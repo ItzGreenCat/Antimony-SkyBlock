@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.antimony.refmap.json",
+  "package": "com.greencat.common.mixins",
+  "mixins": [
+    "MixinMinecraft",
+    "MixinNetHandlerPlayClient",
+    "MixinHideAntimony",
+    "MixinTranslate",
+    "MixinRenderer",
+    "MixinNetworkManager"
+  ]
+}
