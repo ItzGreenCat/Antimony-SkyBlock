@@ -5,7 +5,11 @@ import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.config.ConfigLoader;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.init.Items;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -13,6 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Random;
 
 public class AutoFish {
@@ -85,10 +90,18 @@ public class AutoFish {
             if (FunctionManager.getStatus("AutoFish")) {
                 if (event.name.equals("game.player.swim.splash")) {
                     if (AutoFishStatus) {
-                        new AutoFish();
-                        AutoFishStatus = false;
-                        if(ConfigLoader.getAutoFishNotice()) {
-                            utils.print("钓鱼检测状态:关闭");
+                        float x = event.result.getXPosF();
+                        float y = event.result.getYPosF();
+                        float z = event.result.getZPosF();
+                        List<EntityFishHook> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityFishHook.class, new AxisAlignedBB(x - (0.5 / 2d), y - (0.5 / 2d), z - (0.5 / 2d), x + (0.5 / 2d), y + (0.5 / 2d), z + (0.5 / 2d)), null);
+                        for (EntityFishHook entity : entities) {
+                            if(entity.angler == Minecraft.getMinecraft().thePlayer) {
+                                new AutoFish();
+                                AutoFishStatus = false;
+                                if (ConfigLoader.getAutoFishNotice()) {
+                                    utils.print("钓鱼检测状态:关闭");
+                                }
+                            }
                         }
                     } else {
                         AutoFishStatus = true;

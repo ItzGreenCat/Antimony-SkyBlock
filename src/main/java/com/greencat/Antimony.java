@@ -37,7 +37,7 @@ import java.io.IOException;
 public class Antimony {
         public static final String MODID = "antimony";
         public static final String NAME = "Antimony-SkyBlock";
-        public static final String VERSION = "2.0.8";
+        public static final String VERSION = "2.0.9.1";
         private static final String Sb = "Sb";
         public static int AutoFishYaw = 0;
         public static int RodIndex = 0;
@@ -117,6 +117,8 @@ public class Antimony {
                 new HideDungeonMobNameTag();
                 new PlayerFinder();
                 new SecretBot();
+                new LividESP();
+                new AutoCannon();
 
                 new RankList();
                 new CustomRank();
@@ -145,12 +147,14 @@ public class Antimony {
                 register.RegisterFunction(new AntimonyFunction("Sprint"));
                 register.RegisterFunction(new AntimonyFunction("Eagle"));
                 register.RegisterFunction(new AntimonyFunction("Velocity"));
+                register.RegisterFunction(new AntimonyFunction("AutoCannon"));
                 register.RegisterFunction(new AntimonyFunction("ItemTranslate"));
                 register.RegisterFunction(new AntimonyFunction("GhostBlock"));
                 register.RegisterFunction(new AntimonyFunction("InstantSwitch"));
                 register.RegisterFunction(new AntimonyFunction("NoHurtCam"));
                 register.RegisterFunction(new AntimonyFunction("TerminalESP"));
                 register.RegisterFunction(new AntimonyFunction("HideDungeonMobNameTag"));
+                register.RegisterFunction(new AntimonyFunction("LividESP"));
                 register.RegisterFunction(new AntimonyFunction("PlayerFinder"));
                 register.RegisterFunction(new AntimonyFunction("SecretBot"));
                 register.RegisterFunction(new AntimonyFunction("ClassicGui"));
@@ -175,6 +179,7 @@ public class Antimony {
                 register.RegisterSelectObject(new SelectObject("table","Misc","root"));
 
                 register.RegisterSelectObject(new SelectObject("function","AutoClicker","Combat"));
+                register.RegisterSelectObject(new SelectObject("function","AutoCannon","Combat"));
 
                 register.RegisterSelectObject(new SelectObject("function","SilverfishESP","Render"));
                 register.RegisterSelectObject(new SelectObject("function","GuardianESP","Render"));
@@ -191,6 +196,7 @@ public class Antimony {
                 register.RegisterSelectObject(new SelectObject("function","HideDungeonMobNameTag","Dungeon"));
                 register.RegisterSelectObject(new SelectObject("function","SecretBot","Dungeon"));
                 register.RegisterSelectObject(new SelectObject("function","GhostBlock","Dungeon"));
+                register.RegisterSelectObject(new SelectObject("function","LividESP","Dungeon"));
 
                 register.RegisterSelectObject(new SelectObject("function","ZealotMinion","Macro"));
                 register.RegisterSelectObject(new SelectObject("function","AutoFish","Macro"));
