@@ -8,15 +8,16 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class GhostBlock {
     public GhostBlock(){
         MinecraftForge.EVENT_BUS.register(this);
     }
     @SubscribeEvent
-    public void CreateGhostBlock(InputEvent.KeyInputEvent event){
+    public void CreateGhostBlock(TickEvent.ClientTickEvent event){
         if(FunctionManager.getStatus("GhostBlock")) {
-            if (KeyLoader.GhostBlock.isPressed()) {
+            if (KeyLoader.GhostBlock.isKeyDown()) {
                 MovingObjectPosition position = Minecraft.getMinecraft().thePlayer.rayTrace(6.0D, 0.0F);
                 if (Minecraft.getMinecraft().thePlayer.worldObj.getBlockState(position.getBlockPos()).getBlock() != Blocks.chest &&
                         Minecraft.getMinecraft().thePlayer.worldObj.getBlockState(position.getBlockPos()).getBlock() != Blocks.stone_button &&

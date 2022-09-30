@@ -120,4 +120,16 @@ public class ConfigLoader {
         config.load();
         return status;
     }
+    public static void setMSwitch(String name,String key) {
+        String rule = name + "~~SPLIT~~" + key;
+        config.get(Configuration.CATEGORY_GENERAL, "MSwitch", "of the End~~SPLIT~~LEFT", "MSwitch规则").set(rule);
+        config.save();
+        config.load();
+    }
+    public static String getMSwitch() {
+        String MSwitch = config.get(Configuration.CATEGORY_GENERAL, "MSwitch", "of the End~~SPLIT~~LEFT", "MSwitch规则").getString();
+        config.save();
+        config.load();
+        return MSwitch;
+    }
 }

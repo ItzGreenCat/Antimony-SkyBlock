@@ -5,6 +5,7 @@ import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.command.CommandManager;
 import com.greencat.common.command.DevCommand;
 import com.greencat.common.config.ConfigLoader;
+import com.greencat.common.event.CustomEventHandler;
 import com.greencat.common.function.*;
 import com.greencat.common.function.rank.CustomRank;
 import com.greencat.common.function.rank.RankList;
@@ -37,7 +38,7 @@ import java.io.IOException;
 public class Antimony {
         public static final String MODID = "antimony";
         public static final String NAME = "Antimony-SkyBlock";
-        public static final String VERSION = "2.0.9.1";
+        public static final String VERSION = "2.0.9.2";
         private static final String Sb = "Sb";
         public static int AutoFishYaw = 0;
         public static int RodIndex = 0;
@@ -88,6 +89,7 @@ public class Antimony {
                 }
 
                 new Chroma();
+                new CustomEventHandler.ClientTickEndEvent();
 
                 new AutoKillWorm();
                 new WormLavaESP();
@@ -95,7 +97,6 @@ public class Antimony {
                 new GolemESP();
                 new GuardianESP();
                 new GemstoneHidePane();
-                new AutoPickaxe();
                 new FullBright();
                 new StarredMobESP();
                 new DungeonKeyESP();
@@ -119,6 +120,9 @@ public class Antimony {
                 new SecretBot();
                 new LividESP();
                 new AutoCannon();
+                new DroppedItemESP();
+                new MouseISwitch();
+                new Rat();
 
                 new RankList();
                 new CustomRank();
@@ -136,7 +140,6 @@ public class Antimony {
                 register.RegisterFunction(new AntimonyFunction("AutoFish"));
                 register.RegisterFunction(new AntimonyFunction("AutoKillWorm"));
                 register.RegisterFunction(new AntimonyFunction("GemstoneHidePane"));
-                register.RegisterFunction(new AntimonyFunction("AutoPickaxe"));
                 register.RegisterFunction(new AntimonyFunction("FullBright"));
                 register.RegisterFunction(new AntimonyFunction("StarredMobESP"));
                 register.RegisterFunction(new AntimonyFunction("DungeonKeyESP"));
@@ -158,6 +161,9 @@ public class Antimony {
                 register.RegisterFunction(new AntimonyFunction("PlayerFinder"));
                 register.RegisterFunction(new AntimonyFunction("SecretBot"));
                 register.RegisterFunction(new AntimonyFunction("ClassicGui"));
+                register.RegisterFunction(new AntimonyFunction("DroppedItemESP"));
+                register.RegisterFunction(new AntimonyFunction("MouseISwitch"));
+                register.RegisterFunction(new AntimonyFunction("Rat"));
 
 
 
@@ -169,6 +175,8 @@ public class Antimony {
                 register.RegisterTable(new SelectTable("Mining"));
                 register.RegisterTable(new SelectTable("Movement"));
                 register.RegisterTable(new SelectTable("Misc"));
+                register.RegisterTable(new SelectTable("Fun"));
+
 
                 register.RegisterSelectObject(new SelectObject("table","Combat","root"));
                 register.RegisterSelectObject(new SelectObject("table","Render","root"));
@@ -177,6 +185,7 @@ public class Antimony {
                 register.RegisterSelectObject(new SelectObject("table","Mining","root"));
                 register.RegisterSelectObject(new SelectObject("table","Movement","root"));
                 register.RegisterSelectObject(new SelectObject("table","Misc","root"));
+                register.RegisterSelectObject(new SelectObject("table","Fun","root"));
 
                 register.RegisterSelectObject(new SelectObject("function","AutoClicker","Combat"));
                 register.RegisterSelectObject(new SelectObject("function","AutoCannon","Combat"));
@@ -188,6 +197,7 @@ public class Antimony {
                 register.RegisterSelectObject(new SelectObject("function","LanternESP","Render"));
                 register.RegisterSelectObject(new SelectObject("function","PlayerFinder","Render"));
                 register.RegisterSelectObject(new SelectObject("function","FullBright","Render"));
+                register.RegisterSelectObject(new SelectObject("function","DroppedItemESP","Render"));
                 register.RegisterSelectObject(new SelectObject("function","NoHurtCam","Render"));
 
                 register.RegisterSelectObject(new SelectObject("function","StarredMobESP","Dungeon"));
@@ -203,18 +213,21 @@ public class Antimony {
                 register.RegisterSelectObject(new SelectObject("function","AutoKillWorm","Macro"));
 
                 register.RegisterSelectObject(new SelectObject("function","GemstoneHidePane","Mining"));
-                //register.RegisterSelectObject(new SelectObject("function","AutoPickaxe","Mining"));
 
                 register.RegisterSelectObject(new SelectObject("function","AntiAFKJump","Movement"));
                 register.RegisterSelectObject(new SelectObject("function","Sprint","Movement"));
                 register.RegisterSelectObject(new SelectObject("function","Eagle","Movement"));
                 register.RegisterSelectObject(new SelectObject("function","Velocity","Movement"));
 
-                register.RegisterSelectObject(new SelectObject("function","CustomPetNameTag","Misc"));
-                register.RegisterSelectObject(new SelectObject("function","CustomItemSound","Misc"));
+
                 register.RegisterSelectObject(new SelectObject("function","SkeletonAim","Misc"));
                 register.RegisterSelectObject(new SelectObject("function","ClassicGui","Misc"));
                 register.RegisterSelectObject(new SelectObject("function","InstantSwitch","Misc"));
+                register.RegisterSelectObject(new SelectObject("function","MouseISwitch","Misc"));
+
+                register.RegisterSelectObject(new SelectObject("function","CustomPetNameTag","Fun"));
+                register.RegisterSelectObject(new SelectObject("function","CustomItemSound","Fun"));
+                register.RegisterSelectObject(new SelectObject("function","Rat","Fun"));
 
 
                 register.RegisterSelectObject(new SelectObject("function","ItemTranslate","root"));

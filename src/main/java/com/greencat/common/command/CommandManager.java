@@ -26,7 +26,8 @@ public class CommandManager extends CommandBase {
             "/antimony petName <字符串:规则> <整数:等级> 设置CustomPetNameTag的自定义规则和自定义等级,规则为\"原始字符=要替换的字符\",(例如Sheep=Golden%SPACESheep),若想要重置规则，则将<字符串:规则填写null," +
                     "如果遇到空格请使用%SPACE代替,如果添加多项规则请使用\",\"分割,(例如Sheep=Golden%SPACESheep,Magma%SPACECube=Slime%SPACECube),宠物等级为整数,若想取消自定义等级请填写\"0\"",
             "/antimony ISwitch <字符串:物品名字(不用全名,空格用_表示)> <字符串:<LEFT,RIGHT>填写LEFT为左键填写RIGHT为右键>",
-            "/antimony AutoFishNotice <字符串:ON/OFF> 开启或关闭钓鱼提升"
+            "/antimony MouseSwitch <字符串:手中物品名字(不用全名,空格用_表示)> <字符串:<LEFT,RIGHT>填写LEFT为左键触发填写RIGHT为右键触发>",
+            "/antimony AutoFishNotice <字符串:ON/OFF> 开启或关闭钓鱼提示"
             //"/antimony AutoFishPresentYaw 将当前Yaw设置为AutoFish使用的视角Yaw",
     //"/antimony SetSwordAndRodIndex [整数:SWORD_INDEX,0-8] [整数:ROD_INDEX,0-8]"
     };
@@ -146,6 +147,10 @@ public class CommandManager extends CommandBase {
             }
             if(args[0].equalsIgnoreCase("iswitch")){
                 ConfigLoader.setISwitch(args[1].replace("_"," "),args[2].toUpperCase());
+                utils.print("设置完成,规则:" + args[1].replace("_"," ") + "方式:" + args[2].toUpperCase());
+            }
+            if(args[0].equalsIgnoreCase("mouseswitch")){
+                ConfigLoader.setMSwitch(args[1].replace("_"," "),args[2].toUpperCase());
                 utils.print("设置完成,规则:" + args[1].replace("_"," ") + "方式:" + args[2].toUpperCase());
             }
 
