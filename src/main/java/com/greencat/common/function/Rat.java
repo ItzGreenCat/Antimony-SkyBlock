@@ -1,5 +1,6 @@
 package com.greencat.common.function;
 
+import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
@@ -21,8 +22,10 @@ public class Rat {
     public static String d = "                 ''------'---''---'-'         ";
     @SubscribeEvent
     public void showRat(ClientChatReceivedEvent event) {
-        if(EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("You are playing on profile")){
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "You have been Rat"));
+        if(FunctionManager.getStatus("Rat")) {
+            if (EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("You are playing on profile")) {
+                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "You have been Rat"));
+            }
         }
     }
 

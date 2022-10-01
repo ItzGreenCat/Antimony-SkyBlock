@@ -45,6 +45,15 @@ public class Utils {
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "[" + EnumChatFormatting.WHITE + "Antimony" + EnumChatFormatting.LIGHT_PURPLE + "] " + message + "."));
         }
     }
+    public void printAntimonyChannel(String message) {
+        if(Minecraft.getMinecraft().theWorld != null) {
+            try {
+                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "[" + EnumChatFormatting.WHITE + "Antimony-Channel" + EnumChatFormatting.LIGHT_PURPLE + "] -> " + EnumChatFormatting.GOLD + message.split("MSG-!-SPLIT")[0] + EnumChatFormatting.WHITE + ":" + message.split("MSG-!-SPLIT")[1]));
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
     public void devLog(String message) {
         if(Minecraft.getMinecraft().theWorld != null) {
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_GREEN + "[" + EnumChatFormatting.GOLD + "Antimony" + EnumChatFormatting.DARK_RED + "Dev" + EnumChatFormatting.DARK_GREEN + "]" + EnumChatFormatting.YELLOW + message + "."));

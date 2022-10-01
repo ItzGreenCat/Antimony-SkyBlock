@@ -13,12 +13,13 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.EnumChatFormatting;
 
 public class CommandManager extends CommandBase {
     FunctionNotice functionNotice = new FunctionNotice();
     Utils utils = new Utils();
     String[] Usage = {"/antimony 主命令",
-           // "/antimony AutoFishYaw <整数:YAW> 设置钓鱼视角Yaw",
+            EnumChatFormatting.GOLD + "/amc <消息> 向Antimony聊天频道发送消息",
             "/antimony HUDHeight <整数:HEIGHT> 设置SelectGUI距屏幕顶部高度",
             "/antimony FunctionHeight <整数:HEIGHT> 设置FunctionList距屏幕顶部高度",
             "/antimony ss <整数:SCALING> 设置大型截图SCALING(分辨率是窗口分辨率的SCALING倍)",

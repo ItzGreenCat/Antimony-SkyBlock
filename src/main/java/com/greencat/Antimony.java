@@ -1,7 +1,11 @@
 package com.greencat;
 
+import com.greencat.common.Chat.AntimonyChannel;
+import com.greencat.common.Chat.CheckConnect;
+import com.greencat.common.Chat.ReadFromServer;
 import com.greencat.common.EventLoader;
 import com.greencat.common.FunctionManager.FunctionManager;
+import com.greencat.common.command.ChatCommand;
 import com.greencat.common.command.CommandManager;
 import com.greencat.common.command.DevCommand;
 import com.greencat.common.config.ConfigLoader;
@@ -38,7 +42,7 @@ import java.io.IOException;
 public class Antimony {
         public static final String MODID = "antimony";
         public static final String NAME = "Antimony-SkyBlock";
-        public static final String VERSION = "2.0.9.2";
+        public static final String VERSION = "2.0.9.3";
         private static final String Sb = "Sb";
         public static int AutoFishYaw = 0;
         public static int RodIndex = 0;
@@ -80,6 +84,7 @@ public class Antimony {
                 }
                 ClientCommandHandler.instance.registerCommand(new CommandManager());
                 ClientCommandHandler.instance.registerCommand(new DevCommand());
+                ClientCommandHandler.instance.registerCommand(new ChatCommand());
                 LabymodInstallCheck = utils.ModLoadCheck("labymod");
                 AutoFish autoFish = new AutoFish();
                 autoFish.AutoFishEventRegiser();
@@ -124,6 +129,10 @@ public class Antimony {
                 new MouseISwitch();
                 new Rat();
 
+                new AntimonyChannel();
+                new ReadFromServer();
+                new CheckConnect();
+
                 new RankList();
                 new CustomRank();
                 //Dev
@@ -163,6 +172,7 @@ public class Antimony {
                 register.RegisterFunction(new AntimonyFunction("ClassicGui"));
                 register.RegisterFunction(new AntimonyFunction("DroppedItemESP"));
                 register.RegisterFunction(new AntimonyFunction("MouseISwitch"));
+                register.RegisterFunction(new AntimonyFunction("AntimonyChannel"));
                 register.RegisterFunction(new AntimonyFunction("Rat"));
 
 
@@ -222,6 +232,7 @@ public class Antimony {
 
                 register.RegisterSelectObject(new SelectObject("function","SkeletonAim","Misc"));
                 register.RegisterSelectObject(new SelectObject("function","ClassicGui","Misc"));
+                register.RegisterSelectObject(new SelectObject("function","AntimonyChannel","Misc"));
                 register.RegisterSelectObject(new SelectObject("function","InstantSwitch","Misc"));
                 register.RegisterSelectObject(new SelectObject("function","MouseISwitch","Misc"));
 
@@ -236,6 +247,7 @@ public class Antimony {
                 ConfigLoader.applyFunctionState();
 
                 FunctionManager.setStatus("CustomPetNameTag",false);
+                FunctionManager.setStatus("AntimonyChannel",true);
                 LoadScreen.text.setText(Minecraft.getMinecraft().debug);
 
 
