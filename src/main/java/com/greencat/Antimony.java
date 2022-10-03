@@ -42,7 +42,7 @@ import java.io.IOException;
 public class Antimony {
         public static final String MODID = "antimony";
         public static final String NAME = "Antimony-SkyBlock";
-        public static final String VERSION = "2.0.9.3";
+        public static final String VERSION = "2.0.9.4";
         private static final String Sb = "Sb";
         public static int AutoFishYaw = 0;
         public static int RodIndex = 0;

@@ -3,6 +3,7 @@ package com.greencat.utils;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.config.ConfigLoader;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -46,11 +47,13 @@ public class Utils {
         }
     }
     public void printAntimonyChannel(String message) {
-        if(Minecraft.getMinecraft().theWorld != null) {
-            try {
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "[" + EnumChatFormatting.WHITE + "Antimony-Channel" + EnumChatFormatting.LIGHT_PURPLE + "] -> " + EnumChatFormatting.GOLD + message.split("MSG-!-SPLIT")[0] + EnumChatFormatting.WHITE + ":" + message.split("MSG-!-SPLIT")[1]));
-            } catch(Exception e){
-                e.printStackTrace();
+        if(FunctionManager.getStatus("AntimonyChannel")) {
+            if (Minecraft.getMinecraft().theWorld != null) {
+                try {
+                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "[" + EnumChatFormatting.WHITE + "ⒶⓂⒸ" + EnumChatFormatting.LIGHT_PURPLE + "] -> " + EnumChatFormatting.GOLD + message.split("MSG-!-SPLIT")[0] + EnumChatFormatting.WHITE + ": " + message.split("MSG-!-SPLIT")[1]));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.io.IOException;
 
 @Mixin(NetworkManager.class)
-public class MixinNetworkManager {
+public abstract class MixinNetworkManager {
 
     @Inject(
             method = {"channelRead0"},

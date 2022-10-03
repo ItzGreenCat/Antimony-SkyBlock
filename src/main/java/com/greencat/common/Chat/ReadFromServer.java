@@ -13,10 +13,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class ReadFromServer {
-    static int cooldown = 0;
-    public ReadFromServer(){
-        MinecraftForge.EVENT_BUS.register(this);
-    }
+    int tick = 0;
+    /*public static boolean StopThread = false;
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -25,34 +23,54 @@ public class ReadFromServer {
             try {
                 br = new BufferedReader(new InputStreamReader(AntimonyChannel.socket.getInputStream(), StandardCharsets.UTF_8));
                 while((msg = br.readLine()) != null) {
-                    new Utils().printAntimonyChannel(msg);
-                }
-            } catch (Exception ignored) {
-                try {
-                    AntimonyChannel.socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                new AntimonyChannel();
-                new Utils().print("Antimony Channel与服务器断开连接,正在重连");
-            }
-        }
-    };
-    Thread thread = new Thread(runnable);
-    @SubscribeEvent
-    public void ClientTick(TickEvent.ClientTickEvent event){
-        if(FunctionManager.getStatus("AntimonyChannel")) {
-            if (cooldown >= 10) {
-                if (Minecraft.getMinecraft().theWorld != null) {
-                    try {
-                        thread.start();
-                    } catch (Exception ignored) {
+                    if(!StopThread) {
+                        new Utils().printAntimonyChannel(msg);
+                    } else {
+                        StopThread = false;
+                        break;
                     }
                 }
-                cooldown = 0;
-            } else {
-                cooldown = cooldown + 1;
+            } catch (Exception ignored) {
             }
+        }
+    };*/
+    static BufferedReader br;
+    public ReadFromServer(){
+        /*Thread thread = new Thread(runnable);
+        thread.start();*/
+        MinecraftForge.EVENT_BUS.register(this);
+        refreshBufferedReader();
+    }
+    public static void refreshBufferedReader(){
+        try {
+            br = new BufferedReader(new InputStreamReader(AntimonyChannel.socket.getInputStream(), StandardCharsets.UTF_8));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    @SubscribeEvent
+    public void ClientTick(TickEvent.ClientTickEvent event){
+        if(tick >= 30) {
+            try {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String msg;
+                        try {
+                            if ((msg = br.readLine()) != null) {
+                                new Utils().printAntimonyChannel(msg);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
+            } catch (Exception ignored) {
+            }
+            tick = 0;
+        } else {
+            tick++;
         }
     }
 }

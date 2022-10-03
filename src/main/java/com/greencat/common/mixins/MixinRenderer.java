@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({EntityRenderer.class})
-public class MixinRenderer {
+public abstract class MixinRenderer {
     @Inject(method = {"hurtCameraEffect"},
             at = {@At("HEAD")},
             cancellable = true)

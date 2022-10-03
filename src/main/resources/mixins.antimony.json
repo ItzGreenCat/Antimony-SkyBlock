@@ -9,6 +9,7 @@
     "MixinHideAntimony",
     "MixinTranslate",
     "MixinRenderer",
-    "MixinNetworkManager"
+    "MixinNetworkManager",
+    "MixinEntityPlayerSP"
   ]
 }

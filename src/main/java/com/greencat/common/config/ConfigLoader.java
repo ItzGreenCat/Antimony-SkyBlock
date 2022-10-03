@@ -132,4 +132,15 @@ public class ConfigLoader {
         config.load();
         return MSwitch;
     }
+    public static void setChatChannel(boolean status) {
+        config.get(Configuration.CATEGORY_GENERAL, "ChatChannel", false, "切换聊天频道").set(status);
+        config.save();
+        config.load();
+    }
+    public static boolean getChatChannel() {
+        boolean status = config.get(Configuration.CATEGORY_GENERAL, "ChatChannel", false, "切换聊天频道").getBoolean();
+        config.save();
+        config.load();
+        return status;
+    }
 }

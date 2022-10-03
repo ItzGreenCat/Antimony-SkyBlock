@@ -39,6 +39,10 @@ public class TitleManager {
         TipsList.add("这段文本存在于TitleManager.class");
         TipsList.add("System.out.println(\"Hello World\")");
         TipsList.add("3-5 business days");
+        TipsList.add("Spirit non - 堂堂开混!");
+        TipsList.add("You have been rat");
+        TipsList.add("nothing here");
+        TipsList.add("null");
     }
     @SubscribeEvent
     public void ClientTickEvent(TickEvent.ClientTickEvent event){
