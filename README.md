@@ -1,8 +1,6 @@
 # Antimony - Skyblock 
- <a href="https://discord.gg/drhkxRckgH" target="_blank">
-    <img alt="discord" src="https://img.shields.io/discord/450878205294018560?color=56bcd3&label=discord" />
-  </a>
- **Hypixel Skyblock QOL MOD made by GreenCat**
+Discord https://discord.gg/drhkxRckgH
+**Hypixel Skyblock QOL MOD made by GreenCat**
  
 # What can this mod do
 - ItemTranslate -> Chinese
