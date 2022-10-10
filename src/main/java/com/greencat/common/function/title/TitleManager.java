@@ -32,6 +32,8 @@ public class TitleManager {
         TipsList.add("F7 P2的柱子判定时间为下压后3秒");
         TipsList.add("Crimson Armor曾经有无限攻速");
         TipsList.add("移除了Him");
+        TipsList.add("曾经juju只需要ES3");
+        TipsList.add("2022/10/09 一天出现了7种Dupe方案");
         TipsList.add("Antimony的前身是GreenCatAddon");
         TipsList.add("Spirit Boots技能被禁用了");
         TipsList.add("为什么不尝试一下Portal 2这款游戏呢");
