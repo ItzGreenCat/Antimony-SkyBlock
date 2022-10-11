@@ -1,5 +1,5 @@
 # Antimony - Skyblock 
-Discord https://discord.gg/drhkxRckgH
+Discord https://discord.gg/drhkxRckgH  
 **Hypixel Skyblock QOL MOD made by GreenCat**
  
 # What can this mod do
