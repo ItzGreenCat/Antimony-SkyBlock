@@ -1,0 +1,16 @@
+[
+{
+  "modid": "antimony",
+  "name": "Antimony",
+  "description": "A Simple SkyBlock mod by GreenCat.",
+  "version": "Beta-2.0.9.5-With-Mixin",
+  "mcversion": "1.8.9",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["GreenCat"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

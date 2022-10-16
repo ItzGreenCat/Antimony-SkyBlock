@@ -1,0 +1,42 @@
+FD: com/greencat/common/mixins/MixinEntity/ridingEntity com/greencat/common/mixins/MixinEntity/m
+FD: com/greencat/common/mixins/MixinEntity/onGround com/greencat/common/mixins/MixinEntity/C
+FD: com/greencat/common/mixins/MixinEntity/rotationYaw com/greencat/common/mixins/MixinEntity/y
+FD: com/greencat/common/mixins/MixinEntity/isAirBorne com/greencat/common/mixins/MixinEntity/ai
+FD: com/greencat/common/mixins/MixinEntity/motionX com/greencat/common/mixins/MixinEntity/v
+FD: com/greencat/common/mixins/MixinEntity/motionY com/greencat/common/mixins/MixinEntity/w
+FD: com/greencat/common/mixins/MixinEntity/motionZ com/greencat/common/mixins/MixinEntity/x
+FD: com/greencat/common/mixins/MixinEntity/posZ com/greencat/common/mixins/MixinEntity/u
+FD: com/greencat/common/mixins/MixinEntity/posX com/greencat/common/mixins/MixinEntity/s
+FD: com/greencat/common/mixins/MixinEntity/rotationPitch com/greencat/common/mixins/MixinEntity/z
+FD: com/greencat/common/mixins/MixinEntityPlayer/capabilities com/greencat/common/mixins/MixinEntityPlayer/bA
+FD: com/greencat/common/mixins/MixinEntityPlayer/itemInUseCount com/greencat/common/mixins/MixinEntityPlayer/h
+FD: com/greencat/common/mixins/MixinEntityPlayer/inventory com/greencat/common/mixins/MixinEntityPlayer/bi
+FD: com/greencat/common/mixins/MixinEntityPlayer/speedInAir com/greencat/common/mixins/MixinEntityPlayer/bF
+FD: com/greencat/common/mixins/MixinEntityPlayer/experience com/greencat/common/mixins/MixinEntityPlayer/bD
+FD: com/greencat/common/mixins/MixinEntityPlayer/experienceLevel com/greencat/common/mixins/MixinEntityPlayer/bB
+FD: com/greencat/common/mixins/MixinEntityPlayer/experienceTotal com/greencat/common/mixins/MixinEntityPlayer/bC
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/sendQueue com/greencat/common/mixins/MixinEntityPlayerSP/a
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/serverSprintState com/greencat/common/mixins/MixinEntityPlayerSP/bQ
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/lastReportedPitch com/greencat/common/mixins/MixinEntityPlayerSP/bO
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/lastReportedPosX com/greencat/common/mixins/MixinEntityPlayerSP/bK
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/lastReportedPosY com/greencat/common/mixins/MixinEntityPlayerSP/bL
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/lastReportedPosZ com/greencat/common/mixins/MixinEntityPlayerSP/bM
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/lastReportedYaw com/greencat/common/mixins/MixinEntityPlayerSP/bN
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/positionUpdateTicks com/greencat/common/mixins/MixinEntityPlayerSP/bR
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/serverSneakState com/greencat/common/mixins/MixinEntityPlayerSP/bP
+FD: com/greencat/common/mixins/MixinLivingEntityBase/rotationYawHead com/greencat/common/mixins/MixinLivingEntityBase/aK
+FD: com/greencat/common/mixins/MixinLivingEntityBase/jumpTicks com/greencat/common/mixins/MixinLivingEntityBase/bn
+FD: com/greencat/common/mixins/MixinLivingEntityBase/isJumping com/greencat/common/mixins/MixinLivingEntityBase/aY
+FD: com/greencat/common/mixins/MixinLivingEntityBase/jumpMovementFactor com/greencat/common/mixins/MixinLivingEntityBase/aM
+FD: com/greencat/common/mixins/MixinLivingEntityBase/newPosRotationIncrements com/greencat/common/mixins/MixinLivingEntityBase/bc
+FD: com/greencat/common/mixins/MixinLivingEntityBase/moveForward com/greencat/common/mixins/MixinLivingEntityBase/ba
+FD: com/greencat/common/mixins/MixinLivingEntityBase/moveStrafing com/greencat/common/mixins/MixinLivingEntityBase/aZ
+FD: com/greencat/common/mixins/MixinLivingEntityBase/movedDistance com/greencat/common/mixins/MixinLivingEntityBase/aT
+FD: com/greencat/common/mixins/MixinLivingEntityBase/entityAge com/greencat/common/mixins/MixinLivingEntityBase/aQ
+FD: com/greencat/common/mixins/MixinLivingEntityBase/newPosX com/greencat/common/mixins/MixinLivingEntityBase/bd
+FD: com/greencat/common/mixins/MixinMinecraft/renderViewEntity com/greencat/common/mixins/MixinMinecraft/ad
+MD: com/greencat/common/mixins/MixinEntity/getEntityBoundingBox ()Lnet/minecraft/util/AxisAlignedBB; com/greencat/common/mixins/MixinEntity/aR ()Laug;
+MD: com/greencat/common/mixins/MixinEntity/isSprinting ()Z com/greencat/common/mixins/MixinEntity/aw ()Z
+MD: com/greencat/common/mixins/MixinEntityPlayerSP/isSneaking ()Z com/greencat/common/mixins/MixinEntityPlayerSP/av ()Z
+MD: com/greencat/common/mixins/MixinEntityPlayerSP/isCurrentViewEntity ()Z com/greencat/common/mixins/MixinEntityPlayerSP/A ()Z
+MD: com/greencat/common/mixins/MixinEntityPlayerSP/onUpdateWalkingPlayer ()V com/greencat/common/mixins/MixinEntityPlayerSP/p ()V

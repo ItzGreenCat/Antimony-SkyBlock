@@ -1,0 +1,130 @@
+{
+  "mappings": {
+    "com/greencat/common/mixins/EntityPlayerSPAccessor": {
+      "lastReportedPitch": "field_175165_bM:F",
+      "serverSneakState": "field_175170_bN:Z",
+      "lastReportedPosY": "field_175166_bJ:D",
+      "serverSprintState": "field_175171_bO:Z",
+      "lastReportedPosZ": "field_175167_bK:D",
+      "lastReportedPosX": "field_175172_bI:D",
+      "lastReportedYaw": "field_175164_bL:F"
+    },
+    "com/greencat/common/mixins/MixinRenderer": {
+      "hurtCameraEffect": "Lnet/minecraft/client/renderer/EntityRenderer;func_78482_e(F)V"
+    },
+    "com/greencat/common/mixins/GuiTextFieldAccessor": {
+      "id": "field_175208_g:I"
+    },
+    "com/greencat/common/mixins/MixinEntityPlayerSP": {
+      "sendChatMessage": "Lnet/minecraft/client/entity/EntityPlayerSP;func_71165_d(Ljava/lang/String;)V"
+    },
+    "com/greencat/common/mixins/MixinMinecraft": {
+      "getRenderViewEntity": "Lnet/minecraft/client/Minecraft;func_175606_aa()Lnet/minecraft/entity/Entity;",
+      "createDisplay": "Lnet/minecraft/client/Minecraft;func_175609_am()V"
+    },
+    "com/greencat/common/mixins/MixinNetHandlerPlayClient": {
+      "handleEntityVelocity": "Lnet/minecraft/client/network/NetHandlerPlayClient;func_147244_a(Lnet/minecraft/network/play/server/S12PacketEntityVelocity;)V",
+      "Lnet/minecraft/entity/Entity;setVelocity(DDD)V": "Lnet/minecraft/entity/Entity;func_70016_h(DDD)V"
+    },
+    "com/greencat/common/mixins/MixinNetworkManager": {
+      "sendPacket(Lnet/minecraft/network/Packet;)V": "Lnet/minecraft/network/NetworkManager;func_179290_a(Lnet/minecraft/network/Packet;)V",
+      "channelRead0": "Lnet/minecraft/network/NetworkManager;channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/Packet;)V"
+    },
+    "com/greencat/common/mixins/MinecraftAccessor": {
+      "timer": "field_71428_T:Lnet/minecraft/util/Timer;"
+    },
+    "com/greencat/common/mixins/MixinEntityRenderer": {
+      "Lnet/minecraft/util/Vec3;distanceTo(Lnet/minecraft/util/Vec3;)D": "Lnet/minecraft/util/Vec3;func_72438_d(Lnet/minecraft/util/Vec3;)D",
+      "getMouseOver": "Lnet/minecraft/client/renderer/EntityRenderer;func_78473_a(F)V"
+    },
+    "com/greencat/common/mixins/MixinTranslate": {
+      "getDisplayName": "Lnet/minecraft/item/ItemStack;func_82833_r()Ljava/lang/String;"
+    }
+  },
+  "data": {
+    "notch": {
+      "com/greencat/common/mixins/EntityPlayerSPAccessor": {
+        "lastReportedPitch": "bO:F",
+        "serverSneakState": "bP:Z",
+        "lastReportedPosY": "bL:D",
+        "serverSprintState": "bQ:Z",
+        "lastReportedPosZ": "bM:D",
+        "lastReportedPosX": "bK:D",
+        "lastReportedYaw": "bN:F"
+      },
+      "com/greencat/common/mixins/MixinRenderer": {
+        "hurtCameraEffect": "Lbfk;d(F)V"
+      },
+      "com/greencat/common/mixins/GuiTextFieldAccessor": {
+        "id": "g:I"
+      },
+      "com/greencat/common/mixins/MixinEntityPlayerSP": {
+        "sendChatMessage": "Lbew;e(Ljava/lang/String;)V"
+      },
+      "com/greencat/common/mixins/MixinMinecraft": {
+        "getRenderViewEntity": "Lave;ac()Lpk;",
+        "createDisplay": "Lave;ap()V"
+      },
+      "com/greencat/common/mixins/MixinNetHandlerPlayClient": {
+        "handleEntityVelocity": "Lbcy;a(Lhm;)V",
+        "Lnet/minecraft/entity/Entity;setVelocity(DDD)V": "Lpk;i(DDD)V"
+      },
+      "com/greencat/common/mixins/MixinNetworkManager": {
+        "sendPacket(Lnet/minecraft/network/Packet;)V": "Lek;a(Lff;)V",
+        "channelRead0": "Lek;a(Lio/netty/channel/ChannelHandlerContext;Lff;)V"
+      },
+      "com/greencat/common/mixins/MinecraftAccessor": {
+        "timer": "Y:Lavl;"
+      },
+      "com/greencat/common/mixins/MixinEntityRenderer": {
+        "Lnet/minecraft/util/Vec3;distanceTo(Lnet/minecraft/util/Vec3;)D": "Laui;f(Laui;)D",
+        "getMouseOver": "Lbfk;a(F)V"
+      },
+      "com/greencat/common/mixins/MixinTranslate": {
+        "getDisplayName": "Lzx;q()Ljava/lang/String;"
+      }
+    },
+    "searge": {
+      "com/greencat/common/mixins/EntityPlayerSPAccessor": {
+        "lastReportedPitch": "field_175165_bM:F",
+        "serverSneakState": "field_175170_bN:Z",
+        "lastReportedPosY": "field_175166_bJ:D",
+        "serverSprintState": "field_175171_bO:Z",
+        "lastReportedPosZ": "field_175167_bK:D",
+        "lastReportedPosX": "field_175172_bI:D",
+        "lastReportedYaw": "field_175164_bL:F"
+      },
+      "com/greencat/common/mixins/MixinRenderer": {
+        "hurtCameraEffect": "Lnet/minecraft/client/renderer/EntityRenderer;func_78482_e(F)V"
+      },
+      "com/greencat/common/mixins/GuiTextFieldAccessor": {
+        "id": "field_175208_g:I"
+      },
+      "com/greencat/common/mixins/MixinEntityPlayerSP": {
+        "sendChatMessage": "Lnet/minecraft/client/entity/EntityPlayerSP;func_71165_d(Ljava/lang/String;)V"
+      },
+      "com/greencat/common/mixins/MixinMinecraft": {
+        "getRenderViewEntity": "Lnet/minecraft/client/Minecraft;func_175606_aa()Lnet/minecraft/entity/Entity;",
+        "createDisplay": "Lnet/minecraft/client/Minecraft;func_175609_am()V"
+      },
+      "com/greencat/common/mixins/MixinNetHandlerPlayClient": {
+        "handleEntityVelocity": "Lnet/minecraft/client/network/NetHandlerPlayClient;func_147244_a(Lnet/minecraft/network/play/server/S12PacketEntityVelocity;)V",
+        "Lnet/minecraft/entity/Entity;setVelocity(DDD)V": "Lnet/minecraft/entity/Entity;func_70016_h(DDD)V"
+      },
+      "com/greencat/common/mixins/MixinNetworkManager": {
+        "sendPacket(Lnet/minecraft/network/Packet;)V": "Lnet/minecraft/network/NetworkManager;func_179290_a(Lnet/minecraft/network/Packet;)V",
+        "channelRead0": "Lnet/minecraft/network/NetworkManager;channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/Packet;)V"
+      },
+      "com/greencat/common/mixins/MinecraftAccessor": {
+        "timer": "field_71428_T:Lnet/minecraft/util/Timer;"
+      },
+      "com/greencat/common/mixins/MixinEntityRenderer": {
+        "Lnet/minecraft/util/Vec3;distanceTo(Lnet/minecraft/util/Vec3;)D": "Lnet/minecraft/util/Vec3;func_72438_d(Lnet/minecraft/util/Vec3;)D",
+        "getMouseOver": "Lnet/minecraft/client/renderer/EntityRenderer;func_78473_a(F)V"
+      },
+      "com/greencat/common/mixins/MixinTranslate": {
+        "getDisplayName": "Lnet/minecraft/item/ItemStack;func_82833_r()Ljava/lang/String;"
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+FD: com/greencat/common/mixins/MixinEntity/ridingEntity com/greencat/common/mixins/MixinEntity/field_70154_o
+FD: com/greencat/common/mixins/MixinEntity/onGround com/greencat/common/mixins/MixinEntity/field_70122_E
+FD: com/greencat/common/mixins/MixinEntity/rotationYaw com/greencat/common/mixins/MixinEntity/field_70177_z
+FD: com/greencat/common/mixins/MixinEntity/isAirBorne com/greencat/common/mixins/MixinEntity/field_70160_al
+FD: com/greencat/common/mixins/MixinEntity/motionX com/greencat/common/mixins/MixinEntity/field_70159_w
+FD: com/greencat/common/mixins/MixinEntity/motionY com/greencat/common/mixins/MixinEntity/field_70181_x
+FD: com/greencat/common/mixins/MixinEntity/motionZ com/greencat/common/mixins/MixinEntity/field_70179_y
+FD: com/greencat/common/mixins/MixinEntity/posZ com/greencat/common/mixins/MixinEntity/field_70161_v
+FD: com/greencat/common/mixins/MixinEntity/posX com/greencat/common/mixins/MixinEntity/field_70165_t
+FD: com/greencat/common/mixins/MixinEntity/rotationPitch com/greencat/common/mixins/MixinEntity/field_70125_A
+FD: com/greencat/common/mixins/MixinEntityPlayer/capabilities com/greencat/common/mixins/MixinEntityPlayer/field_71075_bZ
+FD: com/greencat/common/mixins/MixinEntityPlayer/itemInUseCount com/greencat/common/mixins/MixinEntityPlayer/field_71072_f
+FD: com/greencat/common/mixins/MixinEntityPlayer/inventory com/greencat/common/mixins/MixinEntityPlayer/field_71071_by
+FD: com/greencat/common/mixins/MixinEntityPlayer/speedInAir com/greencat/common/mixins/MixinEntityPlayer/field_71102_ce
+FD: com/greencat/common/mixins/MixinEntityPlayer/experience com/greencat/common/mixins/MixinEntityPlayer/field_71106_cc
+FD: com/greencat/common/mixins/MixinEntityPlayer/experienceLevel com/greencat/common/mixins/MixinEntityPlayer/field_71068_ca
+FD: com/greencat/common/mixins/MixinEntityPlayer/experienceTotal com/greencat/common/mixins/MixinEntityPlayer/field_71067_cb
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/sendQueue com/greencat/common/mixins/MixinEntityPlayerSP/field_71174_a
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/serverSprintState com/greencat/common/mixins/MixinEntityPlayerSP/field_175171_bO
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/lastReportedPitch com/greencat/common/mixins/MixinEntityPlayerSP/field_175165_bM
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/lastReportedPosX com/greencat/common/mixins/MixinEntityPlayerSP/field_175172_bI
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/lastReportedPosY com/greencat/common/mixins/MixinEntityPlayerSP/field_175166_bJ
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/lastReportedPosZ com/greencat/common/mixins/MixinEntityPlayerSP/field_175167_bK
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/lastReportedYaw com/greencat/common/mixins/MixinEntityPlayerSP/field_175164_bL
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/positionUpdateTicks com/greencat/common/mixins/MixinEntityPlayerSP/field_175168_bP
+FD: com/greencat/common/mixins/MixinEntityPlayerSP/serverSneakState com/greencat/common/mixins/MixinEntityPlayerSP/field_175170_bN
+FD: com/greencat/common/mixins/MixinLivingEntityBase/rotationYawHead com/greencat/common/mixins/MixinLivingEntityBase/field_70759_as
+FD: com/greencat/common/mixins/MixinLivingEntityBase/jumpTicks com/greencat/common/mixins/MixinLivingEntityBase/field_70773_bE
+FD: com/greencat/common/mixins/MixinLivingEntityBase/isJumping com/greencat/common/mixins/MixinLivingEntityBase/field_70703_bu
+FD: com/greencat/common/mixins/MixinLivingEntityBase/jumpMovementFactor com/greencat/common/mixins/MixinLivingEntityBase/field_70747_aH
+FD: com/greencat/common/mixins/MixinLivingEntityBase/newPosRotationIncrements com/greencat/common/mixins/MixinLivingEntityBase/field_70716_bi
+FD: com/greencat/common/mixins/MixinLivingEntityBase/moveForward com/greencat/common/mixins/MixinLivingEntityBase/field_70701_bs
+FD: com/greencat/common/mixins/MixinLivingEntityBase/moveStrafing com/greencat/common/mixins/MixinLivingEntityBase/field_70702_br
+FD: com/greencat/common/mixins/MixinLivingEntityBase/movedDistance com/greencat/common/mixins/MixinLivingEntityBase/field_70764_aw
+FD: com/greencat/common/mixins/MixinLivingEntityBase/entityAge com/greencat/common/mixins/MixinLivingEntityBase/field_70708_bq
+FD: com/greencat/common/mixins/MixinLivingEntityBase/newPosX com/greencat/common/mixins/MixinLivingEntityBase/field_70709_bj
+FD: com/greencat/common/mixins/MixinMinecraft/renderViewEntity com/greencat/common/mixins/MixinMinecraft/field_175622_Z
+MD: com/greencat/common/mixins/MixinEntity/getEntityBoundingBox ()Lnet/minecraft/util/AxisAlignedBB; com/greencat/common/mixins/MixinEntity/func_174813_aQ ()Lnet/minecraft/util/AxisAlignedBB;
+MD: com/greencat/common/mixins/MixinEntity/isSprinting ()Z com/greencat/common/mixins/MixinEntity/func_70051_ag ()Z
+MD: com/greencat/common/mixins/MixinEntityPlayerSP/isSneaking ()Z com/greencat/common/mixins/MixinEntityPlayerSP/func_70093_af ()Z
+MD: com/greencat/common/mixins/MixinEntityPlayerSP/isCurrentViewEntity ()Z com/greencat/common/mixins/MixinEntityPlayerSP/func_175160_A ()Z
+MD: com/greencat/common/mixins/MixinEntityPlayerSP/onUpdateWalkingPlayer ()V com/greencat/common/mixins/MixinEntityPlayerSP/func_175161_p ()V

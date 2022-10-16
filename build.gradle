@@ -1,11 +1,12 @@
 
 // For those who want the bleeding edge
 repositories {
+    mavenCentral()
     maven { url = "https://repo.spongepowered.org/maven" }
 }
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
         maven {
             url = "http://files.minecraftforge.net/maven"
         }
@@ -27,9 +28,9 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "Beta-2.0.8-With-Mixin"
+version = "Beta-2.0.9.5-With-Mixin"
 group= "com.greencat" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Antimony-SkyBlock"
+archivesBaseName = "Antimony-Client"
 
 compileJava.options.encoding = "UTF-8"
 
@@ -44,12 +45,15 @@ minecraft {
     // simply re-run your setup task after changing the mappings to update your workspace.
     mappings = "stable_22"
     //makeObfSourceJar = false
-    clientJvmArgs += "-Dfml.coreMods.load=com.greencat.common.AntimonyMixinLoader"
+    clientJvmArgs += ["-Dfml.coreMods.load=com.greencat.common.AntimonyMixinLoader","-Ddev-mode"]
 
             // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
 dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
+    implementation 'org.jetbrains:annotations:20.1.0'
+
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
@@ -111,7 +115,8 @@ jar {
             "MixinConfigs": "mixins.antimony.json",
             "ModSide": "CLIENT",
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-            "TweakOrder": "0"
+            "TweakOrder": "0",
+            "FMLAT": "antimony_at.cfg"
     )
 
     enabled = true
