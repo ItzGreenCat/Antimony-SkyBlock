@@ -14,3 +14,6 @@ Discord https://discord.gg/drhkxRckgH
 - Custom Pet Name
 - Custom Item Sound
 - Antimony Mod Channel
+# Mod Dev
+[![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=Pysio2007&theme=dark)](https://github.com/anuraghazra/github-readme-stats)
+[![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=ItzGreenCat&theme=dark)](https://github.com/anuraghazra/github-readme-stats)
