@@ -6887,28 +6887,40 @@ Class Start: com.greencat.common.function.rank.RankList
       @|com\greencat\common\function\rank\RankList.java|473|478|WHITE|field|net.minecraft.util.EnumChatFormatting|WHITE
       @|com\greencat\common\function\rank\RankList.java|489|496|rankMap|field|com.greencat.common.function.rank.RankList|rankMap
       @|com\greencat\common\function\rank\RankList.java|497|500|put|method|java.util.Map|put|(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
-      @|com\greencat\common\function\rank\RankList.java|517|535|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
-      @|com\greencat\common\function\rank\RankList.java|536|540|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
-      @|com\greencat\common\function\rank\RankList.java|549|567|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
-      @|com\greencat\common\function\rank\RankList.java|568|573|BLACK|field|net.minecraft.util.EnumChatFormatting|BLACK
-      @|com\greencat\common\function\rank\RankList.java|590|608|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
-      @|com\greencat\common\function\rank\RankList.java|609|613|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
-      @|com\greencat\common\function\rank\RankList.java|636|654|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
-      @|com\greencat\common\function\rank\RankList.java|655|659|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
-      @|com\greencat\common\function\rank\RankList.java|671|689|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
-      @|com\greencat\common\function\rank\RankList.java|690|695|WHITE|field|net.minecraft.util.EnumChatFormatting|WHITE
-      @|com\greencat\common\function\rank\RankList.java|706|713|rankMap|field|com.greencat.common.function.rank.RankList|rankMap
-      @|com\greencat\common\function\rank\RankList.java|714|717|put|method|java.util.Map|put|(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
-      @|com\greencat\common\function\rank\RankList.java|729|747|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
-      @|com\greencat\common\function\rank\RankList.java|748|752|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
-      @|com\greencat\common\function\rank\RankList.java|761|779|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
-      @|com\greencat\common\function\rank\RankList.java|780|784|GOLD|field|net.minecraft.util.EnumChatFormatting|GOLD
-      @|com\greencat\common\function\rank\RankList.java|798|816|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
-      @|com\greencat\common\function\rank\RankList.java|817|821|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
-      @|com\greencat\common\function\rank\RankList.java|841|859|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
-      @|com\greencat\common\function\rank\RankList.java|860|864|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
-      @|com\greencat\common\function\rank\RankList.java|874|892|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
-      @|com\greencat\common\function\rank\RankList.java|893|898|WHITE|field|net.minecraft.util.EnumChatFormatting|WHITE
+      @|com\greencat\common\function\rank\RankList.java|514|532|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|533|536|RED|field|net.minecraft.util.EnumChatFormatting|RED
+      @|com\greencat\common\function\rank\RankList.java|545|563|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|564|567|RED|field|net.minecraft.util.EnumChatFormatting|RED
+      @|com\greencat\common\function\rank\RankList.java|580|598|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|599|602|RED|field|net.minecraft.util.EnumChatFormatting|RED
+      @|com\greencat\common\function\rank\RankList.java|622|640|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|641|653|LIGHT_PURPLE|field|net.minecraft.util.EnumChatFormatting|LIGHT_PURPLE
+      @|com\greencat\common\function\rank\RankList.java|665|683|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|684|687|RED|field|net.minecraft.util.EnumChatFormatting|RED
+      @|com\greencat\common\function\rank\RankList.java|698|705|rankMap|field|com.greencat.common.function.rank.RankList|rankMap
+      @|com\greencat\common\function\rank\RankList.java|706|709|put|method|java.util.Map|put|(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      @|com\greencat\common\function\rank\RankList.java|726|744|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|745|749|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
+      @|com\greencat\common\function\rank\RankList.java|758|776|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|777|782|BLACK|field|net.minecraft.util.EnumChatFormatting|BLACK
+      @|com\greencat\common\function\rank\RankList.java|799|817|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|818|822|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
+      @|com\greencat\common\function\rank\RankList.java|845|863|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|864|868|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
+      @|com\greencat\common\function\rank\RankList.java|880|898|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|899|904|WHITE|field|net.minecraft.util.EnumChatFormatting|WHITE
+      @|com\greencat\common\function\rank\RankList.java|915|922|rankMap|field|com.greencat.common.function.rank.RankList|rankMap
+      @|com\greencat\common\function\rank\RankList.java|923|926|put|method|java.util.Map|put|(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      @|com\greencat\common\function\rank\RankList.java|938|956|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|957|961|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
+      @|com\greencat\common\function\rank\RankList.java|970|988|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|989|993|GOLD|field|net.minecraft.util.EnumChatFormatting|GOLD
+      @|com\greencat\common\function\rank\RankList.java|1007|1025|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|1026|1030|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
+      @|com\greencat\common\function\rank\RankList.java|1050|1068|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|1069|1073|AQUA|field|net.minecraft.util.EnumChatFormatting|AQUA
+      @|com\greencat\common\function\rank\RankList.java|1083|1101|EnumChatFormatting|class|net.minecraft.util.EnumChatFormatting
+      @|com\greencat\common\function\rank\RankList.java|1102|1107|WHITE|field|net.minecraft.util.EnumChatFormatting|WHITE
    Method End: RankList()V
 Class End  : com.greencat.common.function.rank.RankList
 endProcessing com\greencat\common\function\rank\RankList.java
@@ -6982,28 +6994,30 @@ Class Start: com.greencat.common.function.title.TitleManager
       @|com\greencat\common\function\title\TitleManager.java|1786|1789|add|method|java.util.Collection|add|(Ljava/lang/Object;)Z
       @|com\greencat\common\function\title\TitleManager.java|1807|1815|TipsList|field|com.greencat.common.function.title.TitleManager|TipsList
       @|com\greencat\common\function\title\TitleManager.java|1816|1819|add|method|java.util.Collection|add|(Ljava/lang/Object;)Z
+      @|com\greencat\common\function\title\TitleManager.java|1858|1866|TipsList|field|com.greencat.common.function.title.TitleManager|TipsList
+      @|com\greencat\common\function\title\TitleManager.java|1867|1870|add|method|java.util.Collection|add|(Ljava/lang/Object;)Z
    Method End: TitleManager()V
    Method Start: ClientTickEvent(Lnet/minecraftforge/fml/common/gameevent/TickEvent$ClientTickEvent;)V
-      @|com\greencat\common\function\title\TitleManager.java|1892|1907|ClientTickEvent|method|com.greencat.common.function.title.TitleManager|ClientTickEvent|(Lnet/minecraftforge/fml/common/gameevent/TickEvent$ClientTickEvent;)V
-      @|com\greencat\common\function\title\TitleManager.java|1908|1933|TickEvent.ClientTickEvent|class|net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
-      @|com\greencat\common\function\title\TitleManager.java|1934|1939|event|param|com.greencat.common.function.title.TitleManager|ClientTickEvent|(Lnet/minecraftforge/fml/common/gameevent/TickEvent$ClientTickEvent;)V|event|0
-      @|com\greencat\common\function\title\TitleManager.java|1953|1957|tick|field|com.greencat.common.function.title.TitleManager|tick
-      @|com\greencat\common\function\title\TitleManager.java|1961|1968|MaxTick|field|com.greencat.common.function.title.TitleManager|MaxTick
-      @|com\greencat\common\function\title\TitleManager.java|1984|1988|tick|field|com.greencat.common.function.title.TitleManager|tick
-      @|com\greencat\common\function\title\TitleManager.java|2006|2010|tips|field|com.greencat.common.function.title.TitleManager|tips
-      @|com\greencat\common\function\title\TitleManager.java|2013|2021|TipsList|field|com.greencat.common.function.title.TitleManager|TipsList
-      @|com\greencat\common\function\title\TitleManager.java|2022|2025|get|method|java.util.List|get|(I)Ljava/lang/Object;
-      @|com\greencat\common\function\title\TitleManager.java|2030|2036|Random|class|java.util.Random
-      @|com\greencat\common\function\title\TitleManager.java|2039|2046|nextInt|method|java.util.Random|nextInt|(I)I
-      @|com\greencat\common\function\title\TitleManager.java|2047|2055|TipsList|field|com.greencat.common.function.title.TitleManager|TipsList
-      @|com\greencat\common\function\title\TitleManager.java|2056|2060|size|method|java.util.Collection|size|()I
-      @|com\greencat\common\function\title\TitleManager.java|2078|2085|Display|class|org.lwjgl.opengl.Display
-      @|com\greencat\common\function\title\TitleManager.java|2086|2094|setTitle|method|org.lwjgl.opengl.Display|setTitle|(Ljava/lang/String;)V
-      @|com\greencat\common\function\title\TitleManager.java|2109|2117|Antimony|class|com.greencat.Antimony
-      @|com\greencat\common\function\title\TitleManager.java|2118|2125|VERSION|field|com.greencat.Antimony|VERSION
-      @|com\greencat\common\function\title\TitleManager.java|2136|2140|tips|field|com.greencat.common.function.title.TitleManager|tips
-      @|com\greencat\common\function\title\TitleManager.java|2195|2199|tick|field|com.greencat.common.function.title.TitleManager|tick
-      @|com\greencat\common\function\title\TitleManager.java|2202|2206|tick|field|com.greencat.common.function.title.TitleManager|tick
+      @|com\greencat\common\function\title\TitleManager.java|1936|1951|ClientTickEvent|method|com.greencat.common.function.title.TitleManager|ClientTickEvent|(Lnet/minecraftforge/fml/common/gameevent/TickEvent$ClientTickEvent;)V
+      @|com\greencat\common\function\title\TitleManager.java|1952|1977|TickEvent.ClientTickEvent|class|net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
+      @|com\greencat\common\function\title\TitleManager.java|1978|1983|event|param|com.greencat.common.function.title.TitleManager|ClientTickEvent|(Lnet/minecraftforge/fml/common/gameevent/TickEvent$ClientTickEvent;)V|event|0
+      @|com\greencat\common\function\title\TitleManager.java|1997|2001|tick|field|com.greencat.common.function.title.TitleManager|tick
+      @|com\greencat\common\function\title\TitleManager.java|2005|2012|MaxTick|field|com.greencat.common.function.title.TitleManager|MaxTick
+      @|com\greencat\common\function\title\TitleManager.java|2028|2032|tick|field|com.greencat.common.function.title.TitleManager|tick
+      @|com\greencat\common\function\title\TitleManager.java|2050|2054|tips|field|com.greencat.common.function.title.TitleManager|tips
+      @|com\greencat\common\function\title\TitleManager.java|2057|2065|TipsList|field|com.greencat.common.function.title.TitleManager|TipsList
+      @|com\greencat\common\function\title\TitleManager.java|2066|2069|get|method|java.util.List|get|(I)Ljava/lang/Object;
+      @|com\greencat\common\function\title\TitleManager.java|2074|2080|Random|class|java.util.Random
+      @|com\greencat\common\function\title\TitleManager.java|2083|2090|nextInt|method|java.util.Random|nextInt|(I)I
+      @|com\greencat\common\function\title\TitleManager.java|2091|2099|TipsList|field|com.greencat.common.function.title.TitleManager|TipsList
+      @|com\greencat\common\function\title\TitleManager.java|2100|2104|size|method|java.util.Collection|size|()I
+      @|com\greencat\common\function\title\TitleManager.java|2122|2129|Display|class|org.lwjgl.opengl.Display
+      @|com\greencat\common\function\title\TitleManager.java|2130|2138|setTitle|method|org.lwjgl.opengl.Display|setTitle|(Ljava/lang/String;)V
+      @|com\greencat\common\function\title\TitleManager.java|2153|2161|Antimony|class|com.greencat.Antimony
+      @|com\greencat\common\function\title\TitleManager.java|2162|2169|VERSION|field|com.greencat.Antimony|VERSION
+      @|com\greencat\common\function\title\TitleManager.java|2180|2184|tips|field|com.greencat.common.function.title.TitleManager|tips
+      @|com\greencat\common\function\title\TitleManager.java|2239|2243|tick|field|com.greencat.common.function.title.TitleManager|tick
+      @|com\greencat\common\function\title\TitleManager.java|2246|2250|tick|field|com.greencat.common.function.title.TitleManager|tick
    Method End: ClientTickEvent(Lnet/minecraftforge/fml/common/gameevent/TickEvent$ClientTickEvent;)V
 Class End  : com.greencat.common.function.title.TitleManager
 endProcessing com\greencat\common\function\title\TitleManager.java
