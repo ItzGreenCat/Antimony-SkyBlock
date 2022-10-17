@@ -2,7 +2,6 @@ package com.greencat.common.ui;
 
 import com.greencat.Antimony;
 import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.common.register.AntimonyRegister;
 import com.greencat.type.AntimonyFunction;
 import net.minecraft.client.Minecraft;
@@ -15,7 +14,7 @@ public class NewFunctionList {
     Minecraft mc = Minecraft.getMinecraft();
 
     public void draw() {
-        int height = (Integer) getConfigByFunctionName.get("HUD","FunctionListHeight");
+        int height = ConfigLoader.FunctionListHeight();
         for (AntimonyFunction function : AntimonyRegister.FunctionList) {
             if(function.getStatus()) {
                 GlStateManager.color(1.0F,1.0F,1.0F);

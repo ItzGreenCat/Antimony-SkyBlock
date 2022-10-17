@@ -20,15 +20,12 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import org.lwjgl.input.Mouse;
 
-import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,8 +40,6 @@ public class Killaura {
     public boolean checkTeam = false;
     public boolean checkNPC = false;
     public static boolean attackPlayer = false;
-    public static Double[] currentHeight = {0.0D};
-    public static Boolean[] RenderStatus = {true};
 
     public Killaura() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -126,16 +121,6 @@ public class Killaura {
         }
 
     }
-    @SubscribeEvent
-    public void Render(RenderWorldLastEvent event) {
-        if(FunctionManager.getStatus("Killaura")) {
-            if((boolean)getConfigByFunctionName.get("Killaura","targetESP")) {
-                if (entityTarget != null && !entityTarget.isDead) {
-                    Utils.RenderTargetHUD(entityTarget, new Color(251, 255, 25), (float) ((entityTarget.getEntityBoundingBox().maxY - entityTarget.getEntityBoundingBox().minY) / 4.5), 0.75F, currentHeight, RenderStatus);
-                }
-            }
-        }
-    }
 
     private EntityLivingBase getTarget() {
         if ((!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer) && Minecraft.getMinecraft().theWorld != null)) {
@@ -156,16 +141,8 @@ public class Killaura {
 
     private boolean isValid(EntityLivingBase entity) {
         if ((!(entity == Minecraft.getMinecraft().thePlayer) && !entity.isInvisible()) && !(entity instanceof EntityArmorStand) && !(entity instanceof EntityVillager) && (Minecraft.getMinecraft().thePlayer.canEntityBeSeen(entity)) && entity.getHealth() > 0.0F && entity.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) <= (entityTarget != null && entityTarget != entity ? this.range : Math.max(this.rotationRange, this.range)) && Utils.isWithinFOV(entity, this.fov + 5.0D) && Utils.isWithinPitch(entity, this.fov + 5.0D)) {
-            if(entity instanceof EntityPlayer){
-                if(Utils.isTeamMember(entity, Minecraft.getMinecraft().thePlayer) && checkTeam) {
-                    return false;
-                } else {
-                    if(Utils.isNPC(entity) && checkNPC){
-                        return false;
-                    } else {
-                        return attackPlayer;
-                    }
-                }
+            if((entity instanceof EntityPlayer) && (Utils.isTeam(entity, Minecraft.getMinecraft().thePlayer) && checkTeam || Utils.isNPC(entity) && checkNPC)) {
+                return attackPlayer;
             } else {
                 return true;
             }

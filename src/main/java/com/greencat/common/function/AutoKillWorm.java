@@ -3,7 +3,6 @@ package com.greencat.common.function;
 import com.greencat.Antimony;
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.common.key.KeyLoader;
 import com.greencat.utils.EasyReflection;
 import com.greencat.utils.Utils;
@@ -34,7 +33,7 @@ public class AutoKillWorm {
     public void ClientTickEvent(TickEvent.ClientTickEvent event){
         if(FunctionManager.getStatus("AutoKillWorm")) {
             if(Minecraft.getMinecraft().theWorld != null) {
-                if (Tick < ((Integer)getConfigByFunctionName.get("AutoKillWorm","cooldown") * 40)) {
+                if (Tick < 12000) {
                     Tick = Tick + 1;
                 } else {
                     if (mc.theWorld != null) {
@@ -69,7 +68,7 @@ public class AutoKillWorm {
     public void RenderText(RenderGameOverlayEvent event){
         if(FunctionManager.getStatus("AutoKillWorm")) {
             if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
-                double second = ((double) (((Integer)getConfigByFunctionName.get("AutoKillWorm","cooldown") * 40)) - Tick) / 40;
+                double second = ((double) (12000 - Tick)) / 40;
                 String NoticeString = "AutoKillWorm剩余秒数: " + second;
                 mc.fontRendererObj.drawString(NoticeString, (new ScaledResolution(mc).getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(NoticeString) / 2), (new ScaledResolution(mc).getScaledHeight() / 2) + 20, Antimony.Color);
             }

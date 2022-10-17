@@ -2,7 +2,6 @@ package com.greencat.common.function;
 
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.common.event.CustomEventHandler;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -23,29 +22,28 @@ public class CustomPetName {
     Utils utils = new Utils();
     String OriginalName = null;
     String PetName;
-
     public CustomPetName() {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-
     @SubscribeEvent
-    public void AutoEnableFunction(ClientChatReceivedEvent event) {
-        if (EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("Welcome") && EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("Hypixel SkyBlock")) {
-            if (FunctionManager.getStatus("CustomPetNameTag")) {
-                FunctionManager.setStatus("CustomPetNameTag", false);
-                FunctionManager.setStatus("CustomPetNameTag", true);
+    public void AutoEnableFunction(ClientChatReceivedEvent event){
+        if(EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("Welcome") && EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("Hypixel SkyBlock")){
+            if(FunctionManager.getStatus("CustomPetNameTag")){
+                FunctionManager.setStatus("CustomPetNameTag",false);
+                FunctionManager.setStatus("CustomPetNameTag",true);
             }
-            if (!FunctionManager.getStatus("CustomPetNameTag")) {
-                FunctionManager.setStatus("CustomPetNameTag", true);
+            if(!FunctionManager.getStatus("CustomPetNameTag")){
+                FunctionManager.setStatus("CustomPetNameTag",true);
             }
             utils.print("检测到加入SkyBlock,已经自动开启CustomPetNameTag");
         }
-        if (EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("You summoned your")) {
+        if(EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("You summoned your")) {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    if (FunctionManager.getStatus("CustomPetNameTag")) {
+                    if(FunctionManager.getStatus("CustomPetNameTag"))
+                    {
                         FunctionManager.setStatus("CustomPetNameTag", false);
                         OriginalName = null;
                         try {
@@ -61,11 +59,12 @@ public class CustomPetName {
             Thread thread = new Thread(runnable);
             thread.start();
         }
-        if (EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("Autopet equipped your")) {
+        if(EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("Autopet equipped your")) {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    if (FunctionManager.getStatus("CustomPetNameTag")) {
+                    if(FunctionManager.getStatus("CustomPetNameTag"))
+                    {
                         FunctionManager.setStatus("CustomPetNameTag", false);
                         OriginalName = null;
                         try {
@@ -82,7 +81,6 @@ public class CustomPetName {
             thread.start();
         }
     }
-
     @SubscribeEvent
     public void SwitchFunction(CustomEventHandler.FunctionSwitchEvent event) {
         if (event.function.getName().equals("CustomPetNameTag")) {
@@ -92,14 +90,14 @@ public class CustomPetName {
                 Double y = Minecraft.getMinecraft().thePlayer.posY;
                 Double z = Minecraft.getMinecraft().thePlayer.posZ;
                 List<EntityArmorStand> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityArmorStand.class, new AxisAlignedBB(x - 200, y - 200, z - 200, x + 200, y + 200, z + 200), null);
-                for (EntityArmorStand entity : entities) {
+                for(EntityArmorStand entity : entities){
                     if (EnumChatFormatting.getTextWithoutFormattingCodes(entity.getCustomNameTag()).contains(EnumChatFormatting.getTextWithoutFormattingCodes(Minecraft.getMinecraft().thePlayer.getName() + "'s")) && (!entity.getCustomNameTag().contains("❤"))) {
                         OriginalName = entity.getCustomNameTag();
                         notFoundPet = false;
                         break;
                     }
                 }
-                if (notFoundPet) {
+                if(notFoundPet){
                     event.setCanceled(true);
                     utils.print("无法找到宠物,功能已停用");
                 }
@@ -109,7 +107,7 @@ public class CustomPetName {
                 Double y = Minecraft.getMinecraft().thePlayer.posY;
                 Double z = Minecraft.getMinecraft().thePlayer.posZ;
                 List<EntityArmorStand> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityArmorStand.class, new AxisAlignedBB(x - 200, y - 200, z - 200, x + 200, y + 200, z + 200), null);
-                for (EntityArmorStand entity : entities) {
+                for(EntityArmorStand entity : entities){
                     if (EnumChatFormatting.getTextWithoutFormattingCodes(entity.getCustomNameTag()).contains(EnumChatFormatting.getTextWithoutFormattingCodes(Minecraft.getMinecraft().thePlayer.getName() + "'s")) && (!entity.getCustomNameTag().contains("❤"))) {
                         entity.setCustomNameTag(OriginalName);
                         break;
@@ -118,40 +116,38 @@ public class CustomPetName {
             }
         }
     }
-
     @SubscribeEvent
-    public void EnableFunction(CustomEventHandler.FunctionEnableEvent event) {
-        if (Minecraft.getMinecraft().theWorld != null) {
+    public void EnableFunction(CustomEventHandler.FunctionEnableEvent event){
+        if(Minecraft.getMinecraft().theWorld != null) {
             if (event.function.getName().equals("CustomPetNameTag")) {
                 boolean notFoundPet = true;
                 Double x = Minecraft.getMinecraft().thePlayer.posX;
                 Double y = Minecraft.getMinecraft().thePlayer.posY;
                 Double z = Minecraft.getMinecraft().thePlayer.posZ;
                 List<EntityArmorStand> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityArmorStand.class, new AxisAlignedBB(x - 200, y - 200, z - 200, x + 200, y + 200, z + 200), null);
-                for (EntityArmorStand entity : entities) {
+                for(EntityArmorStand entity : entities){
                     if (EnumChatFormatting.getTextWithoutFormattingCodes(entity.getCustomNameTag()).contains(EnumChatFormatting.getTextWithoutFormattingCodes(Minecraft.getMinecraft().thePlayer.getName() + "'s")) && (!entity.getCustomNameTag().contains("❤"))) {
                         OriginalName = entity.getCustomNameTag();
                         notFoundPet = false;
                         break;
                     }
                 }
-                if (notFoundPet) {
+                if(notFoundPet){
                     event.setCanceled(true);
                     utils.print("无法找到宠物,功能已停用");
                 }
             }
         }
     }
-
     @SubscribeEvent
-    public void DisableFunction(CustomEventHandler.FunctionDisabledEvent event) {
-        if (Minecraft.getMinecraft().theWorld != null) {
+    public void DisableFunction(CustomEventHandler.FunctionDisabledEvent event){
+        if(Minecraft.getMinecraft().theWorld != null) {
             if (event.function.getName().equals("CustomPetNameTag")) {
                 Double x = Minecraft.getMinecraft().thePlayer.posX;
                 Double y = Minecraft.getMinecraft().thePlayer.posY;
                 Double z = Minecraft.getMinecraft().thePlayer.posZ;
                 List<EntityArmorStand> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityArmorStand.class, new AxisAlignedBB(x - 200, y - 200, z - 200, x + 200, y + 200, z + 200), null);
-                for (EntityArmorStand entity : entities) {
+                for(EntityArmorStand entity : entities){
                     if (EnumChatFormatting.getTextWithoutFormattingCodes(entity.getCustomNameTag()).contains(EnumChatFormatting.getTextWithoutFormattingCodes(Minecraft.getMinecraft().thePlayer.getName() + "'s"))) {
                         entity.setCustomNameTag(OriginalName);
                         break;
@@ -160,41 +156,33 @@ public class CustomPetName {
             }
         }
     }
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void modifyPetName(RenderLivingEvent.Specials.Pre<EntityLivingBase> event) {
         if (Minecraft.getMinecraft().theWorld != null) {
-            try {
-                if (FunctionManager.getStatus("CustomPetNameTag")) {
-                    Entity entity = event.entity;
-                    if (entity instanceof EntityArmorStand) {
-                        if (entity.hasCustomName()) {
-                            if (entity.getCustomNameTag().contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString())) {
-                                if (OriginalName != null) {
-                                    PetName = OriginalName;
-                                    if ((Integer) getConfigByFunctionName.get("CustomPetNameTag", "petLevel") != 0) {
-                                        String[] Temp1 = PetName.split("]");
-                                        String[] Temp2 = Temp1[0].split("\\[");
-                                        PetName = Temp2[0] + "[" + EnumChatFormatting.GRAY + "Lv" + (Integer) getConfigByFunctionName.get("CustomPetNameTag", "petLevel") + EnumChatFormatting.DARK_GRAY + "]" + Temp1[1];
-                                    }
-                                    String ruleStr = (String) getConfigByFunctionName.get("CustomPetNameTag", "petName");
-                                    if(!ruleStr.equalsIgnoreCase("null")){
-                                        String[] rules = ruleStr.split(",");
-                                        for (String rule : rules) {
-                                            String[] key2value = rule.split("=");
-                                            PetName = PetName.replace(key2value[0], key2value[1]);
-                                        }
-                                        entity.setCustomNameTag(PetName);
-                                    }
+            if (FunctionManager.getStatus("CustomPetNameTag")) {
+                Entity entity = event.entity;
+                if (entity instanceof EntityArmorStand) {
+                    if (entity.hasCustomName()) {
+                        if (entity.getCustomNameTag().contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString())) {
+                            if(OriginalName != null) {
+                                PetName = OriginalName;
+                                if (ConfigLoader.getCustomPetLevel() != 0) {
+                                    String[] Temp1 = PetName.split("]");
+                                    String[] Temp2 = Temp1[0].split("\\[");
+                                    PetName = Temp2[0] + "[" + EnumChatFormatting.GRAY + "Lv" + ConfigLoader.getCustomPetLevel() + EnumChatFormatting.DARK_GRAY + "]" + Temp1[1];
                                 }
-
-
+                                String[] rules = ConfigLoader.getPetNameRule();
+                                for (String rule : rules) {
+                                    String[] key2value = rule.split("=");
+                                    PetName = PetName.replace(key2value[0], key2value[1]);
+                                }
+                                entity.setCustomNameTag(PetName);
                             }
+
+
                         }
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
