@@ -3,14 +3,17 @@ package com.greencat.common.function;
 import com.greencat.Antimony;
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.config.ConfigLoader;
+import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.init.Items;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -27,14 +30,16 @@ public class AutoFish {
     }
     Minecraft mc = Minecraft.getMinecraft();
     Utils utils = new Utils();
-    Robot robot = new Robot();
     static int Tick = 40;
+    static int hookTick = -1;
+    static int maxHookTick = 1400;
     Random randomYaw = new Random();
     Random randomPitch = new Random();
     static boolean MoveStatus = false;
     int RandomNumber1 = randomYaw.nextInt(20);
     int RandomNumber2 = randomPitch.nextInt(20);
     static Boolean AutoFishStatus = false;
+    static Boolean slugFish = false;
 
 
     public AutoFish() throws AWTException {
@@ -115,13 +120,18 @@ public class AutoFish {
                 Tick = 40;
             }
         }
+        if(hookTick + 1 >= maxHookTick){
+            hookTick = -1;
+        } else {
+            if(hookTick + 1 < maxHookTick && hookTick >= 0){
+                hookTick = hookTick + 1;
+            }
+        }
     }
     @SubscribeEvent
     public void onPacketReceived(PlaySoundEvent event) throws AWTException {
         if(Minecraft.getMinecraft().theWorld != null) {
             if (FunctionManager.getStatus("AutoFish")) {
-
-
                 if (event.name.equals("game.player.swim.splash")) {
                     if (AutoFishStatus) {
                         float x = event.result.getXPosF();
@@ -130,16 +140,30 @@ public class AutoFish {
                         List<EntityFishHook> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityFishHook.class, new AxisAlignedBB(x - (0.5 / 2d), y - (0.5 / 2d), z - (0.5 / 2d), x + (0.5 / 2d), y + (0.5 / 2d), z + (0.5 / 2d)), null);
                         for (EntityFishHook entity : entities) {
                             if(entity.angler == Minecraft.getMinecraft().thePlayer) {
-                                new AutoFish();
-                                AutoFishStatus = false;
-                                if (ConfigLoader.getAutoFishNotice()) {
-                                    utils.print("钓鱼检测状态:关闭");
+                                slugFish = (Boolean)getConfigByFunctionName.get("AutoFish","slug");
+                                if(slugFish) {
+                                    if(hookTick < 0) {
+                                        new AutoFish();
+                                        AutoFishStatus = false;
+                                        if ((Boolean) getConfigByFunctionName.get("AutoFish","message")) {
+                                            utils.print("钓鱼检测状态:关闭");
+                                        }
+                                        hookTick = -1;
+                                    }
+                                } else {
+                                    new AutoFish();
+                                    AutoFishStatus = false;
+                                    if ((Boolean) getConfigByFunctionName.get("AutoFish","message")) {
+                                        utils.print("钓鱼检测状态:关闭");
+                                    }
+                                    hookTick = -1;
                                 }
                             }
                         }
                     } else {
                         AutoFishStatus = true;
-                        if(ConfigLoader.getAutoFishNotice()) {
+                        hookTick = 0;
+                        if((Boolean) getConfigByFunctionName.get("AutoFish","message")) {
                             utils.print("钓鱼检测状态:开启");
                         }
                     }
@@ -154,13 +178,23 @@ public class AutoFish {
                 if (Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == Items.fishing_rod) {
                     if (AutoFishStatus) {
                         AutoFishStatus = false;
-                        if(ConfigLoader.getAutoFishNotice()) {
+                        if((Boolean) getConfigByFunctionName.get("AutoFish","message")) {
                             utils.print("钓鱼检测状态:关闭");
                         }
                     }
                 }
             } catch(NullPointerException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+    @SubscribeEvent
+    public void RenderText(RenderGameOverlayEvent event){
+        if(FunctionManager.getStatus("AutoFish")) {
+            if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
+                double second = ((double) (hookTick)) / 40;
+                String NoticeString = "抛竿秒数: " + second;
+                mc.fontRendererObj.drawString(NoticeString, (new ScaledResolution(mc).getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(NoticeString) / 2), (new ScaledResolution(mc).getScaledHeight() / 2) + 40, Antimony.Color);
             }
         }
     }

@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -646,24 +647,6 @@ public class Utils {
         float pitch = (float)(-(Math.atan2(diffY, dist) * 180.0D / 3.141592653589793D));
         return new float[]{Minecraft.getMinecraft().thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(yaw - Minecraft.getMinecraft().thePlayer.rotationYaw), Minecraft.getMinecraft().thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(pitch - Minecraft.getMinecraft().thePlayer.rotationPitch)};
     }
-    public static boolean isTeam(EntityLivingBase e, EntityLivingBase e2) {
-        if (e.getDisplayName().getUnformattedText().length() < 4) {
-            return false;
-        } else if (e.getDisplayName().getFormattedText().charAt(2) == 167 && e2.getDisplayName().getFormattedText().charAt(2) == 167) {
-            try {
-                if (isOnSkyBlock()) {
-                    return true;
-                } else {
-                    return e.getDisplayName().getFormattedText().charAt(3) == e2.getDisplayName().getFormattedText().charAt(3);
-                }
-            } catch(Exception ex){
-                ex.printStackTrace();
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
     public static boolean isOnSkyBlock() {
         try {
             //ScoreObjective titleObjective = Minecraft.getMinecraft().thePlayer.getWorldScoreboard().getObjectiveInDisplaySlot(1);
@@ -717,6 +700,111 @@ public class Utils {
         } else {
             return false;
         }
+    }
+    public static void RenderTargetHUD(EntityLivingBase entity, Color c,float width,float size,Double[] currentHeight,Boolean[] currentStatus) {
+        RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+        GlStateManager.disableDepth();
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GL11.glLineWidth(width);
+        GlStateManager.color((float) c.getRed() / 255.0F, (float) c.getGreen() / 255.0F, (float) c.getBlue() / 255.0F, (float) c.getAlpha() / 255.0F);
+        double x = entity.posX - renderManager.viewerPosX;
+        double y = entity.getEntityBoundingBox().minY - renderManager.viewerPosY;
+        double z = entity.posZ - renderManager.viewerPosZ;
+        double entityHeight = entity.getEntityBoundingBox().maxY - entity.getEntityBoundingBox().minY;
+
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer wr = tessellator.getWorldRenderer();
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x + (size / 2),y,z + size).endVertex();
+        wr.pos(x + size,y,z + (size / 2)).endVertex();
+        wr.pos(x + size,y,z - (size / 2)).endVertex();
+        wr.pos(x + (size / 2),y,z - size).endVertex();
+        wr.pos(x - (size / 2),y,z - size).endVertex();
+        wr.pos(x - size,y,z - (size / 2)).endVertex();
+        wr.pos(x - size,y,z + (size / 2)).endVertex();
+        wr.pos(x - (size / 2),y,z + size).endVertex();
+        wr.pos(x + (size / 2),y,z + size).endVertex();
+        tessellator.draw();
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x + (size / 2),y + entityHeight,z + size).endVertex();
+        wr.pos(x + size,y + entityHeight,z + (size / 2)).endVertex();
+        wr.pos(x + size,y + entityHeight,z - (size / 2)).endVertex();
+        wr.pos(x + (size / 2),y + entityHeight,z - size).endVertex();
+        wr.pos(x - (size / 2),y + entityHeight,z - size).endVertex();
+        wr.pos(x - size,y + entityHeight,z - (size / 2)).endVertex();
+        wr.pos(x - size,y + entityHeight,z + (size / 2)).endVertex();
+        wr.pos(x - (size / 2),y + entityHeight,z + size).endVertex();
+        wr.pos(x + (size / 2),y + entityHeight,z + size).endVertex();
+        tessellator.draw();
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x + (size / 2),y,z + size).endVertex();
+        wr.pos(x + (size / 2),y + entityHeight,z + size).endVertex();
+        tessellator.draw();
+
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x + size,y,z + (size / 2)).endVertex();
+        wr.pos(x + size,y + entityHeight,z + (size / 2)).endVertex();
+        tessellator.draw();
+
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x + size,y,z - (size / 2)).endVertex();
+        wr.pos(x + size,y + entityHeight,z - (size / 2)).endVertex();
+        tessellator.draw();
+
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x + (size / 2),y,z - size).endVertex();
+        wr.pos(x + (size / 2),y + entityHeight,z - size).endVertex();
+        tessellator.draw();
+
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x - (size / 2),y,z - size).endVertex();
+        wr.pos(x - (size / 2),y + entityHeight,z - size).endVertex();
+        tessellator.draw();
+
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x - size,y,z - (size / 2)).endVertex();
+        wr.pos(x - size,y + entityHeight,z - (size / 2)).endVertex();
+        tessellator.draw();
+
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x - size,y,z + (size / 2)).endVertex();
+        wr.pos(x - size,y + entityHeight,z + (size / 2)).endVertex();
+        tessellator.draw();
+
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x - (size / 2),y,z + size).endVertex();
+        wr.pos(x - (size / 2),y + entityHeight,z + size).endVertex();
+        tessellator.draw();
+        if(currentStatus[0] && currentHeight[0] + 0.02 > entityHeight){
+            currentStatus[0] = false;
+        }
+        if(!currentStatus[0] && currentHeight[0] - 0.02 < 0){
+            currentStatus[0] = true;
+        }
+        if(currentStatus[0]){
+            currentHeight[0] = currentHeight[0] + 0.02;
+        } else {
+            currentHeight[0] = currentHeight[0] - 0.02;
+        }
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        wr.pos(x + (size / 2),y + currentHeight[0],z + size).endVertex();
+        wr.pos(x + size,y + currentHeight[0],z + (size / 2)).endVertex();
+        wr.pos(x + size,y + currentHeight[0],z - (size / 2)).endVertex();
+        wr.pos(x + (size / 2),y + currentHeight[0],z - size).endVertex();
+        wr.pos(x - (size / 2),y + currentHeight[0],z - size).endVertex();
+        wr.pos(x - size,y + currentHeight[0],z - (size / 2)).endVertex();
+        wr.pos(x - size,y + currentHeight[0],z + (size / 2)).endVertex();
+        wr.pos(x - (size / 2),y + currentHeight[0],z + size).endVertex();
+        wr.pos(x + (size / 2),y + currentHeight[0],z + size).endVertex();
+        tessellator.draw();
+
+
+
+        GL11.glLineWidth(1.0F);
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableDepth();
     }
     
 

@@ -45,7 +45,6 @@ public class TitleManager {
         TipsList.add("nothing here");
         TipsList.add("null");
         TipsList.add("Iron Punch (-50 Mana) * 3");
-        TipsList.add("I LOVE YOU HYPIXEL");
     }
     @SubscribeEvent
     public void ClientTickEvent(TickEvent.ClientTickEvent event){
