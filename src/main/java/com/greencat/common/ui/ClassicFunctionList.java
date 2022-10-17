@@ -2,6 +2,7 @@ package com.greencat.common.ui;
 
 import com.greencat.Antimony;
 import com.greencat.common.config.ConfigLoader;
+import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.common.register.AntimonyRegister;
 import com.greencat.type.AntimonyFunction;
 import net.minecraft.client.Minecraft;
@@ -11,7 +12,7 @@ public class ClassicFunctionList {
     Minecraft mc = Minecraft.getMinecraft();
 
     public void draw() {
-        int height = ConfigLoader.FunctionListHeight();
+        int height = (Integer) getConfigByFunctionName.get("HUD","FunctionListHeight");
         for (AntimonyFunction function : AntimonyRegister.FunctionList) {
             if(function.getStatus()) {
                 mc.fontRendererObj.drawString(function.getName(), new ScaledResolution(mc).getScaledWidth() - mc.fontRendererObj.getStringWidth(function.getName()), height, Antimony.Color);

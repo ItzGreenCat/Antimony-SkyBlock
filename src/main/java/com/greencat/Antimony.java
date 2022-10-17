@@ -18,10 +18,7 @@ import com.greencat.common.function.title.TitleManager;
 import com.greencat.common.key.KeyLoader;
 import com.greencat.common.register.AntimonyRegister;
 import com.greencat.extranal.LoadScreen;
-import com.greencat.settings.SettingBoolean;
-import com.greencat.settings.SettingLimitDouble;
-import com.greencat.settings.SettingLimitInt;
-import com.greencat.settings.SettingString;
+import com.greencat.settings.*;
 import com.greencat.type.AntimonyFunction;
 import com.greencat.type.SelectObject;
 import com.greencat.type.SelectTable;
@@ -51,7 +48,7 @@ import java.util.HashMap;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-SkyBlock";
-    public static final String VERSION = "2.0.9.5";
+    public static final String VERSION = "2.0.9.6";
     private static final String Sb = "Sb";
     public static int AutoFishYaw = 0;
     public static int RodIndex = 0;
@@ -160,6 +157,8 @@ public class Antimony {
         new Rat();
         new Killaura();
         new AutoUse();
+        new HollowAutoPurchase();
+        new WTap();
 
         new com.greencat.common.decorate.Events();
 
@@ -176,6 +175,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("AutoClicker"));
         register.RegisterFunction(new AntimonyFunction("Killaura"));
         register.RegisterFunction(new AntimonyFunction("Reach"));
+        register.RegisterFunction(new AntimonyFunction("WTap"));
         register.RegisterFunction(new AntimonyFunction("WormLavaESP"));
         register.RegisterFunction(new AntimonyFunction("LanternESP"));
         register.RegisterFunction(new AntimonyFunction("SilverfishESP"));
@@ -210,6 +210,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("DroppedItemESP"));
         register.RegisterFunction(new AntimonyFunction("MouseISwitch"));
         register.RegisterFunction(new AntimonyFunction("AutoUse"));
+        register.RegisterFunction(new AntimonyFunction("HollowAutoPurchase"));
         register.RegisterFunction(new AntimonyFunction("AntimonyChannel"));
         register.RegisterFunction(new AntimonyFunction("Rat"));
 
@@ -219,7 +220,7 @@ public class Antimony {
         register.RegisterTable(new SelectTable("Render"));
         register.RegisterTable(new SelectTable("Dungeon"));
         register.RegisterTable(new SelectTable("Macro"));
-        register.RegisterTable(new SelectTable("Mining"));
+        register.RegisterTable(new SelectTable("CrystalHollow"));
         register.RegisterTable(new SelectTable("Movement"));
         register.RegisterTable(new SelectTable("Misc"));
         register.RegisterTable(new SelectTable("Fun"));
@@ -229,7 +230,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("table", "Render", "root"));
         register.RegisterSelectObject(new SelectObject("table", "Dungeon", "root"));
         register.RegisterSelectObject(new SelectObject("table", "Macro", "root"));
-        register.RegisterSelectObject(new SelectObject("table", "Mining", "root"));
+        register.RegisterSelectObject(new SelectObject("table", "CrystalHollow", "root"));
         register.RegisterSelectObject(new SelectObject("table", "Movement", "root"));
         register.RegisterSelectObject(new SelectObject("table", "Misc", "root"));
         register.RegisterSelectObject(new SelectObject("table", "Fun", "root"));
@@ -238,6 +239,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoCannon", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "Killaura", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "Reach", "Combat"));
+        register.RegisterSelectObject(new SelectObject("function", "WTap", "Combat"));
 
         register.RegisterSelectObject(new SelectObject("function", "SilverfishESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "GuardianESP", "Render"));
@@ -261,7 +263,8 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoFish", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "AutoKillWorm", "Macro"));
 
-        register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "Mining"));
+        register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
+        register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "HollowAutoPurchase"));
 
         register.RegisterSelectObject(new SelectObject("function", "AntiAFKJump", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Sprint", "Movement"));
@@ -291,16 +294,14 @@ public class Antimony {
         LoadScreen.text.setText(Minecraft.getMinecraft().debug);
 
         FunctionManager.bindFunction("Killaura");
-        FunctionManager.addConfiguration(new SettingBoolean("攻击玩家", "isAttackPlayer", false));
+        FunctionManager.addConfiguration(new SettingBoolean("攻击玩家", "isAttackPlayer", true));
+        FunctionManager.addConfiguration(new SettingBoolean("目标实体透视", "targetESP", true));
         FunctionManager.addConfiguration(new SettingLimitDouble("最大纵向旋转角度", "maxPitch", 120.0D,90.0D,-90.0D));
         FunctionManager.addConfiguration(new SettingLimitDouble("最大横向旋转角度", "maxYaw", 120.0D,180.0D,-180.0D));
         FunctionManager.addConfiguration(new SettingLimitDouble("最大旋转距离", "maxRotationRange", 6.0D,12.0D,2.0D));
         FunctionManager.addConfiguration(new SettingLimitDouble("在此项值内视场角生物为可攻击生物", "Fov", 270.0D,360.0D,90.0D));
         FunctionManager.addConfiguration(new SettingBoolean("攻击NPC", "isAttackNPC", false));
         FunctionManager.addConfiguration(new SettingBoolean("攻击同队伍玩家", "isAttackTeamMember", false));
-
-
-
 
         FunctionManager.bindFunction("InstantSwitch");
         FunctionManager.addConfiguration(new SettingString("物品名称", "itemName", "of the End"));
@@ -313,8 +314,29 @@ public class Antimony {
         FunctionManager.bindFunction("Reach");
         FunctionManager.addConfiguration(new SettingLimitDouble("距离","distance",3.0D,4.0D,3.0D));
 
-        NewUserFunction();
+        FunctionManager.bindFunction("AutoFish");
+        FunctionManager.addConfiguration(new SettingBoolean("SlugFish模式", "slug", false));
+        FunctionManager.addConfiguration(new SettingBoolean("状态提示", "message", true));
 
+        FunctionManager.bindFunction("WTap");
+        FunctionManager.addConfiguration(new SettingBoolean("对弓的支持", "bowMode", true));
+
+        FunctionManager.bindFunction("HUD");
+        FunctionManager.addConfiguration(new SettingInt("左上方(SelectGUI)距屏幕顶部距离","HUDHeight",0));
+        FunctionManager.addConfiguration(new SettingInt("右上方(FunctionList)距屏幕顶部距离","FunctionListHeight",0));
+
+        FunctionManager.bindFunction("CustomPetNameTag");
+        FunctionManager.addConfiguration(new SettingString("规则为\"原始字符=要替换的字符\",如果添加多项规则请使用\",\"分割,如果想清空自定义名称规则请填写null", "petName", "null"));
+        FunctionManager.addConfiguration(new SettingInt("宠物等级,如果想取消自定义等级请填写0","petLevel",0));
+
+        FunctionManager.bindFunction("MouseISwitch");
+        FunctionManager.addConfiguration(new SettingString("物品名称", "itemName", "Shadow Fu"));
+        FunctionManager.addConfiguration(new SettingBoolean("左键触发", "leftTrigger", true));
+
+        FunctionManager.bindFunction("AutoKillWorm");
+        FunctionManager.addConfiguration(new SettingLimitInt("间隔时间","cooldown",300,Integer.MAX_VALUE,0));
+
+        NewUserFunction();
 
     }
 
