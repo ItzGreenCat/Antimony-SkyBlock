@@ -131,7 +131,7 @@ public class Killaura {
         if(FunctionManager.getStatus("Killaura")) {
             if((boolean)getConfigByFunctionName.get("Killaura","targetESP")) {
                 if (entityTarget != null && !entityTarget.isDead) {
-                    Utils.RenderTargetHUD(entityTarget, new Color(251, 255, 25), (float) ((entityTarget.getEntityBoundingBox().maxY - entityTarget.getEntityBoundingBox().minY) / 4.5), 0.75F, currentHeight, RenderStatus);
+                    Utils.RenderTargetESP(entityTarget, new Color(251, 255, 25),2.5F,(float) ((entityTarget.getEntityBoundingBox().maxY - entityTarget.getEntityBoundingBox().minY) / 4.5), currentHeight, RenderStatus);
                 }
             }
         }

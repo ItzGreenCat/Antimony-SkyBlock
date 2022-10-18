@@ -48,11 +48,8 @@ import java.util.HashMap;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-SkyBlock";
-    public static final String VERSION = "2.0.9.6";
+    public static final String VERSION = "2.0.9.7";
     private static final String Sb = "Sb";
-    public static int AutoFishYaw = 0;
-    public static int RodIndex = 0;
-    public static int SwordIndex = 0;
     public static boolean AutoFishYawState = false;
     public static int ImageScaling = 1;
     public static boolean shouldRenderBossBar = true;
@@ -159,6 +156,8 @@ public class Antimony {
         new AutoUse();
         new HollowAutoPurchase();
         new WTap();
+        new FreeCamera();
+        new TargetESP();
 
         new com.greencat.common.decorate.Events();
 
@@ -176,6 +175,8 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("Killaura"));
         register.RegisterFunction(new AntimonyFunction("Reach"));
         register.RegisterFunction(new AntimonyFunction("WTap"));
+        register.RegisterFunction(new AntimonyFunction("FreeCamera"));
+        register.RegisterFunction(new AntimonyFunction("TargetESP"));
         register.RegisterFunction(new AntimonyFunction("WormLavaESP"));
         register.RegisterFunction(new AntimonyFunction("LanternESP"));
         register.RegisterFunction(new AntimonyFunction("SilverfishESP"));
@@ -237,6 +238,7 @@ public class Antimony {
 
         register.RegisterSelectObject(new SelectObject("function", "AutoClicker", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "AutoCannon", "Combat"));
+        register.RegisterSelectObject(new SelectObject("function", "TargetESP", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "Killaura", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "Reach", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "WTap", "Combat"));
@@ -250,6 +252,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "FullBright", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "DroppedItemESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "NoHurtCam", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
 
         register.RegisterSelectObject(new SelectObject("function", "StarredMobESP", "Dungeon"));
         register.RegisterSelectObject(new SelectObject("function", "DungeonKeyESP", "Dungeon"));
@@ -264,7 +267,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoKillWorm", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
-        register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "HollowAutoPurchase"));
+        register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
 
         register.RegisterSelectObject(new SelectObject("function", "AntiAFKJump", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Sprint", "Movement"));
@@ -317,6 +320,7 @@ public class Antimony {
         FunctionManager.bindFunction("AutoFish");
         FunctionManager.addConfiguration(new SettingBoolean("SlugFish模式", "slug", false));
         FunctionManager.addConfiguration(new SettingBoolean("状态提示", "message", true));
+        FunctionManager.addConfiguration(new SettingBoolean("显示抛竿计时器", "timer", true));
 
         FunctionManager.bindFunction("WTap");
         FunctionManager.addConfiguration(new SettingBoolean("对弓的支持", "bowMode", true));

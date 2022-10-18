@@ -701,110 +701,116 @@ public class Utils {
             return false;
         }
     }
-    public static void RenderTargetHUD(EntityLivingBase entity, Color c,float width,float size,Double[] currentHeight,Boolean[] currentStatus) {
-        RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
-        GlStateManager.disableDepth();
-        GlStateManager.disableTexture2D();
-        GlStateManager.disableLighting();
-        GL11.glLineWidth(width);
-        GlStateManager.color((float) c.getRed() / 255.0F, (float) c.getGreen() / 255.0F, (float) c.getBlue() / 255.0F, (float) c.getAlpha() / 255.0F);
-        double x = entity.posX - renderManager.viewerPosX;
-        double y = entity.getEntityBoundingBox().minY - renderManager.viewerPosY;
-        double z = entity.posZ - renderManager.viewerPosZ;
-        double entityHeight = entity.getEntityBoundingBox().maxY - entity.getEntityBoundingBox().minY;
+    public static boolean isMoving() {
+        return Minecraft.getMinecraft().thePlayer != null && (Minecraft.getMinecraft().thePlayer.moveForward != 0.0F || Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0F);
+    }
+    public static void RenderTargetESP(EntityLivingBase entity, Color c,float width,float size,Double[] currentHeight,Boolean[] currentStatus) {
+        try {
+            RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+            GlStateManager.disableDepth();
+            GlStateManager.disableTexture2D();
+            GlStateManager.disableLighting();
+            GL11.glLineWidth(width);
+            GlStateManager.color((float) c.getRed() / 255.0F, (float) c.getGreen() / 255.0F, (float) c.getBlue() / 255.0F, (float) c.getAlpha() / 255.0F);
+            double x = entity.posX - renderManager.viewerPosX;
+            double y = entity.getEntityBoundingBox().minY - renderManager.viewerPosY;
+            double z = entity.posZ - renderManager.viewerPosZ;
+            double entityHeight = entity.getEntityBoundingBox().maxY - entity.getEntityBoundingBox().minY;
 
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer wr = tessellator.getWorldRenderer();
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x + (size / 2),y,z + size).endVertex();
-        wr.pos(x + size,y,z + (size / 2)).endVertex();
-        wr.pos(x + size,y,z - (size / 2)).endVertex();
-        wr.pos(x + (size / 2),y,z - size).endVertex();
-        wr.pos(x - (size / 2),y,z - size).endVertex();
-        wr.pos(x - size,y,z - (size / 2)).endVertex();
-        wr.pos(x - size,y,z + (size / 2)).endVertex();
-        wr.pos(x - (size / 2),y,z + size).endVertex();
-        wr.pos(x + (size / 2),y,z + size).endVertex();
-        tessellator.draw();
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x + (size / 2),y + entityHeight,z + size).endVertex();
-        wr.pos(x + size,y + entityHeight,z + (size / 2)).endVertex();
-        wr.pos(x + size,y + entityHeight,z - (size / 2)).endVertex();
-        wr.pos(x + (size / 2),y + entityHeight,z - size).endVertex();
-        wr.pos(x - (size / 2),y + entityHeight,z - size).endVertex();
-        wr.pos(x - size,y + entityHeight,z - (size / 2)).endVertex();
-        wr.pos(x - size,y + entityHeight,z + (size / 2)).endVertex();
-        wr.pos(x - (size / 2),y + entityHeight,z + size).endVertex();
-        wr.pos(x + (size / 2),y + entityHeight,z + size).endVertex();
-        tessellator.draw();
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x + (size / 2),y,z + size).endVertex();
-        wr.pos(x + (size / 2),y + entityHeight,z + size).endVertex();
-        tessellator.draw();
+            Tessellator tessellator = Tessellator.getInstance();
+            WorldRenderer wr = tessellator.getWorldRenderer();
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x + (size / 2), y, z + size).endVertex();
+            wr.pos(x + size, y, z + (size / 2)).endVertex();
+            wr.pos(x + size, y, z - (size / 2)).endVertex();
+            wr.pos(x + (size / 2), y, z - size).endVertex();
+            wr.pos(x - (size / 2), y, z - size).endVertex();
+            wr.pos(x - size, y, z - (size / 2)).endVertex();
+            wr.pos(x - size, y, z + (size / 2)).endVertex();
+            wr.pos(x - (size / 2), y, z + size).endVertex();
+            wr.pos(x + (size / 2), y, z + size).endVertex();
+            tessellator.draw();
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x + (size / 2), y + entityHeight, z + size).endVertex();
+            wr.pos(x + size, y + entityHeight, z + (size / 2)).endVertex();
+            wr.pos(x + size, y + entityHeight, z - (size / 2)).endVertex();
+            wr.pos(x + (size / 2), y + entityHeight, z - size).endVertex();
+            wr.pos(x - (size / 2), y + entityHeight, z - size).endVertex();
+            wr.pos(x - size, y + entityHeight, z - (size / 2)).endVertex();
+            wr.pos(x - size, y + entityHeight, z + (size / 2)).endVertex();
+            wr.pos(x - (size / 2), y + entityHeight, z + size).endVertex();
+            wr.pos(x + (size / 2), y + entityHeight, z + size).endVertex();
+            tessellator.draw();
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x + (size / 2), y, z + size).endVertex();
+            wr.pos(x + (size / 2), y + entityHeight, z + size).endVertex();
+            tessellator.draw();
 
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x + size,y,z + (size / 2)).endVertex();
-        wr.pos(x + size,y + entityHeight,z + (size / 2)).endVertex();
-        tessellator.draw();
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x + size, y, z + (size / 2)).endVertex();
+            wr.pos(x + size, y + entityHeight, z + (size / 2)).endVertex();
+            tessellator.draw();
 
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x + size,y,z - (size / 2)).endVertex();
-        wr.pos(x + size,y + entityHeight,z - (size / 2)).endVertex();
-        tessellator.draw();
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x + size, y, z - (size / 2)).endVertex();
+            wr.pos(x + size, y + entityHeight, z - (size / 2)).endVertex();
+            tessellator.draw();
 
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x + (size / 2),y,z - size).endVertex();
-        wr.pos(x + (size / 2),y + entityHeight,z - size).endVertex();
-        tessellator.draw();
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x + (size / 2), y, z - size).endVertex();
+            wr.pos(x + (size / 2), y + entityHeight, z - size).endVertex();
+            tessellator.draw();
 
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x - (size / 2),y,z - size).endVertex();
-        wr.pos(x - (size / 2),y + entityHeight,z - size).endVertex();
-        tessellator.draw();
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x - (size / 2), y, z - size).endVertex();
+            wr.pos(x - (size / 2), y + entityHeight, z - size).endVertex();
+            tessellator.draw();
 
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x - size,y,z - (size / 2)).endVertex();
-        wr.pos(x - size,y + entityHeight,z - (size / 2)).endVertex();
-        tessellator.draw();
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x - size, y, z - (size / 2)).endVertex();
+            wr.pos(x - size, y + entityHeight, z - (size / 2)).endVertex();
+            tessellator.draw();
 
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x - size,y,z + (size / 2)).endVertex();
-        wr.pos(x - size,y + entityHeight,z + (size / 2)).endVertex();
-        tessellator.draw();
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x - size, y, z + (size / 2)).endVertex();
+            wr.pos(x - size, y + entityHeight, z + (size / 2)).endVertex();
+            tessellator.draw();
 
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x - (size / 2),y,z + size).endVertex();
-        wr.pos(x - (size / 2),y + entityHeight,z + size).endVertex();
-        tessellator.draw();
-        if(currentStatus[0] && currentHeight[0] + 0.02 > entityHeight){
-            currentStatus[0] = false;
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x - (size / 2), y, z + size).endVertex();
+            wr.pos(x - (size / 2), y + entityHeight, z + size).endVertex();
+            tessellator.draw();
+            if (currentStatus[0] && currentHeight[0] + 0.02 > entityHeight) {
+                currentStatus[0] = false;
+            }
+            if (!currentStatus[0] && currentHeight[0] - 0.02 < 0) {
+                currentStatus[0] = true;
+            }
+            if (currentStatus[0]) {
+                currentHeight[0] = currentHeight[0] + 0.02;
+            } else {
+                currentHeight[0] = currentHeight[0] - 0.02;
+            }
+            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            wr.pos(x + (size / 2), y + currentHeight[0], z + size).endVertex();
+            wr.pos(x + size, y + currentHeight[0], z + (size / 2)).endVertex();
+            wr.pos(x + size, y + currentHeight[0], z - (size / 2)).endVertex();
+            wr.pos(x + (size / 2), y + currentHeight[0], z - size).endVertex();
+            wr.pos(x - (size / 2), y + currentHeight[0], z - size).endVertex();
+            wr.pos(x - size, y + currentHeight[0], z - (size / 2)).endVertex();
+            wr.pos(x - size, y + currentHeight[0], z + (size / 2)).endVertex();
+            wr.pos(x - (size / 2), y + currentHeight[0], z + size).endVertex();
+            wr.pos(x + (size / 2), y + currentHeight[0], z + size).endVertex();
+            tessellator.draw();
+
+
+            GL11.glLineWidth(1.0F);
+            GlStateManager.disableBlend();
+            GlStateManager.enableTexture2D();
+            GlStateManager.enableDepth();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if(!currentStatus[0] && currentHeight[0] - 0.02 < 0){
-            currentStatus[0] = true;
-        }
-        if(currentStatus[0]){
-            currentHeight[0] = currentHeight[0] + 0.02;
-        } else {
-            currentHeight[0] = currentHeight[0] - 0.02;
-        }
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(x + (size / 2),y + currentHeight[0],z + size).endVertex();
-        wr.pos(x + size,y + currentHeight[0],z + (size / 2)).endVertex();
-        wr.pos(x + size,y + currentHeight[0],z - (size / 2)).endVertex();
-        wr.pos(x + (size / 2),y + currentHeight[0],z - size).endVertex();
-        wr.pos(x - (size / 2),y + currentHeight[0],z - size).endVertex();
-        wr.pos(x - size,y + currentHeight[0],z - (size / 2)).endVertex();
-        wr.pos(x - size,y + currentHeight[0],z + (size / 2)).endVertex();
-        wr.pos(x - (size / 2),y + currentHeight[0],z + size).endVertex();
-        wr.pos(x + (size / 2),y + currentHeight[0],z + size).endVertex();
-        tessellator.draw();
-
-
-
-        GL11.glLineWidth(1.0F);
-        GlStateManager.disableBlend();
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableDepth();
     }
     
 

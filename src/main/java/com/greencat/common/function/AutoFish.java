@@ -192,9 +192,11 @@ public class AutoFish {
     public void RenderText(RenderGameOverlayEvent event){
         if(FunctionManager.getStatus("AutoFish")) {
             if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
-                double second = ((double) (hookTick)) / 40;
-                String NoticeString = "抛竿秒数: " + second;
-                mc.fontRendererObj.drawString(NoticeString, (new ScaledResolution(mc).getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(NoticeString) / 2), (new ScaledResolution(mc).getScaledHeight() / 2) + 40, Antimony.Color);
+                if ((Boolean)getConfigByFunctionName.get("AutoFish","timer")) {
+                    double second = ((double) (hookTick)) / 40;
+                    String NoticeString = "抛竿秒数: " + second;
+                    mc.fontRendererObj.drawString(NoticeString, (new ScaledResolution(mc).getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(NoticeString) / 2), (new ScaledResolution(mc).getScaledHeight() / 2) + 40, Antimony.Color);
+                }
             }
         }
     }
