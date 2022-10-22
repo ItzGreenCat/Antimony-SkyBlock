@@ -1,6 +1,7 @@
 package com.greencat.common.Chat;
 
 import com.greencat.common.FunctionManager.FunctionManager;
+import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,7 +20,7 @@ public class CheckConnect {
     @SubscribeEvent
     public void ClientTickEvent(TickEvent.ClientTickEvent event) {
         if (FunctionManager.getStatus("AntimonyChannel")) {
-            if (tick >= 400) {
+            if (tick >= 4000) {
                 new Thread(() -> {
                     try {
                         ps = new PrintStream(AntimonyChannel.socket.getOutputStream(), false, "UTF-8");
@@ -33,9 +34,9 @@ public class CheckConnect {
                         }
                         new AntimonyChannel();
                         ReadFromServer.refreshBufferedReader();
-                /*ReadFromServer.StopThread = true;
-                new ReadFromServer();*/
-                        new Utils().print("Antimony Channel与服务器断开连接,正在重连");
+                        if((Boolean) getConfigByFunctionName.get("AntimonyChannel","notice")) {
+                            new Utils().print("Antimony Channel与服务器断开连接,正在重连");
+                        }
                     }
                     try {
                         AntimonyChannel.socket.sendUrgentData(0xFF);
@@ -47,9 +48,9 @@ public class CheckConnect {
                         }
                         new AntimonyChannel();
                         ReadFromServer.refreshBufferedReader();
-                /*ReadFromServer.StopThread = true;
-                new ReadFromServer();*/
-                        new Utils().print("Antimony Channel与服务器断开连接,正在重连");
+                        if((Boolean) getConfigByFunctionName.get("AntimonyChannel","notice")) {
+                            new Utils().print("Antimony Channel与服务器断开连接,正在重连");
+                        }
                     }
                 }).start();
                 tick = 0;

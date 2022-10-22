@@ -1,0 +1,39 @@
+package com.greencat.utils;
+
+import com.greencat.Antimony;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
+
+import java.awt.*;
+import java.io.InputStream;
+
+public class FontManager {
+    private static Font getGothamRoundedFont(float size) {
+        Font font = null;
+        try {
+            InputStream is = Minecraft.getMinecraft().getResourceManager()
+                    .getResource(new ResourceLocation(Antimony.MODID,"font/Gotham_Rounded_Medium.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(0, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            font = new Font("default", 0, +10);
+        }
+        return font;
+    }
+    private static Font getExpressaSerialFont(float size) {
+        Font font = null;
+        try {
+            InputStream is = Minecraft.getMinecraft().getResourceManager()
+                    .getResource(new ResourceLocation(Antimony.MODID,"font/ExpressaSerial_Bold.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(0, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            font = new Font("default", 0, +10);
+        }
+        return font;
+    }
+    public static CustomFont GothamRoundedFont = CustomFont.createFontRenderer(getGothamRoundedFont(20));
+    public static CustomFont ExpressaSerialBigFont = CustomFont.createFontRenderer(getExpressaSerialFont(40));
+}

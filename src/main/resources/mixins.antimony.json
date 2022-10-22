@@ -10,6 +10,7 @@
     "MixinEntity",
     "MixinEntityPlayer",
     "MixinEntityPlayerSP",
+    "MixinEntityRenderer",
     "MixinHideAntimony",
     "MixinLivingEntityBase",
     "MixinMinecraft",
@@ -17,6 +18,6 @@
     "MixinNetworkManager",
     "MixinRenderer",
     "MixinTranslate",
-    "MixinEntityRenderer"
+    "ShaderGroupAccessor"
   ]
 }

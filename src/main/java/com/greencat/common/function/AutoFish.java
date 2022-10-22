@@ -33,11 +33,7 @@ public class AutoFish {
     static int Tick = 40;
     static int hookTick = -1;
     static int maxHookTick = 1400;
-    Random randomYaw = new Random();
-    Random randomPitch = new Random();
     static boolean MoveStatus = false;
-    int RandomNumber1 = randomYaw.nextInt(20);
-    int RandomNumber2 = randomPitch.nextInt(20);
     static Boolean AutoFishStatus = false;
     static Boolean slugFish = false;
 
@@ -67,18 +63,29 @@ public class AutoFish {
     public void ClientTick(TickEvent.ClientTickEvent event) {
         if (mc.theWorld != null) {
             if (Tick < 40) {
-                if (Tick == 5) {
-                    mc.thePlayer.rotationYaw = mc.thePlayer.rotationYaw + RandomNumber1;
-                    mc.thePlayer.rotationPitch = mc.thePlayer.rotationPitch + RandomNumber2;
+                if (Tick == 0) {
+                    if(Antimony.AutoFishYawState) {
+                        mc.thePlayer.rotationYaw = (float) (mc.thePlayer.rotationYaw + 0.3);
+                        mc.thePlayer.rotationPitch = (float) (mc.thePlayer.rotationPitch + 0.3);
+                        Antimony.AutoFishYawState = false;
+                    } else {
+                        mc.thePlayer.rotationYaw = (float) (mc.thePlayer.rotationYaw - 0.3);
+                        mc.thePlayer.rotationPitch = (float) (mc.thePlayer.rotationPitch - 0.3);
+                        Antimony.AutoFishYawState = true;
+                    }
+                    try {
+                        Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
                     KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(),true);
-                } else if (Tick == 10) {
+                } else if (Tick == 1) {
                     try {
                         Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
                     } catch (Exception e){
                         e.printStackTrace();
                     }
                 } else if (Tick == 29) {
-                    mc.thePlayer.rotationPitch = mc.thePlayer.rotationPitch - RandomNumber2;
                     if(MoveStatus){
                         KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindRight.getKeyCode(),true);
                     } else {
@@ -99,20 +106,7 @@ public class AutoFish {
                         KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindRight.getKeyCode(),false);
                     }
                     MoveStatus = !MoveStatus;
-                } else if(Tick == 37){
-                    if(Antimony.AutoFishYawState) {
-                        mc.thePlayer.rotationYaw = (float) (mc.thePlayer.rotationYaw - RandomNumber1 + 0.3);
-                        Antimony.AutoFishYawState = false;
-                    } else {
-                        mc.thePlayer.rotationYaw = (float) (mc.thePlayer.rotationYaw - RandomNumber1 - 0.3);
-                        Antimony.AutoFishYawState = true;
-                    }
                 } else if (Tick == 39) {
-                    try {
-                        Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
                     KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(),false);
                 }
                 Tick = Tick + 1;

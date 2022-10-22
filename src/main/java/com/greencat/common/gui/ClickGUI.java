@@ -5,9 +5,13 @@ import com.greencat.common.function.title.TitleManager;
 import com.greencat.common.storage.SelectGUIStorage;
 import com.greencat.type.SelectObject;
 import com.greencat.type.SelectTable;
+import com.greencat.utils.Blur;
 import com.greencat.utils.Utils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
+import org.lwjgl.input.Keyboard;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +24,7 @@ public class ClickGUI extends GuiScreen {
     private GuiScreen parentScreen;
     private GuiButton BackButton;
     HashMap<GuiButton, SelectObject> FunctionObjectMap = new HashMap<>();
+    ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
     public ClickGUI(GuiScreen parent,String guiName)
     {
         this.guiName = guiName;
@@ -52,7 +57,10 @@ public class ClickGUI extends GuiScreen {
     }
     public void drawScreen(int x, int y, float delta)
     {
-        drawDefaultBackground();
+        if(!Minecraft.getMinecraft().entityRenderer.isShaderActive()) {
+            Blur b = new Blur();
+            b.blurAreaBoarder(0, 0, scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight(), 1, 0.3F, 1, 0);
+        }
         super.drawScreen(x,y,delta);
         Utils.drawStringScaled("antimony",mc.fontRendererObj,5,5,0xFFFFFF,5);
         Utils.drawStringScaled(" -- " + TitleManager.tips,mc.fontRendererObj,(mc.fontRendererObj.getStringWidth("antimony") * 5) + 5,35,0xFFFFFF,2);
@@ -80,6 +88,10 @@ public class ClickGUI extends GuiScreen {
                 }
             }
         }
+    }
+    @Override
+    public void onGuiClosed() {
+        Blur.stopBlur();
     }
 
 

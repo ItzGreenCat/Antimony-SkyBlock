@@ -4,12 +4,17 @@ import com.greencat.Antimony;
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.FunctionManager.SelectGuiFunctionExecutant;
 import com.greencat.common.config.ConfigLoader;
+import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.common.gui.ClickGUI;
+import com.greencat.common.gui.SettingsGUI;
 import com.greencat.common.key.KeyLoader;
 import com.greencat.common.storage.SelectGUIStorage;
 import com.greencat.common.ui.*;
+import com.greencat.common.ui.transparent.FunctionList;
+import com.greencat.common.ui.transparent.SelectGUI;
 import com.greencat.test.Screenshot;
 import com.greencat.type.SelectTable;
+import com.greencat.utils.Blur;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,6 +28,8 @@ public class EventLoader {
     NewSelectGUI newSelectGui = new NewSelectGUI();
     NewFunctionList newFunctionList = new NewFunctionList();
     ClassicFunctionList classicFunctions = new ClassicFunctionList();
+    SelectGUI transparentSelectGUI = new SelectGUI();
+    FunctionList transparentFunctionList = new FunctionList();
     SelectGuiFunctionExecutant exec = new SelectGuiFunctionExecutant();
 
     int KeyTime = 0;
@@ -36,21 +43,31 @@ public class EventLoader {
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
-    public void RenderEvent(RenderGameOverlayEvent event) {
+    public void RenderEvent(RenderGameOverlayEvent.Post event) {
         if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
             n.Notice();
             if(FunctionManager.getStatus("HUD")) {
-                if (FunctionManager.getStatus("ClassicGui")) {
-                    classicSelectGui.draw();
-                    classicFunctions.draw();
-                } else {
-                    newSelectGui.draw();
-                    newFunctionList.draw();
+                if(!(Minecraft.getMinecraft().currentScreen instanceof ClickGUI) && !(Minecraft.getMinecraft().currentScreen instanceof SettingsGUI)) {
+
+                    int style = (Integer) getConfigByFunctionName.get("HUD","style");
+                    if(style == 0){
+                        classicSelectGui.draw();
+                        classicFunctions.draw();
+                    }
+                    if(style == 1){
+                        newSelectGui.draw();
+                        newFunctionList.draw();
+                    }
+                    if(style == 2){
+                        transparentSelectGUI.draw();
+                        transparentFunctionList.draw();
+                    }
                 }
             }
-
-
         }
+    }
+    @SubscribeEvent(priority = EventPriority.NORMAL)
+    public void RenderEvent(RenderGameOverlayEvent event) {
         if(!Antimony.shouldRenderBossBar) {
             if (event.type == RenderGameOverlayEvent.ElementType.BOSSHEALTH) {
                 event.setCanceled(true);

@@ -22,6 +22,7 @@ import com.greencat.settings.*;
 import com.greencat.type.AntimonyFunction;
 import com.greencat.type.SelectObject;
 import com.greencat.type.SelectTable;
+import com.greencat.utils.Blur;
 import com.greencat.utils.Chroma;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -48,7 +49,7 @@ import java.util.HashMap;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-SkyBlock";
-    public static final String VERSION = "2.0.9.7";
+    public static final String VERSION = "2.0.9.8";
     private static final String Sb = "Sb";
     public static boolean AutoFishYawState = false;
     public static int ImageScaling = 1;
@@ -158,6 +159,10 @@ public class Antimony {
         new WTap();
         new FreeCamera();
         new TargetESP();
+        new Cartoon();
+
+
+        Blur.register();
 
         new com.greencat.common.decorate.Events();
 
@@ -207,10 +212,10 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("LividESP"));
         register.RegisterFunction(new AntimonyFunction("PlayerFinder"));
         register.RegisterFunction(new AntimonyFunction("SecretBot"));
-        register.RegisterFunction(new AntimonyFunction("ClassicGui"));
         register.RegisterFunction(new AntimonyFunction("DroppedItemESP"));
         register.RegisterFunction(new AntimonyFunction("MouseISwitch"));
         register.RegisterFunction(new AntimonyFunction("AutoUse"));
+        register.RegisterFunction(new AntimonyFunction("Cartoon"));
         register.RegisterFunction(new AntimonyFunction("HollowAutoPurchase"));
         register.RegisterFunction(new AntimonyFunction("AntimonyChannel"));
         register.RegisterFunction(new AntimonyFunction("Rat"));
@@ -276,7 +281,6 @@ public class Antimony {
 
 
         register.RegisterSelectObject(new SelectObject("function", "SkeletonAim", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "ClassicGui", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "AntimonyChannel", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "InstantSwitch", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "MouseISwitch", "Misc"));
@@ -285,6 +289,7 @@ public class Antimony {
 
         register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "CustomItemSound", "Fun"));
+        register.RegisterSelectObject(new SelectObject("function", "Cartoon", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Rat", "Fun"));
 
 
@@ -325,9 +330,14 @@ public class Antimony {
         FunctionManager.bindFunction("WTap");
         FunctionManager.addConfiguration(new SettingBoolean("对弓的支持", "bowMode", true));
 
+        HashMap<String, Integer> HUDTypeMap = new HashMap<String, Integer>();
+        HUDTypeMap.put("Classic",0);
+        HUDTypeMap.put("White",1);
+        HUDTypeMap.put("Transparent",2);
         FunctionManager.bindFunction("HUD");
         FunctionManager.addConfiguration(new SettingInt("左上方(SelectGUI)距屏幕顶部距离","HUDHeight",0));
         FunctionManager.addConfiguration(new SettingInt("右上方(FunctionList)距屏幕顶部距离","FunctionListHeight",0));
+        FunctionManager.addConfiguration(new SettingTypeSelector("HUD样式","style",2,HUDTypeMap));
 
         FunctionManager.bindFunction("CustomPetNameTag");
         FunctionManager.addConfiguration(new SettingString("规则为\"原始字符=要替换的字符\",如果添加多项规则请使用\",\"分割,如果想清空自定义名称规则请填写null", "petName", "null"));
@@ -339,6 +349,9 @@ public class Antimony {
 
         FunctionManager.bindFunction("AutoKillWorm");
         FunctionManager.addConfiguration(new SettingLimitInt("间隔时间","cooldown",300,Integer.MAX_VALUE,0));
+
+        FunctionManager.bindFunction("AntimonyChannel");
+        FunctionManager.addConfiguration(new SettingBoolean("重连提示", "notice", true));
 
         NewUserFunction();
 
