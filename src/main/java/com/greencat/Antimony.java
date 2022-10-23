@@ -5,6 +5,7 @@ import com.greencat.common.Chat.CheckConnect;
 import com.greencat.common.Chat.ReadFromServer;
 import com.greencat.common.EventLoader;
 import com.greencat.common.FunctionManager.FunctionManager;
+import com.greencat.common.MainMenu.GuiMainMenuModify;
 import com.greencat.common.command.ChatCommand;
 import com.greencat.common.command.CommandManager;
 import com.greencat.common.command.DevCommand;
@@ -49,7 +50,7 @@ import java.util.HashMap;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-SkyBlock";
-    public static final String VERSION = "2.0.9.8";
+    public static final String VERSION = "2.0.9.9";
     private static final String Sb = "Sb";
     public static boolean AutoFishYawState = false;
     public static int ImageScaling = 1;
@@ -119,6 +120,7 @@ public class Antimony {
         CustomEventHandler.EVENT_BUS.register(new Utils());
 
         new Chroma();
+        new GuiMainMenuModify();
         new CustomEventHandler.ClientTickEndEvent();
 
         new AutoKillWorm();

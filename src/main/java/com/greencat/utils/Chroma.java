@@ -4,52 +4,30 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.awt.*;
+
 public class Chroma {
-    private final int Largest = 16777215;
-    public static int CurrentColor = 0;
-    private boolean state = false;
+    public static float CurrentColor = 0;
+    public static Color color;
     public Chroma() {
         MinecraftForge.EVENT_BUS.register(this);
     }
     @SubscribeEvent
     public void TickEvent(TickEvent.ClientTickEvent event){
-        if(!state) {
-            if (CurrentColor + 5 > Largest) {
-                state = true;
-            } else {
-                CurrentColor = CurrentColor + 5;
-            }
+        if(CurrentColor + 0.01 < 1.0F){
+            CurrentColor = CurrentColor + 0.01F;
+        } else {
+            CurrentColor = 0;
         }
-        if(state) {
-            if (CurrentColor - 5 < 0) {
-                state = false;
-            } else {
-                CurrentColor = CurrentColor - 5;
-            }
-        }
+        color = Color.getHSBColor(CurrentColor,1.0F,1.0F);
     }
     public static int getR(){
-        try{
-           String HexColor =  Utils.Dec2Hex(CurrentColor);
-           return Utils.Hex2Dec(HexColor.substring(0,2));
-        } catch(Exception e){
-            return 0;
-        }
+        return color.getRed();
     }
     public static int getG(){
-        try{
-            String HexColor =  Utils.Dec2Hex(CurrentColor);
-            return Utils.Hex2Dec(HexColor.substring(2,4));
-        } catch(Exception e){
-            return 0;
-        }
+        return color.getGreen();
     }
     public static int getB(){
-        try{
-            String HexColor =  Utils.Dec2Hex(CurrentColor);
-            return Utils.Hex2Dec(HexColor.substring(4,6));
-        } catch(Exception e){
-            return 0;
-        }
+        return color.getBlue();
     }
 }

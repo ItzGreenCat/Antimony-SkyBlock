@@ -18,6 +18,8 @@
     "MixinNetworkManager",
     "MixinRenderer",
     "MixinTranslate",
-    "ShaderGroupAccessor"
+    "ShaderGroupAccessor",
+    "MixinGuiMainMenu",
+    "MixinGuiScreen"
   ]
 }

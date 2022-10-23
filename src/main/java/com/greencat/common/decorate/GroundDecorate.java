@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 public class GroundDecorate {
+    static float rotation = 0.1F;
     public static void draw(double x,double y,double z,ResourceLocation texture){
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
         GlStateManager.pushMatrix();
@@ -29,6 +30,12 @@ public class GroundDecorate {
         double viewerX = x - renderManager.viewerPosX;
         double viewerY = y - renderManager.viewerPosY;
         double viewerZ = z - renderManager.viewerPosZ;
+        if((rotation + 0.1F) < 360F){
+            rotation = rotation + 0.1F;
+        } else {
+            rotation = 0.1F;
+        }
+        GlStateManager.rotate(rotation,0,1,0);
 
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldRenderer = tessellator.getWorldRenderer();
