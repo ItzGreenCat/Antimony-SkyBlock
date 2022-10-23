@@ -17,7 +17,7 @@ Discord https://discord.gg/drhkxRckgH
 - Killaura
 - Reach
 - AutoUse  
-#AMC LOG
+# AMC LOG
 https://amclog.pysio.online/log.txt
 # Mod Dev
 [![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=Pysio2007&theme=dark)](https://github.com/anuraghazra/github-readme-stats)
