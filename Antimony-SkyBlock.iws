@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dffb166a-afac-4456-a842-da5be320c8f1" name="变更" comment="优化代码/提交Git黑名单">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/greencat/common/function/clip.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Antimony-SkyBlock.iws" beforeDir="false" afterPath="$PROJECT_DIR$/Antimony-SkyBlock.iws" afterDir="false" />
-    </list>
+    <list default="true" id="dffb166a-afac-4456-a842-da5be320c8f1" name="变更" comment="优化代码/提交Git黑名单" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
