@@ -8,7 +8,7 @@ import java.awt.*;
 import java.io.InputStream;
 
 public class FontManager {
-    private static Font getGothamRoundedFont(float size) {
+    public static Font getGothamRoundedFont(float size) {
         Font font = null;
         try {
             InputStream is = Minecraft.getMinecraft().getResourceManager()
@@ -33,6 +33,9 @@ public class FontManager {
             font = new Font("default", 0, +10);
         }
         return font;
+    }
+    public static CustomFont getCustomSizeGothamRounded(int scaling){
+        return CustomFont.createFontRenderer(getGothamRoundedFont(20 * scaling));
     }
     public static CustomFont GothamRoundedFont = CustomFont.createFontRenderer(getGothamRoundedFont(20));
     public static CustomFont ExpressaSerialBigFont = CustomFont.createFontRenderer(getExpressaSerialFont(40));

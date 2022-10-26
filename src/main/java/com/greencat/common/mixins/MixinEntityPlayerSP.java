@@ -1,12 +1,15 @@
 package com.greencat.common.mixins;
 
 import com.greencat.common.Chat.SendToServer;
+import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.config.ConfigLoader;
+import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.common.event.CustomEventHandler;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.item.EnumAction;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.util.MovementInput;
@@ -17,6 +20,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value={EntityPlayerSP.class},priority = 1)
@@ -40,6 +44,8 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
     private int positionUpdateTicks;
     @Shadow
     private boolean serverSneakState;
+    @Shadow
+    public MovementInput movementInput;
     @Shadow
     public abstract boolean isSneaking();
     @Shadow
@@ -122,5 +128,49 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
 
             CustomEventHandler.EVENT_BUS.post(new CustomEventHandler.MotionChangeEvent.Post(event));
         }
+    }
+    @Redirect(
+            method = {"onLivingUpdate"},
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/entity/EntityPlayerSP;isUsingItem()Z"
+            )
+    )
+    public boolean isUsingItem(EntityPlayerSP instance) {
+        return (!FunctionManager.getStatus("NoSlow") || !instance.isUsingItem()) && instance.isUsingItem();
+    }
+    @Inject(
+            method = {"onLivingUpdate"},
+            at = {@At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/entity/AbstractClientPlayer;onLivingUpdate()V"
+            )},
+            cancellable = true
+    )
+    public void onLivingUpdate(CallbackInfo ci) {
+        try {
+            if (FunctionManager.getStatus("NoSlow") && this.isUsingItem()) {
+                MovementInput movement;
+                if (this.getItemInUse().getItem().getItemUseAction(this.getItemInUse()) == EnumAction.BLOCK) {
+                    movement = this.movementInput;
+                    movement.moveForward = (float) ((double) movement.moveForward * (Double) getConfigByFunctionName.get("NoSlow","sword"));
+                    movement = this.movementInput;
+                    movement.moveStrafe = (float) ((double) movement.moveStrafe * (Double) getConfigByFunctionName.get("NoSlow","sword"));
+                } else if (this.getItemInUse().getItem().getItemUseAction(this.getItemInUse()) == EnumAction.BOW) {
+                    movement = this.movementInput;
+                    movement.moveForward = (float) ((double) movement.moveForward * (Double) getConfigByFunctionName.get("NoSlow","bow"));
+                    movement = this.movementInput;
+                    movement.moveStrafe = (float) ((double) movement.moveStrafe * (Double) getConfigByFunctionName.get("NoSlow","bow"));
+                } else if (this.getItemInUse().getItem().getItemUseAction(this.getItemInUse()) != EnumAction.NONE) {
+                    movement = this.movementInput;
+                    movement.moveForward = (float) ((double) movement.moveForward * (Double) getConfigByFunctionName.get("NoSlow","eat"));
+                    movement = this.movementInput;
+                    movement.moveStrafe = (float) ((double) movement.moveStrafe * (Double) getConfigByFunctionName.get("NoSlow","eat"));
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 }

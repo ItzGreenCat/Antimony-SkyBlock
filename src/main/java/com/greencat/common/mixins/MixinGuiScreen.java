@@ -7,6 +7,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +25,9 @@ public abstract class MixinGuiScreen extends Gui {
     public int height;
     @Inject(
             method="drawDefaultBackground",
-            at=@At("HEAD"),
+            at=@At(
+                    value = "HEAD"
+            ),
             cancellable = true)
     public void defaultBackground(CallbackInfo cib){
         if (this.mc.theWorld != null) {
@@ -34,6 +38,7 @@ public abstract class MixinGuiScreen extends Gui {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             Gui.drawModalRectWithCustomSizedTexture(0,0,0,0,scaledResolution.getScaledWidth(),scaledResolution.getScaledHeight(),scaledResolution.getScaledWidth(),scaledResolution.getScaledHeight());
         }
+        MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.BackgroundDrawnEvent((GuiScreen) (Object)this));
         cib.cancel();
     }
 }

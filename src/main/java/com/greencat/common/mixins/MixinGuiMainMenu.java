@@ -1,5 +1,7 @@
 package com.greencat.common.mixins;
 
+import com.greencat.utils.CustomFont;
+import com.greencat.utils.FontManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;

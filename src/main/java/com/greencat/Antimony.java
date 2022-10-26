@@ -50,7 +50,7 @@ import java.util.HashMap;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-SkyBlock";
-    public static final String VERSION = "2.0.9.9";
+    public static final String VERSION = "2.1.0.0";
     private static final String Sb = "Sb";
     public static boolean AutoFishYawState = false;
     public static int ImageScaling = 1;
@@ -209,6 +209,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("GhostBlock"));
         register.RegisterFunction(new AntimonyFunction("InstantSwitch"));
         register.RegisterFunction(new AntimonyFunction("NoHurtCam"));
+        register.RegisterFunction(new AntimonyFunction("NoSlow"));
         register.RegisterFunction(new AntimonyFunction("TerminalESP"));
         register.RegisterFunction(new AntimonyFunction("HideDungeonMobNameTag"));
         register.RegisterFunction(new AntimonyFunction("LividESP"));
@@ -246,6 +247,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoClicker", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "AutoCannon", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "TargetESP", "Combat"));
+        register.RegisterSelectObject(new SelectObject("function", "NoSlow", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "Killaura", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "Reach", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "WTap", "Combat"));
@@ -354,6 +356,11 @@ public class Antimony {
 
         FunctionManager.bindFunction("AntimonyChannel");
         FunctionManager.addConfiguration(new SettingBoolean("重连提示", "notice", true));
+
+        FunctionManager.bindFunction("NoSlow");
+        FunctionManager.addConfiguration(new SettingLimitDouble("剑格挡减速效果","sword",0.5D,1.0D,0.2D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("拉弓减速效果","bow",1.0D,1.0D,0.2D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("进食减速效果","eat",1.0D,1.0D,0.2D));
 
         NewUserFunction();
 

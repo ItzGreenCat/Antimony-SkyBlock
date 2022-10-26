@@ -1,5 +1,6 @@
 package com.greencat.common.command;
 
+import com.greencat.common.function.AutoFish;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
@@ -9,7 +10,7 @@ import net.minecraft.command.ICommandSender;
 public class DevCommand extends CommandBase {
     Utils utils = new Utils();
     String[] Usage = {"/antimonydev 主命令",
-    "/antimonydev SelfName 获取自身名字"
+    "SelfName"
     };
     public int getRequiredPermissionLevel() {
         return 0;
