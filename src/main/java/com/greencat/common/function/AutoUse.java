@@ -3,6 +3,7 @@ package com.greencat.common.function;
 import com.greencat.Antimony;
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.config.getConfigByFunctionName;
+import com.greencat.core.HUDManager;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -63,8 +64,7 @@ public class AutoUse {
         if(FunctionManager.getStatus("AutoUse")) {
             if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
                 double second = ((double) (((Integer)getConfigByFunctionName.get("AutoUse","cooldown") * 40) - Tick)) / 40;
-                String NoticeString = "AutoUse剩余秒数: " + second;
-                mc.fontRendererObj.drawString(NoticeString, (new ScaledResolution(mc).getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(NoticeString) / 2), (new ScaledResolution(mc).getScaledHeight() / 2) + 30, Antimony.Color);
+                HUDManager.Render("AutoUse Cooldown",(int)second,(Integer)getConfigByFunctionName.get("AutoUse","timerX"),(Integer)getConfigByFunctionName.get("AutoUse","timerY"));
             }
         }
     }

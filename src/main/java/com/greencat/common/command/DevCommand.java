@@ -1,13 +1,17 @@
 package com.greencat.common.command;
 
-import com.greencat.common.function.AutoFish;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.BlockPos;
+
+import java.util.List;
 
 public class DevCommand extends CommandBase {
+    public static List<BlockPos> posList;
+    public static boolean renderNode = false;
     Utils utils = new Utils();
     String[] Usage = {"/antimonydev 主命令",
     "SelfName"

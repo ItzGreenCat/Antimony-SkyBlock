@@ -17,7 +17,7 @@
     "MixinNetHandlerPlayClient",
     "MixinNetworkManager",
     "MixinRenderer",
-    "MixinTranslate",
+    "MixinItemStack",
     "ShaderGroupAccessor",
     "MixinGuiMainMenu",
     "MixinGuiScreen"

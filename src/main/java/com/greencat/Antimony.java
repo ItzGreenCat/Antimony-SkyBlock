@@ -18,7 +18,7 @@ import com.greencat.common.function.rank.RankList;
 import com.greencat.common.function.title.TitleManager;
 import com.greencat.common.key.KeyLoader;
 import com.greencat.common.register.AntimonyRegister;
-import com.greencat.extranal.LoadScreen;
+import com.greencat.core.HUDManager;
 import com.greencat.settings.*;
 import com.greencat.type.AntimonyFunction;
 import com.greencat.type.SelectObject;
@@ -27,6 +27,8 @@ import com.greencat.utils.Blur;
 import com.greencat.utils.Chroma;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -49,8 +51,8 @@ import java.util.HashMap;
 @Mod(modid = Antimony.MODID, name = Antimony.NAME, version = Antimony.VERSION, acceptedMinecraftVersions = "1.8.9", clientSideOnly = true)
 public class Antimony {
     public static final String MODID = "antimony";
-    public static final String NAME = "Antimony-SkyBlock";
-    public static final String VERSION = "2.1.0.0";
+    public static final String NAME = "Antimony-Client";
+    public static final String VERSION = "3.0";
     private static final String Sb = "Sb";
     public static boolean AutoFishYawState = false;
     public static int ImageScaling = 1;
@@ -70,12 +72,6 @@ public class Antimony {
     public void preInit(FMLPreInitializationEvent event) throws IOException {
         // TODO
 
-
-        new LoadScreen();
-        LoadScreen.LoadingFrame.setBounds(Display.getX(), Display.getY(), Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
-        LoadScreen.LoadingFrame.add(LoadScreen.Panel);
-        LoadScreen.Panel.add(LoadScreen.text);
-        //LoadScreen.LoadingFrame.setVisible(true);
         new com.greencat.common.config.ConfigLoader(event);
     }
 
@@ -91,8 +87,6 @@ public class Antimony {
         ClientCommandHandler.instance.registerCommand(new DevCommand());
         ClientCommandHandler.instance.registerCommand(new ChatCommand());
         LabymodInstallCheck = utils.ModLoadCheck("labymod");
-        AutoFish autoFish = new AutoFish();
-        autoFish.AutoFishEventRegiser();
 
         if (Minecraft.getMinecraft().gameSettings.gammaSetting > 1) {
             Minecraft.getMinecraft().gameSettings.gammaSetting = 0;
@@ -110,8 +104,28 @@ public class Antimony {
                 content += input;
             }
             reader.close();
+            GroundDecorateList.clear();
             for (String str : content.split(";")) {
                 GroundDecorateList.put(str.split(",")[0], str.split(",")[1]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //init CustomItemName
+        try {
+            String content = "";
+            URL url = new URL("https://itzgreencat.github.io/AntimonyCustomItemName/");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+            String input;
+            while ((input = reader.readLine()) != null) {
+                content += input;
+            }
+            reader.close();
+            CustomItemName.CustomName.clear();
+            for (String str : content.split(";")) {
+                CustomItemName.CustomName.put(str.split(",")[0], str.split(",")[1]);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,10 +133,15 @@ public class Antimony {
 
         CustomEventHandler.EVENT_BUS.register(new Utils());
 
+        //Misc
         new Chroma();
         new GuiMainMenuModify();
         new CustomEventHandler.ClientTickEndEvent();
+        new HUDManager();
 
+        //Dev
+        //Function
+        new AutoFish();
         new AutoKillWorm();
         new WormLavaESP();
         new SilverfishESP();
@@ -162,6 +181,9 @@ public class Antimony {
         new FreeCamera();
         new TargetESP();
         new Cartoon();
+        new Interface();
+        new ShortBowAura();
+        new HideFallingBlock();
 
 
         Blur.register();
@@ -222,6 +244,9 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("HollowAutoPurchase"));
         register.RegisterFunction(new AntimonyFunction("AntimonyChannel"));
         register.RegisterFunction(new AntimonyFunction("Rat"));
+        register.RegisterFunction(new AntimonyFunction("Interface"));
+        register.RegisterFunction(new AntimonyFunction("ShortBowAura"));
+        register.RegisterFunction(new AntimonyFunction("HideFallingBlock"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -249,6 +274,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "TargetESP", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "NoSlow", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "Killaura", "Combat"));
+        register.RegisterSelectObject(new SelectObject("function", "ShortBowAura", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "Reach", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "WTap", "Combat"));
 
@@ -261,6 +287,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "FullBright", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "DroppedItemESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "NoHurtCam", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "HideFallingBlock", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
 
         register.RegisterSelectObject(new SelectObject("function", "StarredMobESP", "Dungeon"));
@@ -289,6 +316,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "InstantSwitch", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "MouseISwitch", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "AutoUse", "Misc"));
+        register.RegisterSelectObject(new SelectObject("function", "Interface", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "HUD", "Misc"));
 
         register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
@@ -299,11 +327,12 @@ public class Antimony {
 
         register.RegisterSelectObject(new SelectObject("function", "ItemTranslate", "root"));
 
+        AntimonyRegister.ReList();
 
         ConfigLoader.applyFunctionState();
 
         FunctionManager.setStatus("CustomPetNameTag", false);
-        LoadScreen.text.setText(Minecraft.getMinecraft().debug);
+        FunctionManager.setStatus("Interface", true);
 
         FunctionManager.bindFunction("Killaura");
         FunctionManager.addConfiguration(new SettingBoolean("攻击玩家", "isAttackPlayer", true));
@@ -322,6 +351,8 @@ public class Antimony {
         FunctionManager.bindFunction("AutoUse");
         FunctionManager.addConfiguration(new SettingLimitInt("间隔时间","cooldown",10,Integer.MAX_VALUE,0));
         FunctionManager.addConfiguration(new SettingString("物品名称(部分匹配,无需写全名)","itemName","of the End"));
+        FunctionManager.addConfiguration(new SettingInt("计时器位置(X)", "timerX", 200));
+        FunctionManager.addConfiguration(new SettingInt("计时器位置(Y)", "timerY", 130));
 
         FunctionManager.bindFunction("Reach");
         FunctionManager.addConfiguration(new SettingLimitDouble("距离","distance",3.0D,4.0D,3.0D));
@@ -330,6 +361,9 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingBoolean("SlugFish模式", "slug", false));
         FunctionManager.addConfiguration(new SettingBoolean("状态提示", "message", true));
         FunctionManager.addConfiguration(new SettingBoolean("显示抛竿计时器", "timer", true));
+        FunctionManager.addConfiguration(new SettingBoolean("强制潜行", "sneak", false));
+        FunctionManager.addConfiguration(new SettingInt("抛竿计时器位置(X)", "timerX", 200));
+        FunctionManager.addConfiguration(new SettingInt("抛竿计时器位置(Y)", "timerY", 100));
 
         FunctionManager.bindFunction("WTap");
         FunctionManager.addConfiguration(new SettingBoolean("对弓的支持", "bowMode", true));
@@ -353,6 +387,9 @@ public class Antimony {
 
         FunctionManager.bindFunction("AutoKillWorm");
         FunctionManager.addConfiguration(new SettingLimitInt("间隔时间","cooldown",300,Integer.MAX_VALUE,0));
+        FunctionManager.addConfiguration(new SettingString("右键物品名称", "itemName", "staff of the vol"));
+        FunctionManager.addConfiguration(new SettingInt("计时器位置(X)", "timerX", 200));
+        FunctionManager.addConfiguration(new SettingInt("计时器位置(Y)", "timerY", 115));
 
         FunctionManager.bindFunction("AntimonyChannel");
         FunctionManager.addConfiguration(new SettingBoolean("重连提示", "notice", true));
@@ -362,14 +399,35 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingLimitDouble("拉弓减速效果","bow",1.0D,1.0D,0.2D));
         FunctionManager.addConfiguration(new SettingLimitDouble("进食减速效果","eat",1.0D,1.0D,0.2D));
 
+        HashMap<String, Integer> BackgroundStyleMap = new HashMap<String, Integer>();
+        BackgroundStyleMap.put("Vanilla",0);
+        BackgroundStyleMap.put("Blur",1);
+        FunctionManager.bindFunction("Interface");
+        FunctionManager.addConfiguration(new SettingBoolean("FPS显示", "fps", false));
+        FunctionManager.addConfiguration(new SettingInt("FPS位置(X)", "fpsX", 200));
+        FunctionManager.addConfiguration(new SettingInt("FPS位置(Y)", "fpsY", 130));
+        FunctionManager.addConfiguration(new SettingBoolean("坐标显示", "location", false));
+        FunctionManager.addConfiguration(new SettingInt("坐标位置(X)", "locationX", 200));
+        FunctionManager.addConfiguration(new SettingInt("坐标位置(Y)", "locationY", 145));
+        FunctionManager.addConfiguration(new SettingBoolean("服务器天数显示", "day", false));
+        FunctionManager.addConfiguration(new SettingInt("天数位置(X)", "dayX", 200));
+        FunctionManager.addConfiguration(new SettingInt("天数位置(Y)", "dayY", 190));
+        FunctionManager.addConfiguration(new SettingTypeSelector("GUI背景样式","bgstyle",1,BackgroundStyleMap));
+
+        FunctionManager.bindFunction("ShortBowAura");
+        FunctionManager.addConfiguration(new SettingLimitDouble("延迟", "delay", 3.0D,10.0D,1.0D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 15.0D,30.0D,5.0D));
+        FunctionManager.addConfiguration(new SettingBoolean("仅Dungeon", "onlyDungeon", false));
+        FunctionManager.addConfiguration(new SettingBoolean("右键模式", "right", false));
+        FunctionManager.addConfiguration(new SettingBoolean("攻击同队成员", "attackTeam", false));
+
         NewUserFunction();
 
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        // TODO
-        //LoadScreen.LoadingFrame.setVisible(false);
+
     }
 
     public void NewUserFunction() {
@@ -379,5 +437,8 @@ public class Antimony {
 
             ConfigLoader.setBoolean("newUser", false, true);
         }
+    }
+    public static BlockPos getEntityPos(Entity entity){
+        return new BlockPos(entity.posX,entity.posY,entity.posZ);
     }
 }

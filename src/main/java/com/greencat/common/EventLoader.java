@@ -15,12 +15,15 @@ import com.greencat.common.ui.transparent.SelectGUI;
 import com.greencat.test.Screenshot;
 import com.greencat.type.SelectTable;
 import com.greencat.utils.Blur;
+import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+
+import java.awt.*;
 
 public class EventLoader {
     NoticeManager n = new NoticeManager();

@@ -1,20 +1,15 @@
 package com.greencat.common.decorate;
 
-import com.greencat.Antimony;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 public class GroundDecorate {
-    static float rotation = 0.1F;
     public static void draw(double x,double y,double z,ResourceLocation texture){
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
         GlStateManager.pushMatrix();
@@ -30,12 +25,6 @@ public class GroundDecorate {
         double viewerX = x - renderManager.viewerPosX;
         double viewerY = y - renderManager.viewerPosY;
         double viewerZ = z - renderManager.viewerPosZ;
-        if((rotation + 0.1F) < 360F){
-            rotation = rotation + 0.1F;
-        } else {
-            rotation = 0.1F;
-        }
-        GlStateManager.rotate(rotation,0,1,0);
 
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldRenderer = tessellator.getWorldRenderer();

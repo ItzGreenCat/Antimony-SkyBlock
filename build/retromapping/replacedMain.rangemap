@@ -8264,22 +8264,22 @@ endProcessing com\greencat\common\mixins\MixinRenderer.java
 
 processing com\greencat\common\mixins\MixinTranslate.java
 @|com\greencat\common\mixins\MixinTranslate.java|8|34|com.greencat.common.mixins|package|com.greencat.common.mixins|(file)
-Class Start: com.greencat.common.mixins.MixinTranslate
+Class Start: com.greencat.common.mixins.MixinItemStack
    Method Start: Translate(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V
-      @|com\greencat\common\mixins\MixinTranslate.java|593|602|Translate|method|com.greencat.common.mixins.MixinTranslate|Translate|(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V
+      @|com\greencat\common\mixins\MixinTranslate.java|593|602|Translate|method|com.greencat.common.mixins.MixinItemStack|Translate|(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V
       @|com\greencat\common\mixins\MixinTranslate.java|626|632|String|class|java.lang.String
       @|com\greencat\common\mixins\MixinTranslate.java|603|625|CallbackInfoReturnable|class|org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
-      @|com\greencat\common\mixins\MixinTranslate.java|634|637|cir|param|com.greencat.common.mixins.MixinTranslate|Translate|(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V|cir|0
+      @|com\greencat\common\mixins\MixinTranslate.java|634|637|cir|param|com.greencat.common.mixins.MixinItemStack|Translate|(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V|cir|0
       @|com\greencat\common\mixins\MixinTranslate.java|648|654|String|class|java.lang.String
-      @|com\greencat\common\mixins\MixinTranslate.java|670|673|cir|param|com.greencat.common.mixins.MixinTranslate|Translate|(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V|cir|0
+      @|com\greencat\common\mixins\MixinTranslate.java|670|673|cir|param|com.greencat.common.mixins.MixinItemStack|Translate|(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V|cir|0
       @|com\greencat\common\mixins\MixinTranslate.java|674|688|getReturnValue|method|org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable|getReturnValue|()Ljava/lang/Object;
       @|com\greencat\common\mixins\MixinTranslate.java|700|713|ItemTranslate|class|com.greencat.common.function.ItemTranslate
       @|com\greencat\common\mixins\MixinTranslate.java|730|743|ItemTranslate|class|com.greencat.common.function.ItemTranslate
-      @|com\greencat\common\mixins\MixinTranslate.java|755|758|cir|param|com.greencat.common.mixins.MixinTranslate|Translate|(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V|cir|0
+      @|com\greencat\common\mixins\MixinTranslate.java|755|758|cir|param|com.greencat.common.mixins.MixinItemStack|Translate|(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V|cir|0
       @|com\greencat\common\mixins\MixinTranslate.java|759|773|setReturnValue|method|org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable|setReturnValue|(Ljava/lang/Object;)V
       @|com\greencat\common\mixins\MixinTranslate.java|784|794|modifyName|method|com.greencat.common.function.ItemTranslate|modifyName|(Ljava/lang/String;)Ljava/lang/String;
    Method End: Translate(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V
-Class End  : com.greencat.common.mixins.MixinTranslate
+Class End  : com.greencat.common.mixins.MixinItemStack
 endProcessing com\greencat\common\mixins\MixinTranslate.java
 
 processing com\greencat\common\register\AntimonyRegister.java

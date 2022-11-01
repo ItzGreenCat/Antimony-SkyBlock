@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.Map;
 
-@IFMLLoadingPlugin.Name("Antimony on Top")
+/*@IFMLLoadingPlugin.Name("Antimony on Top")
 public class AntimonyMixinLoader implements IFMLLoadingPlugin {
 
     public AntimonyMixinLoader() {
@@ -39,4 +39,4 @@ public class AntimonyMixinLoader implements IFMLLoadingPlugin {
     public String getAccessTransformerClass() {
         return null;
     }
-}
+}*/

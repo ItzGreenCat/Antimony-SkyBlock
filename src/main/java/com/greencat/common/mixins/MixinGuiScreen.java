@@ -1,11 +1,13 @@
 package com.greencat.common.mixins;
 
+import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.utils.Blur;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiScreen.class)
 public abstract class MixinGuiScreen extends Gui {
+    Blur blur = new Blur();
     @Shadow
     public Minecraft mc;
     @Shadow
@@ -30,15 +33,24 @@ public abstract class MixinGuiScreen extends Gui {
             ),
             cancellable = true)
     public void defaultBackground(CallbackInfo cib){
-        if (this.mc.theWorld != null) {
-            Blur.renderBlur(0,0,this.width,this.height,20);
-        } else {
-            ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/CustomUI/defaultBackground.png"));
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            Gui.drawModalRectWithCustomSizedTexture(0,0,0,0,scaledResolution.getScaledWidth(),scaledResolution.getScaledHeight(),scaledResolution.getScaledWidth(),scaledResolution.getScaledHeight());
+        try {
+            if (this.mc.theWorld != null) {
+                if((Integer) getConfigByFunctionName.get("Interface","bgstyle") == 0) {
+                    this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
+                }
+                if((Integer) getConfigByFunctionName.get("Interface","bgstyle") == 1) {
+                    Blur.renderBlur(0, 0, this.width, this.height, 20);
+                }
+            } else {
+                ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+                Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/CustomUI/defaultBackground.png"));
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight(), scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight());
+            }
+            MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.BackgroundDrawnEvent((GuiScreen) (Object) this));
+        } catch (Exception e){
+            e.printStackTrace();
         }
-        MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.BackgroundDrawnEvent((GuiScreen) (Object)this));
         cib.cancel();
     }
 }

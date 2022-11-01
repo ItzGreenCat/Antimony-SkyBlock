@@ -4,6 +4,7 @@ import com.greencat.Antimony;
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.common.event.CustomEventHandler;
+import com.greencat.core.HUDManager;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -22,11 +23,6 @@ import java.awt.*;
 import java.util.List;
 
 public class AutoFish {
-    public void AutoFishEventRegiser() {
-        MinecraftForge.EVENT_BUS.register(this);
-        CustomEventHandler.EVENT_BUS.register(this);
-    }
-
     Minecraft mc = Minecraft.getMinecraft();
     Utils utils = new Utils();
     static int Tick = 40;
@@ -38,14 +34,16 @@ public class AutoFish {
     public static boolean emberStatus = false;
 
 
-    public AutoFish() throws AWTException {
+    public AutoFish(){
+        MinecraftForge.EVENT_BUS.register(this);
+        CustomEventHandler.EVENT_BUS.register(this);
+    }
+    public void init(){
         try {
             if (FunctionManager.getStatus("AutoFish")) {
                 if (mc.thePlayer.getHeldItem().getItem() == Items.fishing_rod) {
-                    this.Tick = 0;
-                    //utils.print("Fish now Up");
+                    Tick = 0;
                 }
-
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -57,6 +55,10 @@ public class AutoFish {
         if (Minecraft.getMinecraft().theWorld != null) {
             if (!FunctionManager.getStatus("AutoFish")) {
                 AutoFishStatus = false;
+            } else {
+                if((Boolean)getConfigByFunctionName.get("AutoFish","sneak")){
+                    KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(),true);
+                }
             }
         }
     }
@@ -140,7 +142,7 @@ public class AutoFish {
                                 slugFish = (Boolean) getConfigByFunctionName.get("AutoFish", "slug");
                                 if (slugFish) {
                                     if (hookTick < 0) {
-                                        new AutoFish();
+                                        init();
                                         AutoFishStatus = false;
                                         if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
                                             utils.print("钓鱼检测状态:关闭");
@@ -148,7 +150,7 @@ public class AutoFish {
                                         hookTick = -1;
                                     }
                                 } else {
-                                    new AutoFish();
+                                    init();
                                     AutoFishStatus = false;
                                     if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
                                         utils.print("钓鱼检测状态:关闭");
@@ -189,14 +191,14 @@ public class AutoFish {
 
     @SubscribeEvent
     public void RenderText(RenderGameOverlayEvent event) {
-        if (FunctionManager.getStatus("AutoFish")) {
+            if (FunctionManager.getStatus("AutoFish")) {
             if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
                 if ((Boolean) getConfigByFunctionName.get("AutoFish", "timer")) {
                     double second = ((double) (hookTick)) / 40;
-                    String NoticeString = "抛竿秒数: " + second;
-                    mc.fontRendererObj.drawString(NoticeString, (new ScaledResolution(mc).getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(NoticeString) / 2), (new ScaledResolution(mc).getScaledHeight() / 2) + 40, Antimony.Color);
+                    HUDManager.Render("Hook Thrown Time",(int)second,(Integer)getConfigByFunctionName.get("AutoFish","timerX"),(Integer)getConfigByFunctionName.get("AutoFish","timerY"));
+                    //mc.fontRendererObj.drawString(NoticeString, (new ScaledResolution(mc).getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(NoticeString) / 2), (new ScaledResolution(mc).getScaledHeight() / 2) + 40, Antimony.Color);
                 }
             }
-        }
+            }
     }
 }
