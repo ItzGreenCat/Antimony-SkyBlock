@@ -5,6 +5,7 @@ import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.config.ConfigLoader;
 import com.greencat.common.config.getConfigByFunctionName;
 import com.greencat.common.key.KeyLoader;
+import com.greencat.core.HUDManager;
 import com.greencat.utils.EasyReflection;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -50,7 +51,7 @@ public class AutoKillWorm {
                         }
 
                         if (!ActiveStaff()) {
-                            utils.print("无法找到Staff of the Volcano");
+                            utils.print("无法找到对应物品");
                         }
                         if (TranslateOn) {
                             FunctionManager.setStatus("ItemTranslate", true);
@@ -70,8 +71,7 @@ public class AutoKillWorm {
         if(FunctionManager.getStatus("AutoKillWorm")) {
             if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
                 double second = ((double) (((Integer)getConfigByFunctionName.get("AutoKillWorm","cooldown") * 40)) - Tick) / 40;
-                String NoticeString = "AutoKillWorm剩余秒数: " + second;
-                mc.fontRendererObj.drawString(NoticeString, (new ScaledResolution(mc).getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(NoticeString) / 2), (new ScaledResolution(mc).getScaledHeight() / 2) + 20, Antimony.Color);
+                HUDManager.Render("Worm Killer Cooldown",(int)second,(Integer)getConfigByFunctionName.get("AutoKillWorm","timerX"),(Integer)getConfigByFunctionName.get("AutoKillWorm","timerY"));
             }
         }
     }
@@ -82,7 +82,7 @@ public class AutoKillWorm {
             latest = System.currentTimeMillis();
             for (int i = 0; i < 8; ++i) {
                 ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.mainInventory[i];
-                if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains("of the volcano")) {
+                if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains((String)getConfigByFunctionName.get("AutoKillWorm","itemName"))) {
                     int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
                     Minecraft.getMinecraft().thePlayer.inventory.currentItem = i;
                     Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, stack);

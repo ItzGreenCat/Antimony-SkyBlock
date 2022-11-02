@@ -1,16 +1,17 @@
 package com.greencat.common.gui;
 
+import com.greencat.Antimony;
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.settings.*;
 import com.greencat.utils.Blur;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.*;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,9 @@ public class SettingsGUI extends GuiScreen {
     private GuiScreen parentScreen;
     private GuiButton BackButton;
     private int ButtonListHeight;
+    private GuiScrollButton upButton;
+    private GuiScrollButton downButton;
+    public int ButtonExcursion = 0;
     List<ISettingOption> options;
     List<AbstractSettingOptionTextField> optionTextField = new ArrayList<AbstractSettingOptionTextField>();
     ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
@@ -59,15 +63,28 @@ public class SettingsGUI extends GuiScreen {
                 optionTextField.add(textField);
             }
         }
-        BackButton = new GuiButton(0,this.width / 2 - 100,this.height - 25,200,20,"保存并返回");
+        upButton = new GuiScrollButton(114514,(width / 2) - ((FunctionManager.getLongestTextWidthAdd20() + 50) / 2) + FunctionManager.getLongestTextWidthAdd20() + 50 + 50,this.height / 2 - 30,30,30,"ScrollUp1","ScrollUp2");
+        downButton = new GuiScrollButton(1919810,(width / 2) - ((FunctionManager.getLongestTextWidthAdd20() + 50) / 2) + FunctionManager.getLongestTextWidthAdd20() + 50 + 50,this.height / 2 + 30,30,30,"ScrollDown1","ScrollDown2");
+
+        this.buttonList.add(upButton);
+        this.buttonList.add(downButton);
+
+        BackButton = new GuiClickGUIButton(0,this.width / 2 - 100,this.height - 25,200,20,"Save and Back");
         this.buttonList.add(BackButton);
     }
     public void drawScreen(int x, int y, float delta)
     {
-        if(!Minecraft.getMinecraft().entityRenderer.isShaderActive()) {
-            Blur b = new Blur();
-            b.blurAreaBoarder(0, 0, scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight(), 1, 0.3F, 1, 0);
+        drawDefaultBackground();
+        String title = guiName + " 配置";
+        for(GuiButton button : this.buttonList){
+            if(button instanceof AbstractSettingOptionButton){
+                ((AbstractSettingOptionButton) button).Excursion = this.ButtonExcursion;
+            }
         }
+        for(AbstractSettingOptionTextField textField : optionTextField){
+            textField.Excursion = this.ButtonExcursion;
+        }
+        Utils.drawStringScaled(title,mc.fontRendererObj,(width / 2) - ((mc.fontRendererObj.getStringWidth(title) * 2) / 2),25,0xFFFFFF,2);
         super.drawScreen(x,y,delta);
         for(GuiButton button : this.buttonList){
             if(button instanceof AbstractSettingOptionButton){
@@ -77,8 +94,6 @@ public class SettingsGUI extends GuiScreen {
         for(AbstractSettingOptionTextField textField : optionTextField){
             textField.update();
         }
-        String title = guiName + " 配置";
-        Utils.drawStringScaled(title,mc.fontRendererObj,(width / 2) - ((mc.fontRendererObj.getStringWidth(title) * 2) / 2),25,0xFFFFFF,2);
     }
     @Override
     protected void actionPerformed(GuiButton button) {
@@ -88,13 +103,19 @@ public class SettingsGUI extends GuiScreen {
             }
             mc.displayGuiScreen(parentScreen);
         }
-        if(button instanceof AbstractSettingOptionButton){
-            if(button instanceof SettingBoolean){
-                handleBoolean((SettingBoolean) button);
+        if(button.id != 114514 && button.id != 1919810) {
+            if (button instanceof AbstractSettingOptionButton) {
+                if (button instanceof SettingBoolean) {
+                    handleBoolean((SettingBoolean) button);
+                }
+                if (button instanceof SettingTypeSelector) {
+                    handleTypeSelector((SettingTypeSelector) button);
+                }
             }
-            if(button instanceof SettingTypeSelector){
-                handleTypeSelector((SettingTypeSelector) button);
-            }
+        } else if(button.id == 114514){
+            this.ButtonExcursion = ButtonExcursion - 10;
+        } else {
+            this.ButtonExcursion = ButtonExcursion + 10;
         }
     }
     @Override
@@ -121,7 +142,6 @@ public class SettingsGUI extends GuiScreen {
     @Override
     public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false); //关闭键盘连续输入
-        Blur.stopBlur();
     }
     private void handleBoolean(SettingBoolean option){
         option.switchStatus();

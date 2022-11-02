@@ -12,6 +12,8 @@ public abstract class AbstractSettingOptionTextField extends GuiTextField implem
     public String name;
     public String ID;
     public String parentFunction;
+    public int OriginalYPos;
+    public int Excursion = 0;
     public AbstractSettingOptionTextField() {
         super(0, Minecraft.getMinecraft().fontRendererObj,0,0,0,0);
         this.setFocused(false);
@@ -25,6 +27,7 @@ public abstract class AbstractSettingOptionTextField extends GuiTextField implem
     }
     public void setY(int y){
         this.yPosition = y;
+        this.OriginalYPos = y;
     }
     public void setWidth(int w){
         this.width = w;
@@ -34,4 +37,8 @@ public abstract class AbstractSettingOptionTextField extends GuiTextField implem
     }
     public abstract void setValue();
     public abstract void init();
+    public void drawTextBox(){
+        this.yPosition = this.OriginalYPos + this.Excursion;
+        super.drawTextBox();
+    }
 }

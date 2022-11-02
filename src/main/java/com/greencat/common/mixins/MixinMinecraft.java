@@ -34,7 +34,7 @@ public abstract class MixinMinecraft {
             at = {@At("HEAD")}
     )
     public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir) {
-        if (FunctionManager.getStatus("Killaura") && this.renderViewEntity != null && this.renderViewEntity == Minecraft.getMinecraft().thePlayer) {
+        if ((FunctionManager.getStatus("Killaura") || FunctionManager.getStatus("ShortBowAura")) && this.renderViewEntity != null && this.renderViewEntity == Minecraft.getMinecraft().thePlayer) {
             if (Killaura.entityTarget != null) {
                 ((EntityLivingBase)this.renderViewEntity).rotationYawHead = ((EntityPlayerSPAccessor)this.renderViewEntity).getLastReportedYaw();
                 ((EntityLivingBase)this.renderViewEntity).renderYawOffset = ((EntityPlayerSPAccessor)this.renderViewEntity).getLastReportedYaw();

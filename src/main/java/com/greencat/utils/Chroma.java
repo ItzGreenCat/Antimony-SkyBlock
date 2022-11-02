@@ -14,8 +14,8 @@ public class Chroma {
     }
     @SubscribeEvent
     public void TickEvent(TickEvent.ClientTickEvent event){
-        if(CurrentColor + 0.01 < 1.0F){
-            CurrentColor = CurrentColor + 0.01F;
+        if(CurrentColor + 0.002 < 1.0F){
+            CurrentColor = CurrentColor + 0.002F;
         } else {
             CurrentColor = 0;
         }

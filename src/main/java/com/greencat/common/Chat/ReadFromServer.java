@@ -14,30 +14,9 @@ import java.nio.charset.StandardCharsets;
 
 public class ReadFromServer {
     int tick = 0;
-    /*public static boolean StopThread = false;
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            BufferedReader br;
-            String msg;
-            try {
-                br = new BufferedReader(new InputStreamReader(AntimonyChannel.socket.getInputStream(), StandardCharsets.UTF_8));
-                while((msg = br.readLine()) != null) {
-                    if(!StopThread) {
-                        new Utils().printAntimonyChannel(msg);
-                    } else {
-                        StopThread = false;
-                        break;
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-        }
-    };*/
     static BufferedReader br;
+    Thread thread;
     public ReadFromServer(){
-        /*Thread thread = new Thread(runnable);
-        thread.start();*/
         MinecraftForge.EVENT_BUS.register(this);
         refreshBufferedReader();
     }
@@ -50,24 +29,30 @@ public class ReadFromServer {
     }
     @SubscribeEvent
     public void ClientTick(TickEvent.ClientTickEvent event){
+        if(CheckConnect.isConnected){
         if(tick >= 30) {
-            try {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String msg;
-                        try {
-                            if ((msg = br.readLine()) != null) {
-                                new Utils().printAntimonyChannel(msg);
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+            if (thread == null || !thread.isAlive()) {
+                try {
+                thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String msg;
+                            try {
+                                if ((msg = br.readLine()) != null) {
+                                    new Utils().printAntimonyChannel(msg);
+                                }
+                            } catch (IOException ignored) {
 
-            } catch (Exception ignored) {
+                            }
+                        }
+                    });
+                    thread.start();
+                    System.gc();
+
+                } catch (Exception ignored) {
+                }
             }
+        }
             tick = 0;
         } else {
             tick++;

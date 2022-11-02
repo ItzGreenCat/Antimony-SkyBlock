@@ -10,6 +10,11 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import java.util.List;
+
 public class FunctionList {
     Minecraft mc = Minecraft.getMinecraft();
 
@@ -17,6 +22,7 @@ public class FunctionList {
         ScaledResolution scaledResolution = new ScaledResolution(mc);
         FontManager.GothamRoundedFont.drawSmoothString("",0,0,0xFFFFFF);
         int height = (Integer) getConfigByFunctionName.get("HUD","FunctionListHeight");
+
         ResourceLocation resourceLocation = new ResourceLocation(Antimony.MODID, "hud2.png");
         for (AntimonyFunction function : AntimonyRegister.FunctionList) {
             if(function.getStatus()) {

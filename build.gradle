@@ -31,7 +31,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "Beta-2.1.0.0"
+version = "3.0-Released"
 group= "com.greencat" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Antimony-Client"
 
