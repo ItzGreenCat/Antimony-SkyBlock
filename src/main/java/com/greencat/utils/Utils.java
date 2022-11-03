@@ -3,8 +3,12 @@ package com.greencat.utils;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.event.CustomEventHandler;
+import com.greencat.common.function.ItemTranslate;
 import com.greencat.common.mixins.EntityPlayerSPAccessor;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
@@ -33,6 +37,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,6 +53,7 @@ public class Utils {
     public static float lastReportedPitch;
     public static int lastReportedSlot;
     public static ArrayList<Packet<?>> noEvent = new ArrayList();
+    public static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static void BoxWithESP(BlockPos pos, Color c, boolean Blend) {
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
@@ -978,5 +988,35 @@ public class Utils {
         return uuid;
     }
 
+    //Jrojro728改变开始
 
+    /**
+     * @param FilePath Json文件路径，可以是全局文件，也可以是存储在resources的。
+     * @return 读取到的HashMap对象
+     */
+    public static HashMap<String, String> getHashMapInJsonFile(String FilePath) {
+        InputStream path = Utils.class.getResourceAsStream(FilePath);
+        StringBuffer content = new StringBuffer();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(path));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        Type type = new TypeToken<HashMap<String, String>>() {}.getType();
+        return gson.fromJson(content.toString(), type);
+    }
+    //Jrojro728改变结束
 }
