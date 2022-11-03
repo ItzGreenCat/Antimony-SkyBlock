@@ -133,6 +133,7 @@ public class Antimony {
 
         CustomEventHandler.EVENT_BUS.register(new Utils());
 
+
         //Misc
         new Chroma();
         new GuiMainMenuModify();
@@ -156,7 +157,6 @@ public class Antimony {
         new LanternESP();
         new SkeletonAim();
         new TitleManager();
-        new ZealotMinion();
         new AntiAFKJump();
         new Sprint();
         new Eagle();
@@ -196,8 +196,6 @@ public class Antimony {
 
         new RankList();
         new CustomRank();
-        //Dev
-        //--
 
         AntimonyRegister register = new AntimonyRegister();
         register.RegisterFunction(new AntimonyFunction("AutoClicker"));
@@ -211,7 +209,6 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("SilverfishESP"));
         register.RegisterFunction(new AntimonyFunction("GolemESP"));
         register.RegisterFunction(new AntimonyFunction("GuardianESP"));
-        register.RegisterFunction(new AntimonyFunction("ZealotMinion"));
         register.RegisterFunction(new AntimonyFunction("AutoFish"));
         register.RegisterFunction(new AntimonyFunction("AutoKillWorm"));
         register.RegisterFunction(new AntimonyFunction("GemstoneHidePane"));
@@ -298,7 +295,6 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "GhostBlock", "Dungeon"));
         register.RegisterSelectObject(new SelectObject("function", "LividESP", "Dungeon"));
 
-        register.RegisterSelectObject(new SelectObject("function", "ZealotMinion", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "AutoFish", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "AutoKillWorm", "Macro"));
 
@@ -417,7 +413,6 @@ public class Antimony {
         FunctionManager.bindFunction("ShortBowAura");
         FunctionManager.addConfiguration(new SettingLimitDouble("延迟", "delay", 3.0D,10.0D,1.0D));
         FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 15.0D,30.0D,5.0D));
-        FunctionManager.addConfiguration(new SettingBoolean("仅Dungeon", "onlyDungeon", false));
         FunctionManager.addConfiguration(new SettingBoolean("右键模式", "right", false));
         FunctionManager.addConfiguration(new SettingBoolean("攻击同队成员", "attackTeam", false));
 

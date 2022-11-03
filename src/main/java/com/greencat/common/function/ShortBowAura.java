@@ -9,10 +9,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.monster.EntityBlaze;
-import net.minecraft.entity.monster.EntityGiantZombie;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.passive.EntityBat;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -30,18 +27,33 @@ import java.util.stream.Stream;
 public class ShortBowAura {
     public static EntityLivingBase target;
     private static boolean attack;
-    public boolean isInTheCatacombs = false;
     private static ArrayList<EntityLivingBase> attackedMobs = new ArrayList();
     public ShortBowAura() {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
+    }
+    @SubscribeEvent
+    public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
+        if(event.function.getName().equals("ShortBowAura")) {
+            target = null;
+            attack = false;
+            attackedMobs.clear();
+        }
+    }
+    @SubscribeEvent
+    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
+        if(event.function.getName().equals("ShortBowAura") && !event.status) {
+            target = null;
+            attack = false;
+            attackedMobs.clear();
+        }
     }
 
     @SubscribeEvent(
             priority = EventPriority.LOWEST
     )
     public void onUpdate(CustomEventHandler.MotionChangeEvent.Pre event) {
-        if (Killaura.entityTarget == null && FunctionManager.getStatus("ShortBowAura") && (double)Minecraft.getMinecraft().thePlayer.ticksExisted % (Double) getConfigByFunctionName.get("ShortBowAura","delay") == 0.0D && (isInDungeon() || (Boolean) getConfigByFunctionName.get("ShortBowAura","onlyDungeon"))) {
+        if (Killaura.entityTarget == null && FunctionManager.getStatus("ShortBowAura") && (double)Minecraft.getMinecraft().thePlayer.ticksExisted % (Double) getConfigByFunctionName.get("ShortBowAura","delay") == 0.0D) {
             boolean hasShortBow = Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == Items.bow;
             if (hasShortBow) {
                 target = this.getTarget(target);
@@ -60,7 +72,6 @@ public class ShortBowAura {
     public void onUpdatePost(CustomEventHandler.MotionChangeEvent.Post event) {
         if (attack) {
             int held = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-
             Utils.updateItemNoEvent();
             this.click();
             Minecraft.getMinecraft().thePlayer.inventory.currentItem = held;
@@ -70,30 +81,23 @@ public class ShortBowAura {
     }
 
     private EntityLivingBase getTarget(EntityLivingBase lastTarget) {
-            Stream Stream1145141919810 = Minecraft.getMinecraft().theWorld.getLoadedEntityList().stream().filter((entityx) -> {
-                return entityx instanceof EntityLivingBase;
-            }).filter((entityx) -> {
-                return this.isValid((EntityLivingBase)entityx);
-            });
-            EntityPlayerSP var10001 = Minecraft.getMinecraft().thePlayer;
-            var10001.getClass();
-            List<Entity> validTargets = (List)Stream1145141919810.sorted(Comparator.comparingDouble(var10001::getDistanceToEntity)).sorted(Comparator.comparing((entityx) -> {
-                return Utils.getYawDifference(lastTarget != null ? lastTarget : (EntityLivingBase)entityx, (EntityLivingBase)entityx);
-            }).reversed()).collect(Collectors.toList());
-            Iterator var3 = validTargets.iterator();
+        Stream<Entity> var10000 = Minecraft.getMinecraft().theWorld.getLoadedEntityList().stream().filter((entityx) -> entityx instanceof EntityLivingBase).filter((entityx) -> this.isValid((EntityLivingBase)entityx));
+        EntityPlayerSP var10001 = Minecraft.getMinecraft().thePlayer;
+        var10001.getClass();
+        List<Entity> validTargets = var10000.sorted(Comparator.comparingDouble(var10001::getDistanceToEntity)).sorted(Comparator.comparing((entityx) -> Utils.getYawDifference(lastTarget != null ? lastTarget : (EntityLivingBase)entityx, (EntityLivingBase)entityx)).reversed()).collect(Collectors.toList());
+        Iterator<Entity> var3 = validTargets.iterator();
             if (var3.hasNext()) {
-                Entity entity = (Entity)var3.next();
-                attackedMobs.add((EntityLivingBase)entity);
-                (new Thread(() -> {
-                    try {
-                        Thread.sleep(350L);
-                    } catch (InterruptedException var2) {
-                        var2.printStackTrace();
-                    }
-
-                    attackedMobs.remove(entity);
-                })).start();
-                return (EntityLivingBase)entity;
+                Entity entity = var3.next();
+                    attackedMobs.add((EntityLivingBase) entity);
+                    (new Thread(() -> {
+                        try {
+                            Thread.sleep(350L);
+                        } catch (InterruptedException var2) {
+                            var2.printStackTrace();
+                        }
+                        attackedMobs.remove(entity);
+                    })).start();
+                    return (EntityLivingBase) entity;
             } else {
                 return null;
             }
@@ -110,27 +114,20 @@ public class ShortBowAura {
     }
 
     private boolean isValid(EntityLivingBase entity) {
-        if (entity != Minecraft.getMinecraft().thePlayer && !(entity instanceof EntityArmorStand) && Minecraft.getMinecraft().thePlayer.canEntityBeSeen(entity) && !(entity.getHealth() <= 0.0F) && !((double)entity.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) > (Double) getConfigByFunctionName.get("ShortBowAura","range")) && (!(entity instanceof EntityPlayer) && !(entity instanceof EntityBat) && !(entity instanceof EntityZombie) && !(entity instanceof EntityGiantZombie) || !entity.isInvisible()) && !entity.getName().equals("Dummy") && !entity.getName().startsWith("Decoy")) {
-            return !attackedMobs.contains(entity) && !(entity instanceof EntityBlaze) && (!Utils.isTeamMember(Minecraft.getMinecraft().thePlayer, entity) || (Boolean) getConfigByFunctionName.get("ShortBowAura","attackTeam"));
+        if ((!(entity == Minecraft.getMinecraft().thePlayer) && !entity.isInvisible()) && !(entity instanceof EntityArmorStand) && !(entity instanceof EntityVillager) && (Minecraft.getMinecraft().thePlayer.canEntityBeSeen(entity)) && entity.getHealth() > 0.0F && !entity.getName().equals("Dummy") && !entity.getName().startsWith("Decoy")
+        && !((double)entity.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) > (Double) getConfigByFunctionName.get("ShortBowAura","range"))
+        ) {
+            if(entity instanceof EntityPlayer){
+                if(Utils.isTeamMember(entity, Minecraft.getMinecraft().thePlayer) && (Boolean) getConfigByFunctionName.get("ShortBowAura","attackTeam")) {
+                    return false;
+                } else {
+                    return !Utils.isNPC(entity);
+                }
+            } else {
+                return true;
+            }
         } else {
             return false;
         }
-    }
-    private boolean isInDungeon() {
-        isInTheCatacombs = false;
-        Utils utils = new Utils();
-        List<String> scoreBoardLines = utils.getSidebarLines();
-        int size = scoreBoardLines.size() - 1;
-        final String combatZoneName = "the catacombs";
-        final String clearedName = "dungeon cleared";
-        for (int i = 0; i < scoreBoardLines.size(); i++) {
-            if (Utils.containedByCharSequence(scoreBoardLines.get(size - i).toLowerCase(), clearedName)) {
-                isInTheCatacombs = true;
-            }
-            if (Utils.containedByCharSequence(scoreBoardLines.get(size - i).toLowerCase(), combatZoneName) && !scoreBoardLines.get(size - i).toLowerCase().contains("to")) {
-                isInTheCatacombs = true;
-            }
-        }
-        return isInTheCatacombs;
     }
 }

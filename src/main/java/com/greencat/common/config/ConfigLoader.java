@@ -31,7 +31,7 @@ public class ConfigLoader {
         for(String function : functions){
             FunctionManager.setStatus(function,true);
         }
-        config.save();
+        //config.save();
         config.load();
     }
     public static void setChatChannel(boolean status) {
@@ -41,7 +41,7 @@ public class ConfigLoader {
     }
     public static boolean getChatChannel() {
         boolean status = config.get(Configuration.CATEGORY_GENERAL, "ChatChannel", false, "切换聊天频道").getBoolean();
-        config.save();
+        //config.save();
         config.load();
         return status;
     }
@@ -53,7 +53,7 @@ public class ConfigLoader {
     }
     public static boolean getBoolean(String key,Boolean defaultValue) {
         boolean status = config.get(Configuration.CATEGORY_GENERAL,key, defaultValue,"").getBoolean();
-        config.save();
+        //config.save();
         config.load();
         return status;
     }
@@ -64,7 +64,7 @@ public class ConfigLoader {
     }
     public static String getString(String key,String defaultValue) {
         String str = config.get(Configuration.CATEGORY_GENERAL,key, defaultValue,"").getString();
-        config.save();
+        //config.save();
         config.load();
         return str;
     }
@@ -75,7 +75,7 @@ public class ConfigLoader {
     }
     public static int getInt(String key,int defaultValue) {
         int number = config.get(Configuration.CATEGORY_GENERAL,key, defaultValue,"").getInt();
-        config.save();
+        //config.save();
         config.load();
         return number;
     }
@@ -86,7 +86,7 @@ public class ConfigLoader {
     }
     public static double getDouble(String key,double defaultValue) {
         double number = config.get(Configuration.CATEGORY_GENERAL,key, defaultValue,"").getDouble();
-        config.save();
+        //config.save();
         config.load();
         return number;
     }

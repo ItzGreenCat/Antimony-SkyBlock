@@ -18,7 +18,6 @@ public class ItemTranslate {
 
     public ItemTranslate(){
         HighLevelMapping = Utils.getHashMapInJsonFile("/HighLevelMapping.json");
-
         normalMapping = Utils.getHashMapInJsonFile("/NormalMapping.json");
     }
     public String modifyName(String CustomName){

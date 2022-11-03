@@ -148,10 +148,8 @@ public class Killaura {
                     return entity;
                 }
             }
-            return null;
-        } else {
-            return null;
         }
+        return null;
     }
 
     private boolean isValid(EntityLivingBase entity) {
