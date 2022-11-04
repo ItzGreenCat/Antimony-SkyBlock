@@ -52,7 +52,7 @@ import java.util.HashMap;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.0";
+    public static final String VERSION = "3.0.1";
     private static final String Sb = "Sb";
     public static boolean AutoFishYawState = false;
     public static int ImageScaling = 1;
@@ -383,6 +383,7 @@ public class Antimony {
 
         FunctionManager.bindFunction("AutoKillWorm");
         FunctionManager.addConfiguration(new SettingLimitInt("间隔时间","cooldown",300,Integer.MAX_VALUE,0));
+        FunctionManager.addConfiguration(new SettingBoolean("瞄准Worm", "aim", false));
         FunctionManager.addConfiguration(new SettingString("右键物品名称", "itemName", "staff of the vol"));
         FunctionManager.addConfiguration(new SettingInt("计时器位置(X)", "timerX", 200));
         FunctionManager.addConfiguration(new SettingInt("计时器位置(Y)", "timerY", 115));
@@ -412,7 +413,7 @@ public class Antimony {
 
         FunctionManager.bindFunction("ShortBowAura");
         FunctionManager.addConfiguration(new SettingLimitDouble("延迟", "delay", 3.0D,10.0D,1.0D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 15.0D,30.0D,5.0D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 15.0D,100.0D,5.0D));
         FunctionManager.addConfiguration(new SettingBoolean("右键模式", "right", false));
         FunctionManager.addConfiguration(new SettingBoolean("攻击同队成员", "attackTeam", false));
 

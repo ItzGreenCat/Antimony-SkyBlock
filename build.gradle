@@ -1,5 +1,9 @@
 
 // For those who want the bleeding edge
+repositories {
+    mavenCentral()
+    maven { url = "https://repo.spongepowered.org/maven" }
+}
 buildscript {
     repositories {
         mavenCentral()
@@ -15,13 +19,6 @@ buildscript {
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
-plugins {
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
-}
-repositories {
-    mavenCentral()
-    maven { url = "https://repo.spongepowered.org/maven" }
-}
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 
@@ -31,7 +28,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "3.0-Released"
+version = "3.0.1-Released"
 group= "com.greencat" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Antimony-Client"
 
@@ -56,7 +53,6 @@ minecraft {
 dependencies {
     implementation 'org.jetbrains:annotations:20.1.0'
     implementation 'org.jetbrains:annotations:20.1.0'
-    implementation 'com.google.code.gson:gson:2.10'
 
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
