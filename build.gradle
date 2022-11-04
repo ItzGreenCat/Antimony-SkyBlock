@@ -53,6 +53,7 @@ minecraft {
 dependencies {
     implementation 'org.jetbrains:annotations:20.1.0'
     implementation 'org.jetbrains:annotations:20.1.0'
+    implementation 'com.google.code.gson:gson:2.10'
 
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
@@ -77,7 +78,6 @@ dependencies {
     provided('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
         exclude module: 'guava'
         exclude module: 'commons-io'
-        exclude module: 'gson'
     }
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
