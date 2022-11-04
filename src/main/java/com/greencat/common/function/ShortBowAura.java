@@ -118,7 +118,7 @@ public class ShortBowAura {
         && !((double)entity.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) > (Double) getConfigByFunctionName.get("ShortBowAura","range"))
         ) {
             if(entity instanceof EntityPlayer){
-                if(Utils.isTeamMember(entity, Minecraft.getMinecraft().thePlayer) && (Boolean) getConfigByFunctionName.get("ShortBowAura","attackTeam")) {
+                if(Utils.isTeamMember(entity, Minecraft.getMinecraft().thePlayer) && !(Boolean) getConfigByFunctionName.get("ShortBowAura","attackTeam")) {
                     return false;
                 } else {
                     return !Utils.isNPC(entity);
