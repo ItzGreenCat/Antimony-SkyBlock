@@ -1,5 +1,0 @@
-{
-  "required": true,
-  "package": "com.GreenCat.common.mixins",
-  "mixins": ["MixinMinecraft"]
-}
