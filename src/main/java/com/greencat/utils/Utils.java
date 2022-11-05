@@ -989,8 +989,8 @@ public class Utils {
     }
 
     //Jrojro728改变开始
-
     /**
+     * 从json文件读取HashMap<String, String>的数据并返回
      * @param FilePath Json文件路径，可以是全局文件，也可以是存储在resources的。
      * @return 读取到的HashMap对象
      */
@@ -1018,5 +1018,14 @@ public class Utils {
         Type type = new TypeToken<HashMap<String, String>>() {}.getType();
         return gson.fromJson(content.toString(), type);
     }
+
+    /**
+     * 解码json字符串到某个对象
+     * @param jsonString json源字符串
+     * @param tClass 要解码对象的class
+     * @param <T> 对象泛型
+     * @return 解码后的对象
+     */
+    public static <T> T decodeJsonToBean(String jsonString, Class<T> tClass) { return gson.fromJson(jsonString, tClass); }
     //Jrojro728改变结束
 }
