@@ -1,14 +1,15 @@
 package com.greencat.common.mixins;
 
+import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.event.CustomEventHandler;
 import com.greencat.utils.Utils;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.server.S13PacketDestroyEntities;
-import net.minecraft.network.play.server.S3EPacketTeams;
-import net.minecraft.network.play.server.S40PacketDisconnect;
+import net.minecraft.network.play.server.*;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -48,9 +49,27 @@ public abstract class MixinNetworkManager {
             cancellable = true
     )
     private void onChannelReadHead(ChannelHandlerContext context, Packet packet, CallbackInfo callbackInfo) {
-        if(CustomEventHandler.EVENT_BUS.post(new CustomEventHandler.PacketReceivedEvent(packet, context))) {
+        CustomEventHandler.PacketReceivedEvent event = new CustomEventHandler.PacketReceivedEvent(packet, context);
+        CustomEventHandler.EVENT_BUS.post(event);
+        if(event.isCanceled()){
             callbackInfo.cancel();
         }
+
+        //test
+        /*if (Minecraft.getMinecraft().thePlayer != null && true) {
+            if (FunctionManager.getStatus("Velocity") && !Minecraft.getMinecraft().thePlayer.isInLava()) {
+                ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
+                if (held == null || !held.getDisplayName().contains("Bonzo's Staff") && !held.getDisplayName().contains("Jerry-chine Gun")) {
+                    if (packet instanceof S27PacketExplosion) {
+                        callbackInfo.cancel();
+                    }
+
+                    if (packet instanceof S12PacketEntityVelocity && ((S12PacketEntityVelocity)packet).getEntityID() == Minecraft.getMinecraft().thePlayer.getEntityId()) {
+                        callbackInfo.cancel();
+                    }
+                }
+            }
+        }*/
     }
 
 

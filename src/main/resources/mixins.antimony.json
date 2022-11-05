@@ -11,15 +11,16 @@
     "MixinEntityPlayer",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
+    "MixinGuiMainMenu",
+    "MixinGuiScreen",
     "MixinHideAntimony",
+    "MixinItemStack",
     "MixinLivingEntityBase",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinNetworkManager",
     "MixinRenderer",
-    "MixinItemStack",
-    "ShaderGroupAccessor",
-    "MixinGuiMainMenu",
-    "MixinGuiScreen"
+    "S12Accessor",
+    "ShaderGroupAccessor"
   ]
 }

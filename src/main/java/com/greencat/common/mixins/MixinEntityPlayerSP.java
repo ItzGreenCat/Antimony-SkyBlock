@@ -173,4 +173,13 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
         }
 
     }
+    @Inject(
+            method = {"onLivingUpdate"},
+            at = {@At(
+                    value = "HEAD"
+            )}
+    )
+    public void callEvent(CallbackInfo ci){
+        CustomEventHandler.EVENT_BUS.post(new CustomEventHandler.PlayerUpdateEvent());
+    }
 }

@@ -8,8 +8,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.event.CustomEventHandler;
-import com.greencat.common.function.ItemTranslate;
 import com.greencat.common.mixins.EntityPlayerSPAccessor;
+import com.greencat.type.Rotation;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -38,13 +39,10 @@ import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.*;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 
 import static java.lang.Math.sqrt;
@@ -54,6 +52,13 @@ public class Utils {
     public static int lastReportedSlot;
     public static ArrayList<Packet<?>> noEvent = new ArrayList();
     public static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    public Utils() {
+        keyBindMap.put(0, Minecraft.getMinecraft().gameSettings.keyBindForward);
+        keyBindMap.put(90, Minecraft.getMinecraft().gameSettings.keyBindLeft);
+        keyBindMap.put(180, Minecraft.getMinecraft().gameSettings.keyBindBack);
+        keyBindMap.put(270, Minecraft.getMinecraft().gameSettings.keyBindRight);
+    }
 
     public static void BoxWithESP(BlockPos pos, Color c, boolean Blend) {
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
@@ -933,30 +938,34 @@ public class Utils {
             lastReportedSlot = ((C09PacketHeldItemChange) event.packet).getSlotId();
         }
     }
+
     public static float[] getBowAngles(Entity entity) {
         double xDelta = (entity.posX - entity.lastTickPosX) * 0.4D;
         double zDelta = (entity.posZ - entity.lastTickPosZ) * 0.4D;
-        double d = (double)Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity);
+        double d = Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity);
         d -= d % 0.8D;
         double xMulti = d / 0.8D * xDelta;
         double zMulti = d / 0.8D * zDelta;
         double x = entity.posX + xMulti - Minecraft.getMinecraft().thePlayer.posX;
         double z = entity.posZ + zMulti - Minecraft.getMinecraft().thePlayer.posZ;
-        double y = Minecraft.getMinecraft().thePlayer.posY + (double)Minecraft.getMinecraft().thePlayer.getEyeHeight() - (entity.posY + (double)entity.getEyeHeight());
-        double dist = (double)Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity);
-        float yaw = (float)Math.toDegrees(Math.atan2(z, x)) - 90.0F;
-        double d1 = (double)MathHelper.sqrt_double(x * x + z * z);
-        float pitch = (float)(-(Math.atan2(y, d1) * 180.0D / 3.141592653589793D)) + (float)dist * 0.11F;
+        double y = Minecraft.getMinecraft().thePlayer.posY + (double) Minecraft.getMinecraft().thePlayer.getEyeHeight() - (entity.posY + (double) entity.getEyeHeight());
+        double dist = Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity);
+        float yaw = (float) Math.toDegrees(Math.atan2(z, x)) - 90.0F;
+        double d1 = MathHelper.sqrt_double(x * x + z * z);
+        float pitch = (float) (-(Math.atan2(y, d1) * 180.0D / 3.141592653589793D)) + (float) dist * 0.11F;
         return new float[]{yaw, -pitch};
     }
+
     public static float getYawDifference(EntityLivingBase entity1, EntityLivingBase entity2) {
-        return Math.abs(getAngles((Entity)entity1)[0] - getAngles((Entity)entity2)[0]);
+        return Math.abs(getAngles(entity1)[0] - getAngles(entity2)[0]);
     }
 
     public static float getYawDifference(EntityLivingBase entity1) {
-        return Math.abs(Minecraft.getMinecraft().thePlayer.rotationYaw - getAngles((Entity)entity1)[0]);
+        return Math.abs(Minecraft.getMinecraft().thePlayer.rotationYaw - getAngles(entity1)[0]);
     }
+
     private static final HashMap<Integer, String> itemUuidCache = new HashMap<>();
+
     public static String getUuidForItem(ItemStack stack) {
         if (!stack.hasTagCompound()) return null;
 
@@ -971,11 +980,13 @@ public class Utils {
         itemUuidCache.put(nbtHash, uuid);
         return uuid;
     }
+
     public static String getUUIDForItem(ItemStack stack) {
         if (stack == null) return null;
         NBTTagCompound tag = stack.getTagCompound();
         return getUUIDFromNBT(tag);
     }
+
     public static String getUUIDFromNBT(NBTTagCompound tag) {
         String uuid = null;
         if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
@@ -987,10 +998,174 @@ public class Utils {
         }
         return uuid;
     }
+    public static Vec3 ceilVec(Vec3 vec3) {
+        return new Vec3(Math.ceil(vec3.xCoord), Math.ceil(vec3.yCoord), Math.ceil(vec3.zCoord));
+    }
 
+    public static Vec3 floorVec(Vec3 vec3) {
+        return new Vec3(Math.floor(vec3.xCoord), Math.floor(vec3.yCoord), Math.floor(vec3.zCoord));
+    }
+
+    public static Rotation startRot;
+    public static Rotation neededChange;
+    public static Rotation endRot;
+    public static long startTime;
+    public static long endTime;
+    public static boolean done = true;
+    private static final float[][] BLOCK_SIDES = new float[][]{{0.5F, 0.01F, 0.5F}, {0.5F, 0.99F, 0.5F}, {0.01F, 0.5F, 0.5F}, {0.99F, 0.5F, 0.5F}, {0.5F, 0.5F, 0.01F}, {0.5F, 0.5F, 0.99F}};
+
+    public static Rotation getRotation(Vec3 vec) {
+        Vec3 eyes = Minecraft.getMinecraft().thePlayer.getPositionEyes(1.0F);
+        return getRotation(eyes, vec);
+    }
+
+    public static Rotation getRotation(BlockPos bp) {
+        Vec3 vec = new Vec3((double) bp.getX() + 0.5D, (double) bp.getY() + 0.5D, (double) bp.getZ() + 0.5D);
+        return getRotation(vec);
+    }
+
+    public static Rotation getRotation(Vec3 from, Vec3 to) {
+        double diffX = to.xCoord - from.xCoord;
+        double diffY = to.yCoord - from.yCoord;
+        double diffZ = to.zCoord - from.zCoord;
+        return new Rotation(MathHelper.wrapAngleTo180_float((float) (Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0D)), (float) (-Math.toDegrees(Math.atan2(diffY, Math.sqrt(diffX * diffX + diffZ * diffZ)))));
+    }
+
+    public static void setup(Rotation rot, Long aimTime) {
+        Minecraft mc = Minecraft.getMinecraft();
+        done = false;
+        startRot = new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+        neededChange = getNeededChange(startRot, rot);
+        endRot = new Rotation(startRot.getYaw() + neededChange.getYaw(), startRot.getPitch() + neededChange.getPitch());
+        startTime = System.currentTimeMillis();
+        endTime = System.currentTimeMillis() + aimTime;
+    }
+
+    public static Rotation getNeededChange(Rotation startRot, Rotation endRot) {
+        float yawChng = MathHelper.wrapAngleTo180_float(endRot.getYaw()) - MathHelper.wrapAngleTo180_float(startRot.getYaw());
+        if (yawChng <= -180.0F) {
+            yawChng += 360.0F;
+        } else if (yawChng > 180.0F) {
+            yawChng += -360.0F;
+        }
+
+        /*if () {
+            if (yawChng < 0.0F) {
+                yawChng += 360.0F;
+            } else {
+                yawChng -= 360.0F;
+            }
+        }*/
+
+        return new Rotation(yawChng, endRot.getPitch() - startRot.getPitch());
+    }
+
+    public static void reset() {
+        done = true;
+        startRot = null;
+        neededChange = null;
+        endRot = null;
+        startTime = 0L;
+        endTime = 0L;
+    }
+
+    public static void update() {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (System.currentTimeMillis() <= endTime) {
+            mc.thePlayer.rotationYaw = interpolate(startRot.getYaw(), endRot.getYaw());
+            mc.thePlayer.rotationPitch = interpolate(startRot.getPitch(), endRot.getPitch());
+        } else if (!done) {
+            mc.thePlayer.rotationYaw = endRot.getYaw();
+            mc.thePlayer.rotationPitch = endRot.getPitch();
+            reset();
+        }
+
+    }
+
+    private static float interpolate(float start, float end) {
+        float spentMillis = (float) (System.currentTimeMillis() - startTime);
+        float relativeProgress = spentMillis / (float) (endTime - startTime);
+        return (end - start) * easeOutCubic(relativeProgress) + start;
+    }
+
+    public static float easeOutCubic(double number) {
+        return (float) Math.max(0.0D, Math.min(1.0D, 1.0D - Math.pow(1.0D - number, 3.0D)));
+    }
+
+    public static double getHorizontalDistance(Vec3 vec1, Vec3 vec2) {
+        double d0 = vec1.xCoord - vec2.xCoord;
+        double d2 = vec1.zCoord - vec2.zCoord;
+        return MathHelper.sqrt_double(d0 * d0 + d2 * d2);
+    }
+
+    public static Rotation getNeededChange(Rotation endRot) {
+        Minecraft mc = Minecraft.getMinecraft();
+        Rotation startRot = new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+        return getNeededChange(startRot, endRot);
+    }
+
+    public static void stopMovement() {
+        Minecraft mc = Minecraft.getMinecraft();
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindLeft.getKeyCode(), false);
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindRight.getKeyCode(), false);
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), false);
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindBack.getKeyCode(), false);
+    }
+
+    private static final Map<Integer, KeyBinding> keyBindMap = new HashMap<Integer, KeyBinding>();
+
+    public static List<KeyBinding> getNeededKeyPresses(Vec3 from, Vec3 to) {
+        List<KeyBinding> neededKeyPresses = new ArrayList();
+        Rotation neededRot = Utils.getNeededChange(Utils.getRotation(from, to));
+        double neededYaw = neededRot.getYaw() * -1.0F;
+        keyBindMap.forEach((k, v) -> {
+            if (Math.abs((double) k - neededYaw) < 67.5D || Math.abs((double) k - (neededYaw + 360.0D)) < 67.5D) {
+                neededKeyPresses.add(v);
+            }
+
+        });
+        return neededKeyPresses;
+    }
+
+    public static void drawLines(List<Vec3> poses, float thickness, float partialTicks) {
+        Entity render = Minecraft.getMinecraft().getRenderViewEntity();
+        WorldRenderer worldRenderer = Tessellator.getInstance().getWorldRenderer();
+        double realX = render.lastTickPosX + (render.posX - render.lastTickPosX) * (double) partialTicks;
+        double realY = render.lastTickPosY + (render.posY - render.lastTickPosY) * (double) partialTicks;
+        double realZ = render.lastTickPosZ + (render.posZ - render.lastTickPosZ) * (double) partialTicks;
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(-realX, -realY, -realZ);
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GL11.glDisable(3553);
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlpha();
+        GL11.glLineWidth(thickness);
+        GlStateManager.disableDepth();
+        GlStateManager.depthMask(false);
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        worldRenderer.begin(3, DefaultVertexFormats.POSITION_COLOR);
+
+        for (Vec3 pos : poses) {
+            int i = Chroma.color.getRGB();
+            worldRenderer.pos(pos.xCoord + 0.5D, pos.yCoord + 0.5D, pos.zCoord + 0.5D).color((float) (i >> 16 & 255) / 255.0F, (float) (i >> 8 & 255) / 255.0F, (float) (i & 255) / 255.0F, (float) (i >> 24 & 255) / 255.0F).endVertex();
+        }
+
+        Tessellator.getInstance().draw();
+        GlStateManager.translate(realX, realY, realZ);
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableDepth();
+        GlStateManager.depthMask(true);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.popMatrix();
+    }
     //Jrojro728改变开始
 
     /**
+     * 从json文件读取HashMap<String, String>的数据并返回
      * @param FilePath Json文件路径，可以是全局文件，也可以是存储在resources的。
      * @return 读取到的HashMap对象
      */
@@ -1014,9 +1189,16 @@ public class Utils {
                 e.printStackTrace();
             }
         }
-
-        Type type = new TypeToken<HashMap<String, String>>() {}.getType();
+                Type type = new TypeToken<HashMap<String, String>>() {}.getType();
         return gson.fromJson(content.toString(), type);
     }
-    //Jrojro728改变结束
+
+    /**
+     * 解码json字符串到某个对象
+     * @param jsonString json源字符串
+     * @param tClass 要解码对象的class
+     * @param <T> 对象泛型
+     * @return 解码后的对象
+     */
+    public static <T> T decodeJsonToBean(String jsonString, Class<T> tClass) { return gson.fromJson(jsonString, tClass); }
 }

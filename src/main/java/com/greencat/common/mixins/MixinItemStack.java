@@ -14,15 +14,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinItemStack {
     @Inject(method={"getDisplayName"}, cancellable=true,at={@At(value="RETURN")})
     public void Translate(CallbackInfoReturnable<String> cir){
-        if(CustomItemName.hasCustomName(Utils.getUUIDForItem((ItemStack)(Object)this))) {
+        /*if(CustomItemName.hasCustomName(Utils.getUUIDForItem((ItemStack)(Object)this))) {
             cir.setReturnValue(CustomItemName.getCustomName(Utils.getUUIDForItem((ItemStack) (Object) this)));
-        }
-        /*if(!CustomItemName.hasCustomName(Utils.getUUIDForItem((ItemStack)(Object)this))) {
+        }*/
+        if(!CustomItemName.hasCustomName(Utils.getUUIDForItem((ItemStack)(Object)this))) {
             String OriginalName = cir.getReturnValue();
             ItemTranslate translate = new ItemTranslate();
             cir.setReturnValue(translate.modifyName(OriginalName));
         } else {
             cir.setReturnValue(CustomItemName.getCustomName(Utils.getUUIDForItem((ItemStack)(Object)this)));
-        }*/
+        }
     }
 }
