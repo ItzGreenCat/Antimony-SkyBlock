@@ -42,6 +42,7 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -999,8 +1000,8 @@ public class Utils {
         StringBuffer content = new StringBuffer();
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(path));
-            String line = null;
+            reader = new BufferedReader(new InputStreamReader(path, StandardCharsets.UTF_8));
+            String line;
             while ((line = reader.readLine()) != null) {
                 content.append(line);
             }
