@@ -1201,4 +1201,24 @@ public class Utils {
      * @return 解码后的对象
      */
     public static <T> T decodeJsonToBean(String jsonString, Class<T> tClass) { return gson.fromJson(jsonString, tClass); }
+    public static void renderTrace(BlockPos from,BlockPos to,Color c,float width){
+        RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+        GlStateManager.disableDepth();
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.enableBlend();
+        GlStateManager.color((float) c.getRed() / 255.0F, (float) c.getGreen() / 255.0F, (float) c.getBlue() / 255.0F, (float) c.getAlpha() / 255.0F);
+        GL11.glLineWidth(width);
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(GL11.GL_LINE_STRIP,DefaultVertexFormats.POSITION);
+        worldrenderer.pos(from.getX() - renderManager.viewerPosX,from.getY() - renderManager.viewerPosY,from.getZ() - renderManager.viewerPosZ).endVertex();
+        worldrenderer.pos(to.getX() - renderManager.viewerPosX,to.getY() - renderManager.viewerPosY,to.getZ() - renderManager.viewerPosZ).endVertex();
+        tessellator.draw();
+        GL11.glLineWidth(1.0F);
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableDepth();
+
+    }
 }

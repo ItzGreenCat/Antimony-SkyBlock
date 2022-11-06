@@ -3,13 +3,17 @@ package com.greencat.common.mixins;
 import com.greencat.Antimony;
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.config.getConfigByFunctionName;
+import com.greencat.common.function.Velocity;
+import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.util.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,12 +22,16 @@ import static java.lang.Math.*;
 
 @Mixin(value = {NetHandlerPlayClient.class})
 public abstract class MixinNetHandlerPlayClient {
+    @Shadow
+    private
+    WorldClient clientWorldController;
     @Inject(method = {"handleEntityVelocity"}, cancellable = true, at = {@At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocity(DDD)V")})
     public void handleEntityVelocity(S12PacketEntityVelocity s12packetv, CallbackInfo cbi) {
         if (FunctionManager.getStatus("Velocity")) {
-            Entity velocityEntity = Minecraft.getMinecraft().theWorld.getEntityByID(s12packetv.getEntityID());
-            if (velocityEntity instanceof EntityPlayerSP) {
-                        /*boolean isUsingSkyBlockKnockBack = false;
+            Entity entity = this.clientWorldController.getEntityByID(s12packetv.getEntityID());
+            if (entity != null) {
+            if (s12packetv.getEntityID() == Minecraft.getMinecraft().thePlayer.getEntityId()) {
+                        boolean isUsingSkyBlockKnockBack = false;
                         for(String BootsID : Velocity.BootsIDList){
                             if(BootsID.equals(Utils.getSkyBlockCustomItemID(Utils.getBoots()))){
                                 isUsingSkyBlockKnockBack = true;
@@ -37,26 +45,16 @@ public abstract class MixinNetHandlerPlayClient {
                             }
                         }
                         if(!isUsingSkyBlockKnockBack) {
-                            double motionX = s12packetv.getMotionX();
-                            double motionY = s12packetv.getMotionY();
-                            double motionZ = s12packetv.getMotionZ();
-                            if(Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition()).getBlock() == Blocks.lava ||
-                            Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-1,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-2,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-3,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-4,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-5,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-6,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-7,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-8,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-9,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-10,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-11,0)).getBlock() == Blocks.lava ||
-                                    Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().thePlayer.getPosition().add(0,-12,0)).getBlock() == Blocks.lava) {
-                                velocityEntity.setVelocity(Minecraft.getMinecraft().thePlayer.motionX + motionX * 0.01 / 8000.0D, motionY * 1 / 8000.0D, Minecraft.getMinecraft().thePlayer.motionZ + motionZ * 0.01 / 8000.0D);
+                            if(Minecraft.getMinecraft().thePlayer.isInLava()){
+                                Minecraft.getMinecraft().thePlayer.motionX *= ((s12packetv.getMotionX() * 0.0001D)/ 8000.0D);
+                                Minecraft.getMinecraft().thePlayer.motionZ *= ((s12packetv.getMotionZ() * 0.0001D)/ 8000.0D);
+                            } else {
+                                Minecraft.getMinecraft().thePlayer.motionX *= ((s12packetv.getMotionX() * 0.0001D)/ 8000.0D);
+                                Minecraft.getMinecraft().thePlayer.motionY *= ((s12packetv.getMotionY() * 0.0001D)/ 8000.0D);
+                                Minecraft.getMinecraft().thePlayer.motionZ *= ((s12packetv.getMotionZ() * 0.0001D)/ 8000.0D);
                             }
-                            cbi.cancel();
-                        }*/
+                        }
+            }
             }
         }
     }

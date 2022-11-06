@@ -41,7 +41,7 @@ public class AutoKillWorm {
             if(event.phase == TickEvent.Phase.START) {
                 if(stage == 0) {
                     if (Minecraft.getMinecraft().theWorld != null) {
-                        if (Tick < ((Integer) getConfigByFunctionName.get("AutoKillWorm", "cooldown") * 40)) {
+                        if (Tick < ((Integer) getConfigByFunctionName.get("AutoKillWorm", "cooldown") * 20)) {
                             Tick = Tick + 1;
                         } else {
                             if (mc.theWorld != null) {
@@ -126,7 +126,7 @@ public class AutoKillWorm {
     public void RenderText(RenderGameOverlayEvent event){
         if(FunctionManager.getStatus("AutoKillWorm")) {
             if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
-                double second = ((double) (((Integer)getConfigByFunctionName.get("AutoKillWorm","cooldown") * 40)) - Tick) / 40;
+                double second = ((double) (((Integer)getConfigByFunctionName.get("AutoKillWorm","cooldown") * 20)) - Tick) / 20;
                 HUDManager.Render("Worm Killer Cooldown",(int)second,(Integer)getConfigByFunctionName.get("AutoKillWorm","timerX"),(Integer)getConfigByFunctionName.get("AutoKillWorm","timerY"));
             }
         }

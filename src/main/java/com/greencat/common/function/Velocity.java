@@ -28,11 +28,6 @@ public class Velocity {
 
     public static List<String> BootsIDList = new ArrayList<String>();
     public static List<String> ItemIDList = new ArrayList<String>();
-    private Boolean velocityInput = false;
-    private SystemTimer velocityTimer = new SystemTimer();
-    private float templateX = 0;
-    private float templateY = 0;
-    private float templateZ = 0;
 
 
     public Velocity(){
@@ -56,44 +51,6 @@ public class Velocity {
     public void InputEvent(InputEvent.KeyInputEvent event){
         if(KeyLoader.SwitchVelocity.isPressed()){
             FunctionManager.switchStatus("Velocity");
-        }
-    }
-    @SubscribeEvent
-    public void Update(CustomEventHandler.PlayerUpdateEvent event){
-        if(FunctionManager.getStatus("Velocity") && !SkyBlockKB()){
-        Minecraft mc = Minecraft.getMinecraft();
-        if (mc.thePlayer.hurtTime> 0 && velocityInput) {
-            velocityInput = false;
-            mc.thePlayer.motionX = 0.0;
-            mc.thePlayer.motionZ = 0.0;
-            mc.thePlayer.motionY = 0.0;
-            mc.thePlayer.jumpMovementFactor = -0.002f;
-            mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, 1.7976931348623157E+308, mc.thePlayer.posZ, true));
-        }
-        if (velocityTimer.hasTimePassed(80L) && velocityInput) {
-            velocityInput = false;
-            mc.thePlayer.motionX = templateX / 8000.0;
-            mc.thePlayer.motionZ = templateZ / 8000.0;
-            mc.thePlayer.motionY = templateY / 8000.0;
-            mc.thePlayer.jumpMovementFactor = -0.002f;
-        }
-        }
-    }
-    @SubscribeEvent
-    public void Packet(CustomEventHandler.PacketReceivedEvent event){
-        if(FunctionManager.getStatus("Velocity")) {
-            if (event.packet instanceof S12PacketEntityVelocity) {
-                if(!SkyBlockKB()) {
-                    S12PacketEntityVelocity packet = (S12PacketEntityVelocity) event.packet;
-                    if (packet.getEntityID() == Minecraft.getMinecraft().thePlayer.getEntityId()) {
-                        event.setCanceled(true);
-                        velocityInput = true;
-                        templateX = packet.getMotionX();
-                        templateZ = packet.getMotionZ();
-                        templateY = packet.getMotionY();
-                    }
-                }
-            }
         }
     }
 }

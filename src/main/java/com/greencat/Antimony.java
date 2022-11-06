@@ -53,7 +53,7 @@ import java.util.HashMap;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.0.3";
+    public static final String VERSION = "3.0.4";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -192,6 +192,8 @@ public class Antimony {
         new ShortBowAura();
         new HideFallingBlock();
         new AutoWolfSlayer();
+        new ChestFinder();
+        new AutoLeave();
 
 
         Blur.register();
@@ -254,6 +256,8 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("HideFallingBlock"));
         register.RegisterFunction(new AntimonyFunction("Pathfinding"));
         register.RegisterFunction(new AntimonyFunction("AutoWolfSlayer"));
+        register.RegisterFunction(new AntimonyFunction("ChestFinder"));
+        register.RegisterFunction(new AntimonyFunction("AutoLeave"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -295,6 +299,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "DroppedItemESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "NoHurtCam", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "HideFallingBlock", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "ChestFinder", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
 
         register.RegisterSelectObject(new SelectObject("function", "StarredMobESP", "Dungeon"));
@@ -307,6 +312,7 @@ public class Antimony {
 
         register.RegisterSelectObject(new SelectObject("function", "AutoFish", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "AutoKillWorm", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "AutoLeave", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "AutoWolfSlayer", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
@@ -438,6 +444,19 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingTypeSelector("击杀Wolf模式","mode",0,SlayMode));
         FunctionManager.addConfiguration(new SettingString("近战物品名称", "swordName", "livid"));
         FunctionManager.addConfiguration(new SettingString("短弓名称", "bowName", "juju"));
+
+        FunctionManager.bindFunction("ChestFinder");
+        HashMap<String, Integer> renderMode = new HashMap<String, Integer>();
+        renderMode.put("Outline",0);
+        renderMode.put("Full",1);
+        renderMode.put("Tracer",2);
+        FunctionManager.addConfiguration(new SettingTypeSelector("模式","mode",0,renderMode));
+
+        FunctionManager.bindFunction("AutoLeave");
+        FunctionManager.addConfiguration(new SettingInt("检测半径", "radius",30));
+        FunctionManager.addConfiguration(new SettingLimitInt("附近最大可存在玩家数量", "limit",0,100,0));
+        FunctionManager.addConfiguration(new SettingLimitInt("附近玩家大于可存在玩家数量后执行命令前冷却(游戏Tick)", "tickLimit",200,Integer.MAX_VALUE,0));
+        FunctionManager.addConfiguration(new SettingString("需执行的命令", "command", "/warp home"));
 
         NewUserFunction();
 

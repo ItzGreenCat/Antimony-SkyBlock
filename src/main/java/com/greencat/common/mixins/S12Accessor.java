@@ -8,6 +8,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface S12Accessor {
     @Accessor("motionX")
     void setMotionX(int MotionX);
+    @Accessor("motionY")
+    void setMotionY(int MotionY);
     @Accessor("motionZ")
     void setMotionZ(int MotionZ);
 }
