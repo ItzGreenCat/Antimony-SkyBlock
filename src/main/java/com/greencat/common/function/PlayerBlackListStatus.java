@@ -9,8 +9,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-
-//Jrojro728编写
+/**
+ * @author Jrojro728
+ * 使用方法:
+ * 1、使用sendGet函数获取json字符串
+ * 2、PlayerBlackListStatus name = decodeJsonToThisClass(json字符串.toString);
+ * 3、playerIsInBlackList();
+ */
 public class PlayerBlackListStatus {
     private String name;
     private String UUID;
