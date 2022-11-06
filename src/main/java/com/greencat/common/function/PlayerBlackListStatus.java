@@ -110,6 +110,16 @@ public class PlayerBlackListStatus {
 
     /**
      * 如函数名
+     * @return 玩家是否是高能玩家
+     */
+    public boolean playerIsInBlackList() {
+        if (getUUID().indexOf(UUID) != 32) { return false; }
+        if (isFun()) { return false; }
+        return !reason.isEmpty();
+    }
+
+    /**
+     * 如函数名
      * @param Json 要解码的Json字符串
      * @return 解码到的此对象
      */

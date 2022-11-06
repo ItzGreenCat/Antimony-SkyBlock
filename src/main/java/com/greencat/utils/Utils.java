@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.List;
 
 import static java.lang.Math.sqrt;
 
@@ -1189,7 +1190,7 @@ public class Utils {
             }
         }
 
-        Type type = new TypeToken<HashMap<String, String>>() {}.getType();
+            Type type = new TypeToken<HashMap<String, String>>() {}.getType();
         return gson.fromJson(content.toString(), type);
     }
 
