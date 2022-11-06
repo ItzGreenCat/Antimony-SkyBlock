@@ -2,6 +2,7 @@ package com.greencat.common.mixins;
 
 import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.function.Killaura;
+import com.greencat.common.function.ShortBowAura;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -35,7 +36,7 @@ public abstract class MixinMinecraft {
     )
     public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir) {
         if ((FunctionManager.getStatus("Killaura") || FunctionManager.getStatus("ShortBowAura")) && this.renderViewEntity != null && this.renderViewEntity == Minecraft.getMinecraft().thePlayer) {
-            if (Killaura.entityTarget != null) {
+            if (Killaura.entityTarget != null || ShortBowAura.target != null) {
                 ((EntityLivingBase)this.renderViewEntity).rotationYawHead = ((EntityPlayerSPAccessor)this.renderViewEntity).getLastReportedYaw();
                 ((EntityLivingBase)this.renderViewEntity).renderYawOffset = ((EntityPlayerSPAccessor)this.renderViewEntity).getLastReportedYaw();
             }

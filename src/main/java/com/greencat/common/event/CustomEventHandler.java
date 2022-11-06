@@ -2,8 +2,6 @@ package com.greencat.common.event;
 
 import com.greencat.type.AntimonyFunction;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
@@ -59,6 +57,7 @@ public class CustomEventHandler {
         }
 
     }
+    @Cancelable
     public static class PacketReceivedEvent extends Event {
         public Packet packet;
         public ChannelHandlerContext context;
@@ -123,6 +122,21 @@ public class CustomEventHandler {
                 this.packet = packet;
             }
         }
+    }
+    @Cancelable
+    public static class MoveStrafeEvent extends Event {
+        public float strafe;
+        public float forward;
+        public float friction;
+
+        public MoveStrafeEvent(float strafe,float forward,float friction) {
+            this.strafe = strafe;
+            this.forward = forward;
+            this.friction = friction;
+        }
+    }
+    public static class PlayerUpdateEvent extends Event{
+        public PlayerUpdateEvent(){}
     }
 
 

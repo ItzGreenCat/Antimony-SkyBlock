@@ -19,6 +19,7 @@ import com.greencat.common.function.title.TitleManager;
 import com.greencat.common.key.KeyLoader;
 import com.greencat.common.register.AntimonyRegister;
 import com.greencat.core.HUDManager;
+import com.greencat.core.Pathfinding;
 import com.greencat.settings.*;
 import com.greencat.type.AntimonyFunction;
 import com.greencat.type.SelectObject;
@@ -52,8 +53,13 @@ import java.util.HashMap;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.0.2";
+    public static final String VERSION = "3.0.4";
     private static final String Sb = "Sb";
+
+    public static float strafe;
+    public static float forward;
+    public static float friction;
+
     public static boolean AutoFishYawState = false;
     public static int ImageScaling = 1;
     public static boolean shouldRenderBossBar = true;
@@ -139,6 +145,7 @@ public class Antimony {
         new GuiMainMenuModify();
         new CustomEventHandler.ClientTickEndEvent();
         new HUDManager();
+        new Pathfinding();
 
         //Dev
         //Function
@@ -184,6 +191,9 @@ public class Antimony {
         new Interface();
         new ShortBowAura();
         new HideFallingBlock();
+        new AutoWolfSlayer();
+        new ChestFinder();
+        new AutoLeave();
 
 
         Blur.register();
@@ -244,6 +254,10 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("Interface"));
         register.RegisterFunction(new AntimonyFunction("ShortBowAura"));
         register.RegisterFunction(new AntimonyFunction("HideFallingBlock"));
+        register.RegisterFunction(new AntimonyFunction("Pathfinding"));
+        register.RegisterFunction(new AntimonyFunction("AutoWolfSlayer"));
+        register.RegisterFunction(new AntimonyFunction("ChestFinder"));
+        register.RegisterFunction(new AntimonyFunction("AutoLeave"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -285,6 +299,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "DroppedItemESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "NoHurtCam", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "HideFallingBlock", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "ChestFinder", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
 
         register.RegisterSelectObject(new SelectObject("function", "StarredMobESP", "Dungeon"));
@@ -297,6 +312,8 @@ public class Antimony {
 
         register.RegisterSelectObject(new SelectObject("function", "AutoFish", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "AutoKillWorm", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "AutoLeave", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "AutoWolfSlayer", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
         register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
@@ -328,6 +345,7 @@ public class Antimony {
         ConfigLoader.applyFunctionState();
 
         FunctionManager.setStatus("CustomPetNameTag", false);
+        FunctionManager.setStatus("Pathfinding", false);
         FunctionManager.setStatus("Interface", true);
 
         FunctionManager.bindFunction("Killaura");
@@ -418,6 +436,27 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 15.0D,100.0D,5.0D));
         FunctionManager.addConfiguration(new SettingBoolean("右键模式", "right", false));
         FunctionManager.addConfiguration(new SettingBoolean("攻击同队成员", "attackTeam", false));
+
+        FunctionManager.bindFunction("AutoWolfSlayer");
+        HashMap<String, Integer> SlayMode = new HashMap<String, Integer>();
+        SlayMode.put("Killaura",0);
+        SlayMode.put("ShortBowAura",1);
+        FunctionManager.addConfiguration(new SettingTypeSelector("击杀Wolf模式","mode",0,SlayMode));
+        FunctionManager.addConfiguration(new SettingString("近战物品名称", "swordName", "livid"));
+        FunctionManager.addConfiguration(new SettingString("短弓名称", "bowName", "juju"));
+
+        FunctionManager.bindFunction("ChestFinder");
+        HashMap<String, Integer> renderMode = new HashMap<String, Integer>();
+        renderMode.put("Outline",0);
+        renderMode.put("Full",1);
+        renderMode.put("Tracer",2);
+        FunctionManager.addConfiguration(new SettingTypeSelector("模式","mode",0,renderMode));
+
+        FunctionManager.bindFunction("AutoLeave");
+        FunctionManager.addConfiguration(new SettingInt("检测半径", "radius",30));
+        FunctionManager.addConfiguration(new SettingLimitInt("附近最大可存在玩家数量", "limit",0,100,0));
+        FunctionManager.addConfiguration(new SettingLimitInt("附近玩家大于可存在玩家数量后执行命令前冷却(游戏Tick)", "tickLimit",200,Integer.MAX_VALUE,0));
+        FunctionManager.addConfiguration(new SettingString("需执行的命令", "command", "/warp home"));
 
         NewUserFunction();
 

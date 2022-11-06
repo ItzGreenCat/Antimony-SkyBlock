@@ -28,7 +28,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "3.0.2-Released"
+version = "3.0.4"
 group= "com.greencat" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Antimony-Client"
 
@@ -51,7 +51,6 @@ minecraft {
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:20.1.0'
     implementation 'org.jetbrains:annotations:20.1.0'
     implementation 'com.google.code.gson:gson:2.10'
 
