@@ -1195,6 +1195,36 @@ public class Utils {
     }
 
     /**
+     * 从json文件读取List<String>的数据并返回
+     * @param FilePath Json文件路径，可以是全局文件，也可以是存储在resources的。
+     * @return 读取到的HashMap对象
+     */
+    public static List<String> getListInJsonFile(String FilePath) {
+        InputStream path = Utils.class.getResourceAsStream(FilePath);
+        StringBuffer content = new StringBuffer();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(path, "utf-8"));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        Type type = new TypeToken<List<String>>() {}.getType();
+        return gson.fromJson(content.toString(), type);
+    }
+
+    /**
      * 解码json字符串到某个对象
      * @param jsonString json源字符串
      * @param tClass 要解码对象的class
