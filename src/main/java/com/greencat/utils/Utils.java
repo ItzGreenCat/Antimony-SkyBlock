@@ -1253,4 +1253,46 @@ public class Utils {
         GlStateManager.enableDepth();
 
     }
+    public static final char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
+    public static final int alphabetLength;
+
+    public static String nextString(int lenght, Random random) {
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i < lenght; ++i) {
+            sb.append(alphabet[random.nextInt(alphabet.length)]);
+        }
+
+        return sb.toString();
+    }
+
+    public static String nextString(int lenght) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i < lenght; ++i) {
+            sb.append(alphabet[random.nextInt(alphabet.length)]);
+        }
+
+        return sb.toString();
+    }
+
+    static {
+        alphabetLength = alphabet.length;
+    }
+    public static EnumFacing calculateEnumfacingLook(Vec3 look) {
+        MovingObjectPosition position = calculateInterceptAABBLook(getBlockAABB(new BlockPos(look)), look);
+        return position != null ? position.sideHit : Minecraft.getMinecraft().thePlayer.getHorizontalFacing().getOpposite();
+    }
+    public static MovingObjectPosition calculateInterceptAABBLook(AxisAlignedBB aabb, Vec3 look) {
+        return aabb.calculateIntercept(getPositionEyes(), look);
+    }
+    public static AxisAlignedBB getBlockAABB(BlockPos pos) {
+        Block block = Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock();
+        block.setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, pos);
+        return block.getSelectedBoundingBox(Minecraft.getMinecraft().theWorld, pos);
+    }
+    public static Vec3 getPositionEyes() {
+        return new Vec3(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY + (double)(Minecraft.getMinecraft().thePlayer.isSneaking() ? 1.54F : 1.62F), Minecraft.getMinecraft().thePlayer.posZ);
+    }
 }

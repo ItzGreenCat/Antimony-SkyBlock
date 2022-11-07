@@ -20,6 +20,7 @@ import com.greencat.common.key.KeyLoader;
 import com.greencat.common.register.AntimonyRegister;
 import com.greencat.core.HUDManager;
 import com.greencat.core.Pathfinding;
+import com.greencat.core.nukerCore;
 import com.greencat.settings.*;
 import com.greencat.type.AntimonyFunction;
 import com.greencat.type.SelectObject;
@@ -53,7 +54,7 @@ import java.util.HashMap;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.0.4";
+    public static final String VERSION = "3.0.5";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -146,6 +147,7 @@ public class Antimony {
         new CustomEventHandler.ClientTickEndEvent();
         new HUDManager();
         new Pathfinding();
+        new nukerCore();
 
         //Dev
         //Function
@@ -194,6 +196,7 @@ public class Antimony {
         new AutoWolfSlayer();
         new ChestFinder();
         new AutoLeave();
+        new CropBot();
 
 
         Blur.register();
@@ -258,6 +261,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("AutoWolfSlayer"));
         register.RegisterFunction(new AntimonyFunction("ChestFinder"));
         register.RegisterFunction(new AntimonyFunction("AutoLeave"));
+        register.RegisterFunction(new AntimonyFunction("CropBot"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -314,6 +318,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoKillWorm", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "AutoLeave", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "AutoWolfSlayer", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "CropBot", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
         register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
@@ -351,7 +356,7 @@ public class Antimony {
         FunctionManager.bindFunction("Killaura");
         FunctionManager.addConfiguration(new SettingBoolean("攻击玩家", "isAttackPlayer", true));
         FunctionManager.addConfiguration(new SettingBoolean("目标实体透视", "targetESP", true));
-        FunctionManager.addConfiguration(new SettingLimitDouble("最大纵向旋转角度", "maxPitch", 120.0D,90.0D,-90.0D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("最大纵向旋转角度", "maxPitch", 90.0D,90.0D,-90.0D));
         FunctionManager.addConfiguration(new SettingLimitDouble("最大横向旋转角度", "maxYaw", 120.0D,180.0D,-180.0D));
         FunctionManager.addConfiguration(new SettingLimitDouble("最大旋转距离", "maxRotationRange", 6.0D,12.0D,2.0D));
         FunctionManager.addConfiguration(new SettingLimitDouble("在此项值内视场角生物为可攻击生物", "Fov", 270.0D,360.0D,90.0D));
@@ -457,6 +462,15 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingLimitInt("附近最大可存在玩家数量", "limit",0,100,0));
         FunctionManager.addConfiguration(new SettingLimitInt("附近玩家大于可存在玩家数量后执行命令前冷却(游戏Tick)", "tickLimit",200,Integer.MAX_VALUE,0));
         FunctionManager.addConfiguration(new SettingString("需执行的命令", "command", "/warp home"));
+
+        FunctionManager.bindFunction("CropBot");
+        HashMap<String, Integer> crops = new HashMap<String, Integer>();
+        crops.put("Potato",0);
+        crops.put("Carrot",1);
+        crops.put("Mushroom",2);
+        crops.put("Nether Wart",3);
+        FunctionManager.addConfiguration(new SettingTypeSelector("作物种类","crop",0,crops));
+        FunctionManager.addConfiguration(new SettingInt("检测半径(设置太高小心卡死)", "radius",8));
 
         NewUserFunction();
 
