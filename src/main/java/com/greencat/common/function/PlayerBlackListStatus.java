@@ -1,6 +1,12 @@
 package com.greencat.common.function;
 
+import com.google.common.base.Predicate;
+import com.greencat.common.event.CustomEventHandler;
 import com.greencat.utils.Utils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -8,6 +14,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author Jrojro728
@@ -27,6 +36,8 @@ public class PlayerBlackListStatus {
     private String Rank;
     private String contact;
     private boolean fun;
+
+    private List<String> stringList = new ArrayList<>();
 
     public String getname() { return name; }
 
@@ -71,7 +82,22 @@ public class PlayerBlackListStatus {
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36";
     private static final String defaultHost = "https://api.scamlist.cn/uuid/";
 
-    public PlayerBlackListStatus() {}
+    public PlayerBlackListStatus() {
+    }
+
+    @SubscribeEvent
+    public void onEnable(CustomEventHandler.FunctionEnableEvent event) {
+        Predicate<Entity> entityPredicate = input -> true;
+        for(EntityPlayer s : Minecraft.getMinecraft().theWorld.getPlayers(EntityPlayer.class, entityPredicate)){
+            stringList.add(s.toString());
+        }
+        if (event.function.getName().equals("PlayerBlackListStatus")) {
+            Logger logger = Logger.getAnonymousLogger();
+            for (String s: stringList) {
+                logger.info(s);
+            }
+        }
+    }
 
     // TODO: 2022/11/5 调用以下函数
 

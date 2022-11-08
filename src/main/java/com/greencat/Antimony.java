@@ -197,6 +197,7 @@ public class Antimony {
         new ChestFinder();
         new AutoLeave();
         new CropBot();
+        new PlayerBlackListStatus();
 
 
         Blur.register();
@@ -262,7 +263,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("ChestFinder"));
         register.RegisterFunction(new AntimonyFunction("AutoLeave"));
         register.RegisterFunction(new AntimonyFunction("CropBot"));
-
+        register.RegisterFunction(new AntimonyFunction("PlayerBlackListStatus"));
 
         register.RegisterTable(new SelectTable("root"));
         register.RegisterTable(new SelectTable("Combat"));
@@ -341,6 +342,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "CustomItemSound", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Cartoon", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Rat", "Fun"));
+        register.RegisterSelectObject(new SelectObject("function", "PlayerBlackListStatus", "Fun"));
 
 
         register.RegisterSelectObject(new SelectObject("function", "ItemTranslate", "root"));
