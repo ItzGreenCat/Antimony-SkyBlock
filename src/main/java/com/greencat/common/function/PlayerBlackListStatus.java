@@ -1,12 +1,17 @@
 package com.greencat.common.function;
 
 import com.google.common.base.Predicate;
+import com.greencat.common.FunctionManager.FunctionManager;
 import com.greencat.common.event.CustomEventHandler;
+import com.greencat.common.register.AntimonyRegister;
+import com.greencat.type.AntimonyFunction;
 import com.greencat.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -16,14 +21,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * @author Jrojro728
- * 使用方法:
- * 1、使用sendGet函数获取json字符串
- * 2、PlayerBlackListStatus name = decodeJsonToThisClass(json字符串.toString);
- * 3、playerIsInBlackList();
  */
 public class PlayerBlackListStatus {
     private String name;
@@ -37,7 +37,7 @@ public class PlayerBlackListStatus {
     private String contact;
     private boolean fun;
 
-    private List<String> stringList = new ArrayList<>();
+    Utils utils = new Utils();
 
     public String getname() { return name; }
 
@@ -83,35 +83,57 @@ public class PlayerBlackListStatus {
     private static final String defaultHost = "https://api.scamlist.cn/uuid/";
 
     public PlayerBlackListStatus() {
+        MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
+
+    /**
+     * 此函数类的主逻辑函数,当然你也可以不用自己搞一个也行
+     * @param event 触发此函数的事件对象
+     */
     @SubscribeEvent
     public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
-        Predicate<Entity> entityPredicate = input -> true;
-        stringList.clear();
 
-        if(Minecraft.getMinecraft().theWorld == null) {return;}
 
-        for(EntityPlayer s : Minecraft.getMinecraft().theWorld.getPlayers(EntityPlayer.class, entityPredicate)){
-            stringList.add(s.toString());
-        }
         if (event.function.getName().equals("PlayerBlackListStatus")) {
-            if(event.status == true){
-                for (String s: stringList) {
-                    new Utils().print(s);
-                }
+            if(event.status){
+
             }
         }
     }
 
-    // TODO: 2022/11/5 调用以下函数
+    @SubscribeEvent
+    public void tick(TickEvent.ClientTickEvent event) {
+        if(FunctionManager.getStatus("PlayerBlackListStatus")) {
+            if(Minecraft.getMinecraft().theWorld == null) {return;}
+            //init
+            Predicate<Entity> entityPredicate = input -> true;
+            List<EntityPlayer> entityPlayerList = new ArrayList<>();
+            List<String> stringList = new ArrayList<>();
+            List<PlayerBlackListStatus> playerBlackListStatusList = new ArrayList<>();
+            entityPlayerList.clear();
+
+            entityPlayerList.addAll(Minecraft.getMinecraft().theWorld.getPlayers(EntityPlayer.class, entityPredicate));
+            for(EntityPlayer entityPlayer : entityPlayerList) {
+                stringList.add(sendGet(entityPlayer.getUniqueID().toString().replace("-", "")).toString());
+            }
+            for (String s : stringList) {
+                playerBlackListStatusList.add(decodeJsonToThisClass(s));
+            }
+            for (PlayerBlackListStatus playerBlackListStatus : playerBlackListStatusList) {
+                if(playerBlackListStatus.playerIsInBlackList()) {
+                    utils.print("此世界有高能玩家");
+                }
+            }
+        }
+    }
 
     /**
      * 向api查询玩家是否被列在黑名单里面
      * @param uuid 要查询的玩家的uuid字符串
      * @return 读取到的json字符串
      */
-    public static @NotNull StringBuffer sendGet(String uuid) {
+    public @NotNull StringBuffer sendGet(String uuid) {
         try {
             HttpURLConnection connection;
             BufferedReader bufferedReader;
@@ -159,7 +181,7 @@ public class PlayerBlackListStatus {
      * @param Json 要解码的Json字符串
      * @return 解码到的此对象
      */
-    public static PlayerBlackListStatus decodeJsonToThisClass(String Json) {
+    public PlayerBlackListStatus decodeJsonToThisClass(String Json) {
         return Utils.decodeJsonToBean(Json, PlayerBlackListStatus.class);
     }
 }
