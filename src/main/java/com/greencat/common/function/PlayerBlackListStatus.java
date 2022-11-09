@@ -83,18 +83,23 @@ public class PlayerBlackListStatus {
     private static final String defaultHost = "https://api.scamlist.cn/uuid/";
 
     public PlayerBlackListStatus() {
+        CustomEventHandler.EVENT_BUS.register(this);
     }
-
     @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event) {
+    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
         Predicate<Entity> entityPredicate = input -> true;
+        stringList.clear();
+
+        if(Minecraft.getMinecraft().theWorld == null) {return;}
+
         for(EntityPlayer s : Minecraft.getMinecraft().theWorld.getPlayers(EntityPlayer.class, entityPredicate)){
             stringList.add(s.toString());
         }
         if (event.function.getName().equals("PlayerBlackListStatus")) {
-            Logger logger = Logger.getAnonymousLogger();
-            for (String s: stringList) {
-                logger.info(s);
+            if(event.status == true){
+                for (String s: stringList) {
+                    new Utils().print(s);
+                }
             }
         }
     }
