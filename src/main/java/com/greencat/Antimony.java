@@ -337,14 +337,13 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoUse", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "Interface", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "HUD", "Misc"));
+        register.RegisterSelectObject(new SelectObject("function", "PlayerBlackListStatus", "Fun"));
 
         register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "CustomItemSound", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Cartoon", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Rat", "Fun"));
-        register.RegisterSelectObject(new SelectObject("function", "PlayerBlackListStatus", "Fun"));
-
-
+        
         register.RegisterSelectObject(new SelectObject("function", "ItemTranslate", "root"));
 
         AntimonyRegister.ReList();
