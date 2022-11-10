@@ -263,7 +263,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("ChestFinder"));
         register.RegisterFunction(new AntimonyFunction("AutoLeave"));
         register.RegisterFunction(new AntimonyFunction("CropBot"));
-        register.RegisterFunction(new AntimonyFunction("PlayerBlackListStatus"));
+//         register.RegisterFunction(new AntimonyFunction("PlayerBlackListStatus"));
 
         register.RegisterTable(new SelectTable("root"));
         register.RegisterTable(new SelectTable("Combat"));
@@ -337,7 +337,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoUse", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "Interface", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "HUD", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "PlayerBlackListStatus", "Fun"));
+//         register.RegisterSelectObject(new SelectObject("function", "PlayerBlackListStatus", "Fun"));
 
         register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "CustomItemSound", "Fun"));
