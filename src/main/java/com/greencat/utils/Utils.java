@@ -1174,7 +1174,7 @@ public class Utils {
         StringBuffer content = new StringBuffer();
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(path));
+            reader = new BufferedReader(new InputStreamReader(path, "utf-8"));
             String line = null;
             while ((line = reader.readLine()) != null) {
                 content.append(line);
@@ -1189,7 +1189,38 @@ public class Utils {
                 e.printStackTrace();
             }
         }
-                Type type = new TypeToken<HashMap<String, String>>() {}.getType();
+
+            Type type = new TypeToken<HashMap<String, String>>() {}.getType();
+        return gson.fromJson(content.toString(), type);
+    }
+
+    /**
+     * 从json文件读取List<String>的数据并返回
+     * @param FilePath Json文件路径，可以是全局文件，也可以是存储在resources的。
+     * @return 读取到的HashMap对象
+     */
+    public static List<String> getListInJsonFile(String FilePath) {
+        InputStream path = Utils.class.getResourceAsStream(FilePath);
+        StringBuffer content = new StringBuffer();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(path, "utf-8"));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        Type type = new TypeToken<List<String>>() {}.getType();
         return gson.fromJson(content.toString(), type);
     }
 
@@ -1201,6 +1232,7 @@ public class Utils {
      * @return 解码后的对象
      */
     public static <T> T decodeJsonToBean(String jsonString, Class<T> tClass) { return gson.fromJson(jsonString, tClass); }
+    //Jrojro728改变结束
     public static void renderTrace(BlockPos from,BlockPos to,Color c,float width){
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
         GlStateManager.disableDepth();

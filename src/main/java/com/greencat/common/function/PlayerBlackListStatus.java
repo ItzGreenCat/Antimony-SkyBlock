@@ -1,6 +1,17 @@
 package com.greencat.common.function;
 
+import com.google.common.base.Predicate;
+import com.greencat.common.FunctionManager.FunctionManager;
+import com.greencat.common.event.CustomEventHandler;
+import com.greencat.common.register.AntimonyRegister;
+import com.greencat.type.AntimonyFunction;
 import com.greencat.utils.Utils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -8,9 +19,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-
-//Jrojro728编写
+/**
+ * @author Jrojro728
+ */
 public class PlayerBlackListStatus {
     private String name;
     private String UUID;
@@ -22,6 +36,8 @@ public class PlayerBlackListStatus {
     private String Rank;
     private String contact;
     private boolean fun;
+
+    Utils utils = new Utils();
 
     public String getname() { return name; }
 
@@ -66,16 +82,44 @@ public class PlayerBlackListStatus {
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36";
     private static final String defaultHost = "https://api.scamlist.cn/uuid/";
 
-    public PlayerBlackListStatus() {}
+    public PlayerBlackListStatus() { MinecraftForge.EVENT_BUS.register(this); }
 
-    // TODO: 2022/11/5 调用以下函数
+    /**
+     * 此函数类的主逻辑函数,当然你也可以不用自己搞一个也行
+     * @param event 触发此函数的事件对象
+     */
+    @SubscribeEvent
+    public void tick(TickEvent.ClientTickEvent event) {
+        if(FunctionManager.getStatus("PlayerBlackListStatus")) {
+            if(Minecraft.getMinecraft().theWorld == null) {return;}
+            //init
+            Predicate<Entity> entityPredicate = input -> true;
+            List<EntityPlayer> entityPlayerList = new ArrayList<>();
+            List<String> stringList = new ArrayList<>();
+            List<PlayerBlackListStatus> playerBlackListStatusList = new ArrayList<>();
+            entityPlayerList.clear();
+
+            entityPlayerList.addAll(Minecraft.getMinecraft().theWorld.getPlayers(EntityPlayer.class, entityPredicate));
+            for(EntityPlayer entityPlayer : entityPlayerList) {
+                stringList.add(sendGet(entityPlayer.getUniqueID().toString().replace("-", "")).toString());
+            }
+            for (String s : stringList) {
+                playerBlackListStatusList.add(decodeJsonToThisClass(s));
+            }
+            for (PlayerBlackListStatus playerBlackListStatus : playerBlackListStatusList) {
+                if(playerBlackListStatus.playerIsInBlackList()) {
+                    utils.print("此世界有高能玩家");
+                }
+            }
+        }
+    }
 
     /**
      * 向api查询玩家是否被列在黑名单里面
      * @param uuid 要查询的玩家的uuid字符串
      * @return 读取到的json字符串
      */
-    public static @NotNull StringBuffer sendGet(String uuid) {
+    public @NotNull StringBuffer sendGet(String uuid) {
         try {
             HttpURLConnection connection;
             BufferedReader bufferedReader;
@@ -110,10 +154,20 @@ public class PlayerBlackListStatus {
 
     /**
      * 如函数名
+     * @return 玩家是否是高能玩家
+     */
+    public boolean playerIsInBlackList() {
+        if (getUUID().indexOf(UUID) != 32) { return false; }
+        if (isFun()) { return false; }
+        return !reason.isEmpty();
+    }
+
+    /**
+     * 如函数名
      * @param Json 要解码的Json字符串
      * @return 解码到的此对象
      */
-    public static PlayerBlackListStatus decodeJsonToThisClass(String Json) {
+    public PlayerBlackListStatus decodeJsonToThisClass(String Json) {
         return Utils.decodeJsonToBean(Json, PlayerBlackListStatus.class);
     }
 }
