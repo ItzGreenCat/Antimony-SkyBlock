@@ -82,26 +82,12 @@ public class PlayerBlackListStatus {
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36";
     private static final String defaultHost = "https://api.scamlist.cn/uuid/";
 
-    public PlayerBlackListStatus() {
-        MinecraftForge.EVENT_BUS.register(this);
-        CustomEventHandler.EVENT_BUS.register(this);
-    }
+    public PlayerBlackListStatus() { MinecraftForge.EVENT_BUS.register(this); }
 
     /**
      * 此函数类的主逻辑函数,当然你也可以不用自己搞一个也行
      * @param event 触发此函数的事件对象
      */
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
-
-
-        if (event.function.getName().equals("PlayerBlackListStatus")) {
-            if(event.status){
-
-            }
-        }
-    }
-
     @SubscribeEvent
     public void tick(TickEvent.ClientTickEvent event) {
         if(FunctionManager.getStatus("PlayerBlackListStatus")) {
