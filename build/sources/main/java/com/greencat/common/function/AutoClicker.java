@@ -1,7 +1,7 @@
-package com.greencat.common.function;
+package com.greencat.antimony.common.function;
 
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.utils.EasyReflection;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.utils.EasyReflection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.settings.KeyBinding;

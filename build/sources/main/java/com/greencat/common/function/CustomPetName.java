@@ -1,9 +1,9 @@
-package com.greencat.common.function;
+package com.greencat.antimony.common.function;
 
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.event.CustomEventHandler;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

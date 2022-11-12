@@ -1,9 +1,9 @@
-package com.greencat.common.command;
+package com.greencat.antimony.common.command;
 
-import com.greencat.common.Chat.SendToServer;
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.config.ConfigLoader;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.common.Chat.SendToServer;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;

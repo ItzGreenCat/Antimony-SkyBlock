@@ -1,9 +1,9 @@
-package com.greencat.common.function;
+package com.greencat.antimony.common.function;
 
 import com.greencat.Antimony;
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.config.getConfigByFunctionName;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.item.ItemStack;

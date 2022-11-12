@@ -1,15 +1,15 @@
-package com.greencat.common;
+package com.greencat.antimony.common;
 
 import com.greencat.Antimony;
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.FunctionManager.SelectGuiFunctionExecutant;
-import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.gui.ClickGUI;
-import com.greencat.common.key.KeyLoader;
-import com.greencat.common.storage.SelectGUIStorage;
-import com.greencat.common.ui.*;
-import com.greencat.test.Screenshot;
-import com.greencat.type.SelectTable;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.FunctionManager.SelectGuiFunctionExecutant;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.gui.ClickGUI;
+import com.greencat.antimony.common.key.KeyLoader;
+import com.greencat.antimony.core.storage.SelectGUIStorage;
+import com.greencat.antimony.core.ui.*;
+import com.greencat.antimony.common.test.Screenshot;
+import com.greencat.antimony.core.type.SelectTable;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;

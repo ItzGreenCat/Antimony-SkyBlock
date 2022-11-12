@@ -1,6 +1,6 @@
-package com.greencat.settings;
+package com.greencat.antimony.core.settings;
 
-import com.greencat.common.mixins.GuiTextFieldAccessor;
+import com.greencat.antimony.common.mixins.GuiTextFieldAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;

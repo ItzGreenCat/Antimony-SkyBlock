@@ -1,10 +1,10 @@
-package com.greencat.common.ui;
+package com.greencat.antimony.core.ui;
 
 import com.greencat.Antimony;
-import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.storage.SelectGUIStorage;
-import com.greencat.type.SelectObject;
-import com.greencat.type.SelectTable;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.storage.SelectGUIStorage;
+import com.greencat.antimony.core.type.SelectObject;
+import com.greencat.antimony.core.type.SelectTable;
 import net.minecraft.client.Minecraft;
 
 public class ClassicSelectGUI {

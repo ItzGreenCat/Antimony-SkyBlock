@@ -1,6 +1,6 @@
-package com.greencat.common.event;
+package com.greencat.antimony.core.event;
 
-import com.greencat.type.AntimonyFunction;
+import com.greencat.antimony.core.type.AntimonyFunction;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;

@@ -1,8 +1,8 @@
-package com.greencat.common.gui;
+package com.greencat.antimony.core.gui;
 
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.settings.*;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.settings.*;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;

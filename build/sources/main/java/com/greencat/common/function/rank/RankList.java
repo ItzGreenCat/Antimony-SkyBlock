@@ -1,4 +1,4 @@
-package com.greencat.common.function.rank;
+package com.greencat.antimony.common.function.rank;
 
 import net.minecraft.util.EnumChatFormatting;
 

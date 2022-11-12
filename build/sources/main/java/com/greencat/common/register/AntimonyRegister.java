@@ -1,9 +1,9 @@
-package com.greencat.common.register;
+package com.greencat.antimony.core.register;
 
-import com.greencat.common.storage.SelectGUIStorage;
-import com.greencat.type.AntimonyFunction;
-import com.greencat.type.SelectObject;
-import com.greencat.type.SelectTable;
+import com.greencat.antimony.core.storage.SelectGUIStorage;
+import com.greencat.antimony.core.type.AntimonyFunction;
+import com.greencat.antimony.core.type.SelectObject;
+import com.greencat.antimony.core.type.SelectTable;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.greencat.common.decorate;
+package com.greencat.antimony.common.decorate;
 
 import com.greencat.Antimony;
 import net.minecraft.client.Minecraft;

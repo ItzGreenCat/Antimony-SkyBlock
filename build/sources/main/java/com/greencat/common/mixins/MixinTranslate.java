@@ -1,7 +1,7 @@
-package com.greencat.common.mixins;
+package com.greencat.antimony.common.mixins;
 
-import com.greencat.common.function.ItemTranslate;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.common.function.ItemTranslate;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

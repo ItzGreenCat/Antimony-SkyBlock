@@ -1,8 +1,8 @@
-package com.greencat.common.function;
+package com.greencat.antimony.common.function;
 
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.mixins.MinecraftAccessor;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.common.mixins.MinecraftAccessor;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityGolem;

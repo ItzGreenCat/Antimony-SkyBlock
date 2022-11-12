@@ -1,9 +1,9 @@
-package com.greencat.common.ui;
+package com.greencat.antimony.core.ui;
 
 import com.greencat.Antimony;
-import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.register.AntimonyRegister;
-import com.greencat.type.AntimonyFunction;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.register.AntimonyRegister;
+import com.greencat.antimony.core.type.AntimonyFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 

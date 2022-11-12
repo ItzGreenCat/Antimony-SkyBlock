@@ -1,4 +1,4 @@
-package com.greencat.utils;
+package com.greencat.antimony.utils;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

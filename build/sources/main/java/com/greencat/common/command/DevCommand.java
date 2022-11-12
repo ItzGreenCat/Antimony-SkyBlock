@@ -1,6 +1,6 @@
-package com.greencat.common.command;
+package com.greencat.antimony.common.command;
 
-import com.greencat.utils.Utils;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;

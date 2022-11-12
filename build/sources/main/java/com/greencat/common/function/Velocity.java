@@ -1,7 +1,7 @@
-package com.greencat.common.function;
+package com.greencat.antimony.common.function;
 
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.key.KeyLoader;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.common.key.KeyLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;

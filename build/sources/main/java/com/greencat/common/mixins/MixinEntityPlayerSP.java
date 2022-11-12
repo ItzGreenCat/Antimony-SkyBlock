@@ -1,9 +1,9 @@
-package com.greencat.common.mixins;
+package com.greencat.antimony.common.mixins;
 
-import com.greencat.common.Chat.SendToServer;
-import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.event.CustomEventHandler;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.common.Chat.SendToServer;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;

@@ -1,7 +1,7 @@
-package com.greencat.common.function;
+package com.greencat.antimony.common.function;
 
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.type.CheckableValue;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.type.CheckableValue;
 import net.minecraft.client.Minecraft;
 import scala.tools.nsc.typechecker.Checkable;
 

@@ -1,7 +1,7 @@
-package com.greencat.common.Chat;
+package com.greencat.antimony.common.Chat;
 
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

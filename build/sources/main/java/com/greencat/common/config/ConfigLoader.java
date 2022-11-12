@@ -1,8 +1,8 @@
-package com.greencat.common.config;
+package com.greencat.antimony.core.config;
 
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.register.AntimonyRegister;
-import com.greencat.type.AntimonyFunction;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.register.AntimonyRegister;
+import com.greencat.antimony.core.type.AntimonyFunction;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 

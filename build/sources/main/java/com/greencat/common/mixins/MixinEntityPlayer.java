@@ -1,4 +1,4 @@
-package com.greencat.common.mixins;
+package com.greencat.antimony.common.mixins;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;

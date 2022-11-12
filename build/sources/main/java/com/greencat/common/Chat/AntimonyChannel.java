@@ -1,4 +1,4 @@
-package com.greencat.common.Chat;
+package com.greencat.antimony.common.Chat;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -1,13 +1,13 @@
-package com.greencat.common.command;
+package com.greencat.antimony.common.command;
 
 import com.greencat.Antimony;
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.storage.SelectGUIStorage;
-import com.greencat.common.ui.FunctionNotice;
-import com.greencat.type.SelectObject;
-import com.greencat.type.SelectTable;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.storage.SelectGUIStorage;
+import com.greencat.antimony.core.ui.FunctionNotice;
+import com.greencat.antimony.core.type.SelectObject;
+import com.greencat.antimony.core.type.SelectTable;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.command.CommandBase;

@@ -1,9 +1,9 @@
-package com.greencat.common.FunctionManager;
+package com.greencat.antimony.core.FunctionManager;
 
 import com.greencat.Antimony;
-import com.greencat.common.storage.SelectGUIStorage;
-import com.greencat.common.ui.ClassicSelectGUI;
-import com.greencat.type.SelectTable;
+import com.greencat.antimony.core.storage.SelectGUIStorage;
+import com.greencat.antimony.core.ui.ClassicSelectGUI;
+import com.greencat.antimony.core.type.SelectTable;
 
 
 public class SelectGuiFunctionExecutant {

@@ -1,12 +1,12 @@
-package com.greencat.utils;
+package com.greencat.antimony.utils;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.event.CustomEventHandler;
-import com.greencat.common.mixins.EntityPlayerSPAccessor;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.common.mixins.EntityPlayerSPAccessor;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;

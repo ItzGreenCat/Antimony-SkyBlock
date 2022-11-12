@@ -1,4 +1,4 @@
-package com.greencat.common.gui;
+package com.greencat.antimony.core.gui;
 
 import com.greencat.Antimony;
 import net.minecraft.client.Minecraft;

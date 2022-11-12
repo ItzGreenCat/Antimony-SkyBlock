@@ -1,4 +1,4 @@
-package com.greencat.common.function.title;
+package com.greencat.antimony.common.function.title;
 
 import com.greencat.Antimony;
 import net.minecraftforge.common.MinecraftForge;

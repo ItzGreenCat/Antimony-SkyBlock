@@ -1,6 +1,6 @@
-package com.greencat.settings;
+package com.greencat.antimony.core.settings;
 
-import com.greencat.common.config.ConfigLoader;
+import com.greencat.antimony.core.config.ConfigLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 

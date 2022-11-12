@@ -1,7 +1,7 @@
-package com.greencat.common.mixins;
+package com.greencat.antimony.common.mixins;
 
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.function.Killaura;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.common.function.Killaura;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

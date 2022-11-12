@@ -1,7 +1,7 @@
-package com.greencat.common.mixins;
+package com.greencat.antimony.common.mixins;
 
-import com.greencat.common.event.CustomEventHandler;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.utils.Utils;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;

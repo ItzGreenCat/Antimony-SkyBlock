@@ -28,7 +28,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "3.0.5"
+version = "3.0.6"
 group= "com.greencat" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Antimony-Client"
 
@@ -45,7 +45,7 @@ minecraft {
     // simply re-run your setup task after changing the mappings to update your workspace.
     mappings = "stable_22"
     //makeObfSourceJar = false
-    clientJvmArgs += ["-Dfml.coreMods.load=com.greencat.common.AntimonyMixinLoader","-Ddev-mode"]
+    clientJvmArgs += ["-Dfml.coreMods.load=com.greencat.antimony.common.AntimonyMixinLoader","-Ddev-mode"]
 
             // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
@@ -110,7 +110,7 @@ jar {
     }
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
     manifest.attributes(
-            "FMLCorePlugin": "com.greencat.common.AntimonyMixinLoader",
+            "FMLCorePlugin": "com.greencat.antimony.common.AntimonyMixinLoader",
             "FMLCorePluginContainsFMLMod": true,
             "ForceLoadAsMod": true,
             "MixinConfigs": "mixins.antimony.json",

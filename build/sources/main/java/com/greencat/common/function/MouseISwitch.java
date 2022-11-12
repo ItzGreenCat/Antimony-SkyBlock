@@ -1,7 +1,7 @@
-package com.greencat.common.function;
+package com.greencat.antimony.common.function;
 
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.config.ConfigLoader;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.config.ConfigLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.MinecraftForge;

@@ -1,33 +1,32 @@
 package com.greencat;
 
-import com.greencat.common.Chat.AntimonyChannel;
-import com.greencat.common.Chat.CheckConnect;
-import com.greencat.common.Chat.ReadFromServer;
-import com.greencat.common.EventLoader;
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.MainMenu.GuiMainMenuModify;
-import com.greencat.common.command.ChatCommand;
-import com.greencat.common.command.CommandManager;
-import com.greencat.common.command.DevCommand;
-import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.config.getConfigByFunctionName;
-import com.greencat.common.event.CustomEventHandler;
-import com.greencat.common.function.*;
-import com.greencat.common.function.rank.CustomRank;
-import com.greencat.common.function.rank.RankList;
-import com.greencat.common.function.title.TitleManager;
-import com.greencat.common.key.KeyLoader;
-import com.greencat.common.register.AntimonyRegister;
-import com.greencat.core.HUDManager;
-import com.greencat.core.Pathfinding;
-import com.greencat.core.nukerCore;
-import com.greencat.settings.*;
-import com.greencat.type.AntimonyFunction;
-import com.greencat.type.SelectObject;
-import com.greencat.type.SelectTable;
-import com.greencat.utils.Blur;
-import com.greencat.utils.Chroma;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.common.Chat.AntimonyChannel;
+import com.greencat.antimony.common.Chat.CheckConnect;
+import com.greencat.antimony.common.Chat.ReadFromServer;
+import com.greencat.antimony.common.EventLoader;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.common.MainMenu.GuiMainMenuModify;
+import com.greencat.antimony.common.command.ChatCommand;
+import com.greencat.antimony.common.command.CommandManager;
+import com.greencat.antimony.common.command.DevCommand;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.common.function.*;
+import com.greencat.antimony.common.function.rank.CustomRank;
+import com.greencat.antimony.common.function.rank.RankList;
+import com.greencat.antimony.common.function.title.TitleManager;
+import com.greencat.antimony.common.key.KeyLoader;
+import com.greencat.antimony.core.register.AntimonyRegister;
+import com.greencat.antimony.core.HUDManager;
+import com.greencat.antimony.core.Pathfinding;
+import com.greencat.antimony.core.nukerCore;
+import com.greencat.antimony.core.settings.*;
+import com.greencat.antimony.core.type.AntimonyFunction;
+import com.greencat.antimony.core.type.SelectObject;
+import com.greencat.antimony.core.type.SelectTable;
+import com.greencat.antimony.utils.Blur;
+import com.greencat.antimony.utils.Chroma;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
@@ -38,7 +37,6 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.lwjgl.opengl.Display;
 
 
 import java.awt.*;
@@ -54,7 +52,7 @@ import java.util.HashMap;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.0.5";
+    public static final String VERSION = "3.0.6";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -79,7 +77,7 @@ public class Antimony {
     public void preInit(FMLPreInitializationEvent event) throws IOException {
         // TODO
 
-        new com.greencat.common.config.ConfigLoader(event);
+        new com.greencat.antimony.core.config.ConfigLoader(event);
     }
 
     @EventHandler
@@ -201,7 +199,7 @@ public class Antimony {
 
         Blur.register();
 
-        new com.greencat.common.decorate.Events();
+        new com.greencat.antimony.common.decorate.Events();
 
         new AntimonyChannel();
         new ReadFromServer();

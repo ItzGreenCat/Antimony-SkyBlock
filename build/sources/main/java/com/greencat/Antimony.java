@@ -1,32 +1,32 @@
 package com.greencat;
 
-import com.greencat.common.Chat.AntimonyChannel;
-import com.greencat.common.Chat.CheckConnect;
-import com.greencat.common.Chat.ReadFromServer;
-import com.greencat.common.EventLoader;
-import com.greencat.common.FunctionManager.FunctionManager;
-import com.greencat.common.command.ChatCommand;
-import com.greencat.common.command.CommandManager;
-import com.greencat.common.command.DevCommand;
-import com.greencat.common.config.ConfigLoader;
-import com.greencat.common.config.getConfigByFunctionName;
-import com.greencat.common.event.CustomEventHandler;
-import com.greencat.common.function.*;
-import com.greencat.common.function.rank.CustomRank;
-import com.greencat.common.function.rank.RankList;
-import com.greencat.common.function.title.TitleManager;
-import com.greencat.common.key.KeyLoader;
-import com.greencat.common.register.AntimonyRegister;
+import com.greencat.antimony.common.Chat.AntimonyChannel;
+import com.greencat.antimony.common.Chat.CheckConnect;
+import com.greencat.antimony.common.Chat.ReadFromServer;
+import com.greencat.antimony.common.EventLoader;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.common.command.ChatCommand;
+import com.greencat.antimony.common.command.CommandManager;
+import com.greencat.antimony.common.command.DevCommand;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.common.function.*;
+import com.greencat.antimony.common.function.rank.CustomRank;
+import com.greencat.antimony.common.function.rank.RankList;
+import com.greencat.antimony.common.function.title.TitleManager;
+import com.greencat.antimony.common.key.KeyLoader;
+import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.extranal.LoadScreen;
-import com.greencat.settings.SettingBoolean;
-import com.greencat.settings.SettingLimitDouble;
-import com.greencat.settings.SettingLimitInt;
-import com.greencat.settings.SettingString;
-import com.greencat.type.AntimonyFunction;
-import com.greencat.type.SelectObject;
-import com.greencat.type.SelectTable;
-import com.greencat.utils.Chroma;
-import com.greencat.utils.Utils;
+import com.greencat.antimony.core.settings.SettingBoolean;
+import com.greencat.antimony.core.settings.SettingLimitDouble;
+import com.greencat.antimony.core.settings.SettingLimitInt;
+import com.greencat.antimony.core.settings.SettingString;
+import com.greencat.antimony.core.type.AntimonyFunction;
+import com.greencat.antimony.core.type.SelectObject;
+import com.greencat.antimony.core.type.SelectTable;
+import com.greencat.antimony.utils.Chroma;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -80,7 +80,7 @@ public class Antimony {
         LoadScreen.LoadingFrame.add(LoadScreen.Panel);
         LoadScreen.Panel.add(LoadScreen.text);
         //LoadScreen.LoadingFrame.setVisible(true);
-        new com.greencat.common.config.ConfigLoader(event);
+        new com.greencat.antimony.core.config.ConfigLoader(event);
     }
 
     @EventHandler
@@ -161,7 +161,7 @@ public class Antimony {
         new Killaura();
         new AutoUse();
 
-        new com.greencat.common.decorate.Events();
+        new com.greencat.antimony.common.decorate.Events();
 
         new AntimonyChannel();
         new ReadFromServer();

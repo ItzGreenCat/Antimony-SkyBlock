@@ -6,5 +6,5 @@ FMLCorePluginContainsFMLMod: true
 FMLAT: antimony_at.cfg
 TweakClass: org.spongepowered.asm.launch.MixinTweaker
 ForceLoadAsMod: true
-FMLCorePlugin: com.greencat.common.AntimonyMixinLoader
+FMLCorePlugin: com.greencat.antimony.common.AntimonyMixinLoader
 

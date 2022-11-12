@@ -1,4 +1,4 @@
-package com.greencat.settings;
+package com.greencat.antimony.core.settings;
 
 import net.minecraft.client.gui.GuiButton;
 
