@@ -41,9 +41,11 @@ public abstract class MixinNetHandlerPlayClient {
                         if(!isUsingSkyBlockKnockBack) {
                             if(Minecraft.getMinecraft().thePlayer.isInLava()){
                                 entity.setVelocity(0,s12packetv.getMotionY() / 8000.0D,0);
+                            } else {
+                                cbi.cancel();
                             }
                         }
-                        cbi.cancel();
+
             }
             }
         }
