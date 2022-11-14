@@ -8,19 +8,23 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url = "http://files.minecraftforge.net/maven"
+            url = "https://files.minecraftforge.net/maven"
         }
         maven {
             url = "https://repo.spongepowered.org/maven"
         }
+        maven { url 'https://plugins.gradle.org/m2' }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+        classpath group: 'com.github.jengelman.gradle.plugins', name: 'shadow', version: '4.0.4'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'java'
+apply plugin: "com.github.johnrengelman.shadow"
 
 /*
 // for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
@@ -28,11 +32,16 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "3.0.6"
+version = "3.0.7"
 group= "com.greencat" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Antimony-Client"
 
 compileJava.options.encoding = "UTF-8"
+
+configurations {
+    include
+    implementation.extendsFrom(include)
+}
 
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
@@ -49,11 +58,14 @@ minecraft {
 
             // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
-
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
 dependencies {
     //implementation 'org.jetbrains:annotations:20.1.0'
-    implementation 'org.jetbrains:annotations:20.1.0'
+    implementation 'org.jetbrains:annotations:23.0.0'
     //implementation 'com.google.code.gson:gson:2.10'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
@@ -75,7 +87,7 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-    provided('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
+    implementation('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
         exclude module: 'guava'
         exclude module: 'commons-io'
         exclude module: 'gson'
@@ -105,10 +117,6 @@ mixin {
     add sourceSets.main, "mixins.antimony.refmap.json"
 }
 jar {
-    from configurations.provided.asFileTree.files.collect {
-        zipTree(it)
-    }
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
     manifest.attributes(
             "FMLCorePlugin": "com.greencat.antimony.common.AntimonyMixinLoader",
             "FMLCorePluginContainsFMLMod": true,
@@ -122,6 +130,14 @@ jar {
 
     enabled = true
 }
+apply plugin: "idea"
+
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+}
+
 
 
 processResources
@@ -150,4 +166,40 @@ tasks.withType(JavaCompile) {
 
     options.encoding = "UTF-8"
 
+}
+reobf {
+    shadowJar {}
+}
+
+jar.dependsOn("shadowJar")
+shadowJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    //configurations = [project.configurations.include]
+    exclude "LICENSE.md"
+    exclude "dummyThing"
+    exclude "**/module-info.class"
+    exclude "*.so"
+    exclude "*.dylib"
+    exclude "*.dll"
+    exclude "*.jnilib"
+    exclude "ibxm/**"
+    exclude "com/jcraft/**"
+    exclude "org/lwjgl/**"
+    exclude "net/java/**"
+
+    exclude "META-INF/proguard/**"
+    exclude "META-INF/maven/**"
+    exclude "META-INF/versions/**"
+    exclude "META-INF/com.android.tools/**"
+
+    exclude "fabric.mod.json"
+    exclude "bungee.yml"
+    exclude "plugin.yml"
+    exclude "velocity-plugin.json"
+    exclude "LICENSE.txt"
+
+    exclude "mcmod.info"
+
+    exclude "org/apache/**"
+    exclude "com/google/**"
 }

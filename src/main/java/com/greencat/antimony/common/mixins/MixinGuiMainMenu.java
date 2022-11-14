@@ -1,5 +1,7 @@
 package com.greencat.antimony.common.mixins;
 
+import com.greencat.Antimony;
+import com.greencat.antimony.core.via.protocol.ProtocolCollection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;

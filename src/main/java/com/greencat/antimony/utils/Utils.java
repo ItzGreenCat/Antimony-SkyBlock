@@ -1263,4 +1263,13 @@ public class Utils {
     public static Vec3 getPositionEyes() {
         return new Vec3(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY + (double)(Minecraft.getMinecraft().thePlayer.isSneaking() ? 1.54F : 1.62F), Minecraft.getMinecraft().thePlayer.posZ);
     }
+    static String MarketingAccountTemplate = "&name&&event&是怎么回事呢？&name&相信大家都很熟悉，但是&name&&event&是怎么回事呢，下面就让小编带大家一起了解吧。" +
+            "" +
+            "&name&&event&，其实就是&explain&，大家可能会很惊讶&name&怎么会&event&呢？但事实就是这样，小编也感到非常惊讶。" +
+            "" +
+            "这就是关于&name&&event&的事情了，大家有什么想法呢，欢迎在评论区告诉小编一起讨论哦！" +
+            "";
+    public static String MarketingAccountGenerator(String name,String event,String explain){
+        return MarketingAccountTemplate.replace("&name&",name).replace("&event&",event).replace("&explain&",explain);
+    }
 }

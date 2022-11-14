@@ -19,8 +19,17 @@
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinNetworkManager",
+    "MixinNetworkManagerChInit",
     "MixinRenderer",
     "S12Accessor",
     "ShaderGroupAccessor"
+  ],
+  "client": [
+    "MixinEntityPlayerSP2",
+    "MixinGuiConnecting",
+    "MixinGuiDisconnected",
+    "MixinGuiMultiplayer",
+    "MixinGuiScreenAddServer",
+    "MixinGuiScreenServerList"
   ]
 }

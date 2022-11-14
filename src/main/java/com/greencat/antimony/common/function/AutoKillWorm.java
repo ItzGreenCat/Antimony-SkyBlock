@@ -138,7 +138,7 @@ public class AutoKillWorm {
             latest = System.currentTimeMillis();
             for (int i = 0; i < 8; ++i) {
                 ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.mainInventory[i];
-                if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains((String)getConfigByFunctionName.get("AutoKillWorm","itemName"))) {
+                if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains(((String)getConfigByFunctionName.get("AutoKillWorm","itemName")).toLowerCase())) {
                     int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
                     Minecraft.getMinecraft().thePlayer.inventory.currentItem = i;
                     Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, stack);

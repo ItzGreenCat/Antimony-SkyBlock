@@ -1,32 +1,44 @@
 package com.greencat;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.greencat.antimony.common.Chat.AntimonyChannel;
 import com.greencat.antimony.common.Chat.CheckConnect;
 import com.greencat.antimony.common.Chat.ReadFromServer;
 import com.greencat.antimony.common.EventLoader;
-import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.common.MainMenu.GuiMainMenuModify;
+import com.greencat.antimony.common.Via;
 import com.greencat.antimony.common.command.ChatCommand;
 import com.greencat.antimony.common.command.CommandManager;
 import com.greencat.antimony.common.command.DevCommand;
-import com.greencat.antimony.core.config.ConfigLoader;
-import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.common.function.*;
 import com.greencat.antimony.common.function.rank.CustomRank;
 import com.greencat.antimony.common.function.rank.RankList;
 import com.greencat.antimony.common.function.title.TitleManager;
 import com.greencat.antimony.common.key.KeyLoader;
-import com.greencat.antimony.core.register.AntimonyRegister;
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.HUDManager;
 import com.greencat.antimony.core.Pathfinding;
+import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore;
+import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.antimony.core.settings.*;
 import com.greencat.antimony.core.type.AntimonyFunction;
 import com.greencat.antimony.core.type.SelectObject;
 import com.greencat.antimony.core.type.SelectTable;
+import com.greencat.antimony.core.via.loader.BackwardsLoader;
+import com.greencat.antimony.core.via.loader.RewindLoader;
+import com.greencat.antimony.core.via.platform.Injector;
+import com.greencat.antimony.core.via.platform.Platform;
+import com.greencat.antimony.core.via.platform.ProviderLoader;
 import com.greencat.antimony.utils.Blur;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.Utils;
+import com.viaversion.viaversion.ViaManagerImpl;
+import com.viaversion.viaversion.api.data.MappingDataLoader;
+import com.greencat.antimony.utils.JLoggerToLog4j;
+import io.netty.channel.EventLoop;
+import io.netty.channel.local.LocalEventLoopGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
@@ -37,7 +49,7 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
+import org.apache.logging.log4j.LogManager;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -47,12 +59,17 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.logging.Logger;
 
 @Mod(modid = Antimony.MODID, name = Antimony.NAME, version = Antimony.VERSION, acceptedMinecraftVersions = "1.8.9", clientSideOnly = true)
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.0.6";
+    public static final String VERSION = "3.0.7";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -67,11 +84,56 @@ public class Antimony {
     public static String PresentGUI = "root";
     public static String PresentFunction = "";
     public static HashMap<String, String> GroundDecorateList = new HashMap<String, String>();
+    public static int versionIndex = 0;
     Utils utils = new Utils();
     public static Boolean LabymodInstallCheck;
 
+
     @Instance(Antimony.MODID)
     public static Antimony instance;
+
+    public static void start() {
+        Via.getInstance().start();
+    }
+    public static Logger getjLogger() {
+        return Via.getInstance().getjLogger();
+    }
+
+    public static CompletableFuture<Void> getInitFuture() {
+        return Via.getInstance().getInitFuture();
+    }
+
+    public static ExecutorService getAsyncExecutor() {
+        return Via.getInstance().getAsyncExecutor();
+    }
+
+    public static EventLoop getEventLoop() {
+        return Via.getInstance().getEventLoop();
+    }
+
+    public static File getFile() {
+        return Via.getInstance().getFile();
+    }
+
+    public static String getLastServer() {
+        return Via.getInstance().getLastServer();
+    }
+
+    public static int getVersion() {
+        return Via.getInstance().getVersion();
+    }
+
+    public static void setVersion(int version) {
+        Via.getInstance().setVersion(version);
+    }
+
+    public static void setFile(File file) {
+        Via.getInstance().setFile(file);
+    }
+
+    public static void setLastServer(String lastServer) {
+        Via.getInstance().setLastServer(lastServer);
+    }
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) throws IOException {
@@ -195,6 +257,7 @@ public class Antimony {
         new ChestFinder();
         new AutoLeave();
         new CropBot();
+        new MarketingGenerator();
 
 
         Blur.register();
@@ -260,6 +323,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("ChestFinder"));
         register.RegisterFunction(new AntimonyFunction("AutoLeave"));
         register.RegisterFunction(new AntimonyFunction("CropBot"));
+        register.RegisterFunction(new AntimonyFunction("MarketingGenerator"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -338,6 +402,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "CustomItemSound", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Cartoon", "Fun"));
+        register.RegisterSelectObject(new SelectObject("function", "MarketingGenerator", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Rat", "Fun"));
 
 
@@ -469,6 +534,12 @@ public class Antimony {
         crops.put("Nether Wart",3);
         FunctionManager.addConfiguration(new SettingTypeSelector("作物种类","crop",0,crops));
         FunctionManager.addConfiguration(new SettingInt("检测半径(设置太高小心卡死)", "radius",8));
+
+        FunctionManager.bindFunction("MarketingGenerator");
+        FunctionManager.addConfiguration(new SettingString("名称", "name", "Necron"));
+        FunctionManager.addConfiguration(new SettingString("事件", "event", "不能与Kuudra一起吃"));
+        FunctionManager.addConfiguration(new SettingString("另一种解释", "explain", "容易Yikes"));
+
 
         NewUserFunction();
 

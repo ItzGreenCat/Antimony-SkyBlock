@@ -1,6 +1,7 @@
 package com.greencat.antimony.common.function.title;
 
 import com.greencat.Antimony;
+import com.greencat.antimony.core.via.protocol.ProtocolCollection;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -8,6 +9,7 @@ import org.lwjgl.opengl.Display;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class TitleManager {
@@ -44,14 +46,14 @@ public class TitleManager {
         TipsList.add("You have been rat");
         TipsList.add("nothing here");
         TipsList.add("null");
-        TipsList.add("Iron Punch (-50 Mana) * 3");
+        TipsList.add("Iron Punch (-70 Mana) * 3");
     }
     @SubscribeEvent
     public void ClientTickEvent(TickEvent.ClientTickEvent event){
         if(tick == MaxTick) {
             tick = 0;
             tips = TipsList.get(new Random().nextInt(TipsList.size()));
-            Display.setTitle("Antimony " + Antimony.VERSION + " | " + tips + " (Minecraft 1.8.9)");
+            Display.setTitle("Antimony " + Antimony.VERSION + "." + new Random().nextInt(114514) + " | " + tips + " (Minecraft " + Objects.requireNonNull(ProtocolCollection.getProtocolById(Antimony.getVersion())).getName() + ")");
         } else {
             tick = tick + 1;
         }

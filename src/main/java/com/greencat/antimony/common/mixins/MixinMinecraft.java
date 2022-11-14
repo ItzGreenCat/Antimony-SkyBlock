@@ -1,9 +1,12 @@
 package com.greencat.antimony.common.mixins;
 
+import com.greencat.Antimony;
+import com.greencat.antimony.common.Via;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.common.function.Killaura;
 import com.greencat.antimony.common.function.ShortBowAura;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.main.GameConfiguration;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import org.lwjgl.opengl.Display;
@@ -41,6 +44,15 @@ public abstract class MixinMinecraft {
                 ((EntityLivingBase)this.renderViewEntity).renderYawOffset = ((EntityPlayerSPAccessor)this.renderViewEntity).getLastReportedYaw();
             }
 
+        }
+    }
+    @Inject(method = "<init>", at = @At("RETURN"))
+    public void injectConstructor(GameConfiguration p_i45547_1_, CallbackInfo ci) {
+        Via.init();
+        try {
+            Antimony.start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
