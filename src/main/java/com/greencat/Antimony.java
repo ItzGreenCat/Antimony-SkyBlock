@@ -18,6 +18,7 @@ import com.greencat.antimony.common.key.KeyLoader;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.HUDManager;
 import com.greencat.antimony.core.Pathfinding;
+import com.greencat.antimony.core.blacklist.BlackList;
 import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore;
@@ -69,7 +70,7 @@ import java.util.logging.Logger;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.0.7";
+    public static final String VERSION = "3.0.8";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -208,6 +209,7 @@ public class Antimony {
         new HUDManager();
         new Pathfinding();
         new nukerCore();
+        new BlackList();
 
         //Dev
         //Function
@@ -258,6 +260,7 @@ public class Antimony {
         new AutoLeave();
         new CropBot();
         new MarketingGenerator();
+        new PeltESP();
 
 
         Blur.register();
@@ -324,6 +327,8 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("AutoLeave"));
         register.RegisterFunction(new AntimonyFunction("CropBot"));
         register.RegisterFunction(new AntimonyFunction("MarketingGenerator"));
+        register.RegisterFunction(new AntimonyFunction("PeltESP"));
+        register.RegisterFunction(new AntimonyFunction("BlackList"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -363,6 +368,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "PlayerFinder", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FullBright", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "DroppedItemESP", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "PeltESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "NoHurtCam", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "HideFallingBlock", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "ChestFinder", "Render"));
@@ -396,6 +402,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "InstantSwitch", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "MouseISwitch", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "AutoUse", "Misc"));
+        register.RegisterSelectObject(new SelectObject("function", "BlackList", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "Interface", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "HUD", "Misc"));
 
@@ -415,6 +422,7 @@ public class Antimony {
         FunctionManager.setStatus("CustomPetNameTag", false);
         FunctionManager.setStatus("Pathfinding", false);
         FunctionManager.setStatus("Interface", true);
+        FunctionManager.setStatus("BlackList", true);
 
         FunctionManager.bindFunction("Killaura");
         FunctionManager.addConfiguration(new SettingBoolean("攻击玩家", "isAttackPlayer", true));
@@ -537,9 +545,14 @@ public class Antimony {
 
         FunctionManager.bindFunction("MarketingGenerator");
         FunctionManager.addConfiguration(new SettingString("名称", "name", "Necron"));
-        FunctionManager.addConfiguration(new SettingString("事件", "event", "不能与Kuudra一起吃"));
+        FunctionManager.addConfiguration(new SettingString("事件", "event","不能与Kuudra一起吃"));
         FunctionManager.addConfiguration(new SettingString("另一种解释", "explain", "容易Yikes"));
 
+        FunctionManager.bindFunction("BlackList");
+        HashMap<String, Integer> apiSource = new HashMap<String, Integer>();
+        apiSource.put("API Source 1",0);
+        apiSource.put("API Source 2",1);
+        FunctionManager.addConfiguration(new SettingTypeSelector("API","api",0,apiSource));
 
         NewUserFunction();
 
