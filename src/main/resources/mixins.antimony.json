@@ -7,12 +7,21 @@
     "EntityPlayerSPAccessor",
     "GuiTextFieldAccessor",
     "MinecraftAccessor",
+    "MixinC03PacketPlayer",
+    "MixinC05PacketPlayerLook",
+    "MixinC06PacketPlayerPosLook",
     "MixinEntity",
     "MixinEntityPlayer",
     "MixinEntityPlayerSP",
+    "MixinEntityPlayerSP2",
     "MixinEntityRenderer",
+    "MixinGuiConnecting",
+    "MixinGuiDisconnected",
     "MixinGuiMainMenu",
+    "MixinGuiMultiplayer",
     "MixinGuiScreen",
+    "MixinGuiScreenAddServer",
+    "MixinGuiScreenServerList",
     "MixinHideAntimony",
     "MixinItemStack",
     "MixinLivingEntityBase",
@@ -25,11 +34,5 @@
     "ShaderGroupAccessor"
   ],
   "client": [
-    "MixinEntityPlayerSP2",
-    "MixinGuiConnecting",
-    "MixinGuiDisconnected",
-    "MixinGuiMultiplayer",
-    "MixinGuiScreenAddServer",
-    "MixinGuiScreenServerList"
   ]
 }

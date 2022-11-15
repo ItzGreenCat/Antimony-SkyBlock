@@ -30,6 +30,8 @@ public abstract class MixinEntity {
     @Shadow
     public double posZ;
     @Shadow
+    public double posY;
+    @Shadow
     public double posX;
     @Shadow
     public float rotationPitch;
@@ -38,6 +40,8 @@ public abstract class MixinEntity {
     public abstract AxisAlignedBB getEntityBoundingBox();
     @Shadow
     public abstract boolean isSprinting();
+    @Shadow
+    protected abstract void setFlag(int flag, boolean value);
     @Inject(method = "moveFlying", at = @At("HEAD"), cancellable = true)
     private void handleRotations(float strafe, float forward, float friction, final CallbackInfo callbackInfo) {
         if ((Object) this != Minecraft.getMinecraft().thePlayer)

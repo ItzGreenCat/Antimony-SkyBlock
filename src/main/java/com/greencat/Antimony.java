@@ -70,7 +70,7 @@ import java.util.logging.Logger;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.0.8";
+    public static final String VERSION = "3.0.9";
     private static final String Sb = "Sb";
 
     public static float strafe;

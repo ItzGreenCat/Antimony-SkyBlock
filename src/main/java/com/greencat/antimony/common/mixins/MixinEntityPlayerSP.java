@@ -2,9 +2,11 @@ package com.greencat.antimony.common.mixins;
 
 import com.greencat.antimony.common.Chat.SendToServer;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.ServerRotation;
 import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.core.type.PlayerState;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -57,10 +59,53 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
             cbi.cancel();
         }
     }
+    //private static PlayerState stateCache;
+    private static CustomEventHandler.MotionChangeEvent eventCache;
+    @Inject(
+            method = "onUpdateWalkingPlayer",
+            at=@At("HEAD"),
+            cancellable = true)
+    public void onUpdateHead(CallbackInfo ci){
+        CustomEventHandler.MotionChangeEvent event = new CustomEventHandler.MotionChangeEvent.Pre(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround, this.isSprinting(), this.isSneaking());
+        CustomEventHandler.EVENT_BUS.post(event);
+        if (event.isCanceled()) {
+            ci.cancel();
+        }
+        eventCache = event;
+        //stateCache = new PlayerState(this.posX,this.posY,this.posZ,this.rotationYaw,this.rotationPitch,this.isSneaking(),this.isSprinting());
+        this.posX = event.x;
+        this.posY = event.y;
+        this.posZ = event.z;
+
+        /*this.rotationYaw = event.yaw;
+        this.rotationPitch = event.pitch;*/
+        ServerRotation.usingServerRotation = true;
+        ServerRotation.yaw = event.yaw;
+        ServerRotation.pitch = event.pitch;
+
+        this.movementInput.sneak = event.sneaking;
+        this.setFlag(3,event.sprinting);
+
+    }
+    @Inject(
+            method = "onUpdateWalkingPlayer",
+            at=@At("RETURN")
+    )
+    public void onUpdatePost(CallbackInfo ci) {
+        ServerRotation.usingServerRotation = false;
+        this.lastReportedPosX = eventCache.x;
+        this.lastReportedPosY = eventCache.y;
+        this.lastReportedPosZ = eventCache.z;
+
+        this.lastReportedYaw = eventCache.yaw;
+        this.lastReportedPitch = eventCache.pitch;
+        CustomEventHandler.EVENT_BUS.post(new CustomEventHandler.MotionChangeEvent.Post(eventCache));
+    }
     /**
      * @author __GreenCat__
-     * @reason killaura need this
+     * @reason killaura dont need this
      */
+    /*
     @Overwrite
     public void onUpdateWalkingPlayer() {
         CustomEventHandler.MotionChangeEvent event = new CustomEventHandler.MotionChangeEvent.Pre(this.posX, this.getEntityBoundingBox().minY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround, this.isSprinting(), this.isSneaking());
@@ -128,6 +173,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
             CustomEventHandler.EVENT_BUS.post(new CustomEventHandler.MotionChangeEvent.Post(event));
         }
     }
+     */
     @Redirect(
             method = {"onLivingUpdate"},
             at = @At(

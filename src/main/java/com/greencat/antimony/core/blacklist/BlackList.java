@@ -43,6 +43,9 @@ public class BlackList {
 	@SuppressWarnings("rawtypes")
 	@SubscribeEvent
 	public void onRender(RenderLivingEvent.Specials.Pre e) {
+		if (Loader.isModLoaded("melodysky"))
+			return;
+
 		float appendY = Loader.isModLoaded("xiaojiaaddons") ? 0.25F : 0.0F;
 
 		if (e.entity == mc.thePlayer && !Loader.isModLoaded("xiaojiaaddons")) {
