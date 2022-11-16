@@ -1,6 +1,7 @@
-# Antimony - Skyblock 
+# Antimony - ~~Skyblock~~
+***Really only a skyblock mod?***
 Discord https://discord.gg/drhkxRckgH  
-**Hypixel Skyblock QOL MOD made by GreenCat**
+**~~Hypixel Skyblock~~ Minecraft QOL MOD made by GreenCat**
  
 # What can this mod do
 - ItemTranslate -> Chinese
@@ -22,4 +23,8 @@ https://amclog.pysio.online/log.txt
 # Mod Dev
 [![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=Pysio2007&theme=dark)](https://github.com/anuraghazra/github-readme-stats)
 [![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=ItzGreenCat&theme=dark)](https://github.com/anuraghazra/github-readme-stats)
-[![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=Jrojro728&count_private=true)
+[![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=Jrojro728&theme=dark)](https://github.com/anuraghazra/github-readme-stats)
+
+
+
+*Part of the code for linking servers across versions comes from ViaForge and ViaVersion*

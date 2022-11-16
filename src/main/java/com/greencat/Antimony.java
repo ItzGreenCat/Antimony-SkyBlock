@@ -70,7 +70,7 @@ import java.util.logging.Logger;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.0.9";
+    public static final String VERSION = "3.1";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -88,6 +88,8 @@ public class Antimony {
     public static int versionIndex = 0;
     Utils utils = new Utils();
     public static Boolean LabymodInstallCheck;
+    public static Boolean NoSaplingBound = false;
+    public static Boolean NoTreeBound = false;
 
 
     @Instance(Antimony.MODID)
@@ -261,6 +263,8 @@ public class Antimony {
         new CropBot();
         new MarketingGenerator();
         new PeltESP();
+        new ForagingBot();
+        new JasperESP();
 
 
         Blur.register();
@@ -329,6 +333,8 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("MarketingGenerator"));
         register.RegisterFunction(new AntimonyFunction("PeltESP"));
         register.RegisterFunction(new AntimonyFunction("BlackList"));
+        register.RegisterFunction(new AntimonyFunction("ForagingBot"));
+        register.RegisterFunction(new AntimonyFunction("JasperESP"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -371,6 +377,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "PeltESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "NoHurtCam", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "HideFallingBlock", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "JasperESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "ChestFinder", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
 
@@ -387,6 +394,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoLeave", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "AutoWolfSlayer", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "CropBot", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "ForagingBot", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
         register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
