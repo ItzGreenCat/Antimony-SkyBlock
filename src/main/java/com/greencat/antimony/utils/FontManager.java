@@ -66,5 +66,6 @@ public class FontManager {
     public static CustomFont GothamRoundedFont = CustomFont.createFontRenderer(getGothamRoundedFont(20));
     public static CustomFont STXINWEIFont = CustomFont.createFontRenderer(getSTXINWEIFont(20));
     public static CustomFont QuicksandFont = CustomFont.createFontRenderer(getQuicksandFont(20));
+    public static CustomFont QuicksandFont35 = CustomFont.createFontRenderer(getQuicksandFont(35));
     public static CustomFont ExpressaSerialBigFont = CustomFont.createFontRenderer(getExpressaSerialFont(40));
 }

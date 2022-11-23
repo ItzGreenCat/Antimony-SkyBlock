@@ -89,6 +89,13 @@ public class FunctionManager {
         }
         return width + 20;
     }
+    public static int getLongestTextWidthAdd5(){
+        int width = 0;
+        for(AntimonyFunction function : AntimonyRegister.FunctionList){
+            width = Math.max(Minecraft.getMinecraft().fontRendererObj.getStringWidth(function.getName()),width);
+        }
+        return width + 5;
+    }
     public static AntimonyFunction getFunctionByName(String name){
         for(AntimonyFunction function : AntimonyRegister.FunctionList) {
             if(function.getName().equals(name)){

@@ -8,6 +8,7 @@ public abstract class AbstractSettingOptionButton extends GuiClickGUIButton impl
     public String ID;
     public String parentFunction;
     public int OriginalYPos;
+    public int OriginalXPos;
     public int Excursion = 0;
     public AbstractSettingOptionButton() {
         super(0, 0, 0, 0, 0,"");
@@ -17,6 +18,7 @@ public abstract class AbstractSettingOptionButton extends GuiClickGUIButton impl
     }
     public void setX(int x){
         this.xPosition = x;
+        OriginalXPos = x;
     }
     public void setY(int y){
         this.yPosition = y;

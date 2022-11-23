@@ -1,5 +1,7 @@
 package com.greencat.antimony.core.gui;
 
+import com.greencat.Antimony;
+import com.greencat.antimony.common.function.title.TitleManager;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.storage.SelectGUIStorage;
 import com.greencat.antimony.core.type.SelectObject;
@@ -9,6 +11,7 @@ import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.FontManager;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -17,7 +20,10 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Mouse;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -25,21 +31,29 @@ import java.util.Objects;
 public class ClickGUI extends GuiScreen {
     private int index = 1;
     private int ButtonListHeight;
+    private boolean animation = true;
     String guiName;
+    private final int widthBound = FunctionManager.getLongestTextWidthAdd20() + 40;
     private GuiScreen parentScreen;
     private GuiButton BackButton;
-    private GuiScrollButton upButton;
-    private GuiScrollButton downButton;
+    ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+    private int pos;
     public int ButtonExcursion = 0;
     Blur blur = new Blur();
     HashMap<GuiButton, SelectObject> FunctionObjectMap = new HashMap<>();
-    ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
     public ClickGUI(GuiScreen parent,String guiName)
     {
         this.guiName = guiName;
         parentScreen = parent;
     }
+    public ClickGUI(GuiScreen parent,String guiName,boolean animation)
+    {
+        this.guiName = guiName;
+        parentScreen = parent;
+        this.animation = animation;
+    }
     public void initGui(){
+        pos = widthBound;
         index = 1;
         ButtonListHeight = 53;
         FunctionObjectMap.clear();
@@ -48,10 +62,14 @@ public class ClickGUI extends GuiScreen {
                 for(SelectObject object : table.getList()) {
                     GuiTableButton button;
                     if(object.getType().equals("function") && Objects.requireNonNull(FunctionManager.getFunctionByName(object.getName())).isConfigurable()) {
-                        button = new GuiTableButton(index, 10 , ButtonListHeight, FunctionManager.getLongestTextWidthAdd20()  + 50 - 20, 18, object.getType().equals("function") ? "[Function] " + object.getName() : "[List] " + object.getName());
-                        this.buttonList.add(new GuiButtonSettings(-index,10 + FunctionManager.getLongestTextWidthAdd20()  + 50 - 18, ButtonListHeight));
+                        button = new GuiTableButton(index, 10 , ButtonListHeight, widthBound - 28, 18,object.getName(),true);
+                        this.buttonList.add(new GuiButtonSettings(-index,10 + widthBound - 28, ButtonListHeight));
                     } else {
-                        button = new GuiTableButton(index, 10, ButtonListHeight, FunctionManager.getLongestTextWidthAdd20()  + 50, 18, object.getType().equals("function") ? "[Function] " + object.getName() : "[List] " + object.getName());
+                        if(object.getType().equals("function")) {
+                            button = new GuiTableButton(index, 10, ButtonListHeight, widthBound - 10, 18, object.getName(), true);
+                        } else {
+                            button = new GuiTableButton(index, 10, ButtonListHeight, widthBound - 10, 18, object.getName(), false);
+                        }
                     }
                     this.buttonList.add(button);
                     FunctionObjectMap.put(button, object);
@@ -60,19 +78,45 @@ public class ClickGUI extends GuiScreen {
                 }
             }
         }
-        upButton = new GuiScrollButton(114514,FunctionManager.getLongestTextWidthAdd20()  + 100,this.height / 2 - 30,30,30,"ScrollUp1","ScrollUp2");
-        downButton = new GuiScrollButton(1919810,FunctionManager.getLongestTextWidthAdd20()  + 100,this.height / 2 + 30,30,30,"ScrollDown1","ScrollDown2");
 
-        this.buttonList.add(upButton);
-        this.buttonList.add(downButton);
-
-        BackButton = new GuiClickGUIButton(0,10,this.height - 25,200,20,"Back");
+        BackButton = new GuiClickGUIButton(0,10,this.height - 25,widthBound - 10,18,"Back",new ResourceLocation(Antimony.MODID,"clickgui/back.png"));
         this.buttonList.add(BackButton);
 
     }
     public void drawScreen(int x, int y, float delta)
     {
-        drawDefaultBackground();
+        if(!(parentScreen instanceof ClickGUI) && animation) {
+            if (pos >= 0) {
+                pos = pos - (widthBound / Minecraft.getDebugFPS() * 2);
+            }
+        } else {
+            pos = 0;
+        }
+        drawRect(0,0,scaledResolution.getScaledWidth(),20,new Color(23,135,183).getRGB());
+        FontManager.QuicksandFont35.drawSmoothString("Antimony",2,2,new Color(255,255,255).getRGB());
+        Utils.drawStringScaled(TitleManager.tips,this.fontRendererObj,scaledResolution.getScaledWidth() - this.fontRendererObj.getStringWidth(TitleManager.tips) * 2,2,new Color(255,255,255).getRGB(),2);
+        drawRect(0,20,widthBound - pos,scaledResolution.getScaledHeight(),new Color(255,255,255,128).getRGB());
+        drawRect(5,44,widthBound - pos  - 5,46,new Color(0,0,0).getRGB());
+        FontManager.QuicksandFont35.drawSmoothString("ClickGui",22 - pos,25,new Color(0,0,0).getRGB());
+        Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(Antimony.MODID,"clickgui/GuiIcon.png"));
+        drawModalRectWithCustomSizedTexture(-pos,22,0,0,20,20,20,20);
+        for(GuiButton button : this.buttonList){
+            if(button instanceof GuiClickGUIButton){
+                button.xPosition = ((GuiClickGUIButton) button).OriginalXPos - pos;
+            }
+            if(button instanceof GuiButtonSettings){
+                button.xPosition = ((GuiButtonSettings) button).OriginalXPos - pos;
+            }
+        }
+        int dWheel = Mouse.getDWheel();
+        if (dWheel < 0) {
+            this.ButtonExcursion = this.ButtonExcursion - 10;
+        } else if (dWheel > 0) {
+            this.ButtonExcursion = this.ButtonExcursion + 10;
+        }
+        for(GuiButton button : this.buttonList){
+            button.visible = button.yPosition >= 53 && (button.yPosition <= this.height - 25 - 18 || button.id == 0);
+        }
         for(GuiButton button : this.buttonList){
             if(button instanceof GuiTableButton){
                 ((GuiTableButton) button).Excursion = this.ButtonExcursion;
@@ -82,25 +126,16 @@ public class ClickGUI extends GuiScreen {
             }
         }
         super.drawScreen(x,y,delta);
-        Utils.drawStringScaled("Antimony",Minecraft.getMinecraft().fontRendererObj,(this.width / 2) - ((Minecraft.getMinecraft().fontRendererObj.getStringWidth("Antimony") * 5) / 2),5,Chroma.color.getRGB(),5);
-        int Scaling;
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        if(Minecraft.getMinecraft().gameSettings.guiScale != 0) {
-            Scaling = (5 - Minecraft.getMinecraft().gameSettings.guiScale) * 2;
-        } else {
-            Scaling = 2;
-        }
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(0,0,100);
-        drawEntityOnScreen((this.width / 4) * 3,this.height / 4 * 3,Scaling * 20,(float)(this.width / 2) - x, (float)(this.height / 2) - y,Minecraft.getMinecraft().thePlayer);
-        GlStateManager.popMatrix();
     }
     @Override
     protected void actionPerformed(GuiButton button) {
-        if (button == BackButton) {
-            mc.displayGuiScreen(parentScreen);
-        }
-        if(button.id != 114514 && button.id != 1919810) {
+        if(button.visible) {
+            if (button == BackButton) {
+                if(parentScreen instanceof ClickGUI) {
+                    ((ClickGUI) parentScreen).animation = false;
+                }
+                mc.displayGuiScreen(parentScreen);
+            }
             if (button.id > 0) {
                 for (Map.Entry<GuiButton, SelectObject> entry : FunctionObjectMap.entrySet()) {
                     if (button == entry.getKey()) {
@@ -108,7 +143,7 @@ public class ClickGUI extends GuiScreen {
                             FunctionManager.switchStatus(entry.getValue().getName());
                             break;
                         } else if (entry.getValue().getType().equals("table")) {
-                            mc.displayGuiScreen(new ClickGUI(mc.currentScreen, entry.getValue().getName()));
+                            mc.displayGuiScreen(new ClickGUI(mc.currentScreen, entry.getValue().getName(),false));
                         }
                     }
                 }
@@ -119,11 +154,11 @@ public class ClickGUI extends GuiScreen {
                     }
                 }
             }
-        } else if(button.id == 114514){
-            this.ButtonExcursion = ButtonExcursion - 10;
-        } else {
-            this.ButtonExcursion = ButtonExcursion + 10;
         }
+    }
+    @Override
+    public boolean doesGuiPauseGame() {
+        return false;
     }
     public static void drawEntityOnScreen(int p_drawEntityOnScreen_0_, int p_drawEntityOnScreen_1_, int p_drawEntityOnScreen_2_, float p_drawEntityOnScreen_3_, float p_drawEntityOnScreen_4_, EntityLivingBase p_drawEntityOnScreen_5_) {
         GlStateManager.enableColorMaterial();

@@ -2,6 +2,7 @@ package com.greencat.antimony.common.mixins;
 
 import com.greencat.Antimony;
 import com.greencat.antimony.common.Via;
+import com.greencat.antimony.common.function.SynthesizerAura;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.common.function.Killaura;
 import com.greencat.antimony.common.function.ShortBowAura;
@@ -38,12 +39,11 @@ public abstract class MixinMinecraft {
             at = {@At("HEAD")}
     )
     public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir) {
-        if ((FunctionManager.getStatus("Killaura") || FunctionManager.getStatus("ShortBowAura")) && this.renderViewEntity != null && this.renderViewEntity == Minecraft.getMinecraft().thePlayer) {
-            if (Killaura.entityTarget != null || ShortBowAura.target != null) {
+        if ((FunctionManager.getStatus("Killaura") || FunctionManager.getStatus("ShortBowAura") || FunctionManager.getStatus("SynthesizerAura")) && this.renderViewEntity != null && this.renderViewEntity == Minecraft.getMinecraft().thePlayer) {
+            if (Killaura.entityTarget != null || ShortBowAura.target != null || SynthesizerAura.entityTarget != null) {
                 ((EntityLivingBase)this.renderViewEntity).rotationYawHead = ((EntityPlayerSPAccessor)this.renderViewEntity).getLastReportedYaw();
                 ((EntityLivingBase)this.renderViewEntity).renderYawOffset = ((EntityPlayerSPAccessor)this.renderViewEntity).getLastReportedYaw();
             }
-
         }
     }
     @Inject(method = "<init>", at = @At("RETURN"))

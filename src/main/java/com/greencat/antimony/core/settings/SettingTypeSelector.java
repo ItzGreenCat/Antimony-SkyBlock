@@ -19,13 +19,15 @@ public class SettingTypeSelector extends AbstractSettingOptionButton {
     }
     @Override
     public void update(){
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        Minecraft.getMinecraft().fontRendererObj.drawString(name,(scaledResolution.getScaledWidth() / 2) - (Minecraft.getMinecraft().fontRendererObj.getStringWidth(name) / 2),yPosition - 10,0xFFFFFF);
-        int SavedInt = ConfigLoader.getInt(parentFunction + "_" + ID,DefaultValue);
-        for(Map.Entry<String,Integer> entry : types.entrySet()){
-            if(entry.getValue() == SavedInt){
-                this.displayString = entry.getKey();
-                break;
+        if(this.visible) {
+            ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+            Minecraft.getMinecraft().fontRendererObj.drawString(name, this.xPosition + (this.width / 2) - (Minecraft.getMinecraft().fontRendererObj.getStringWidth(name) / 2), yPosition - 10, 0xFFFFFF);
+            int SavedInt = ConfigLoader.getInt(parentFunction + "_" + ID, DefaultValue);
+            for (Map.Entry<String, Integer> entry : types.entrySet()) {
+                if (entry.getValue() == SavedInt) {
+                    this.displayString = entry.getKey();
+                    break;
+                }
             }
         }
 

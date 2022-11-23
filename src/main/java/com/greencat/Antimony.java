@@ -1,6 +1,5 @@
 package com.greencat;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.greencat.antimony.common.Chat.AntimonyChannel;
 import com.greencat.antimony.common.Chat.CheckConnect;
 import com.greencat.antimony.common.Chat.ReadFromServer;
@@ -27,19 +26,10 @@ import com.greencat.antimony.core.settings.*;
 import com.greencat.antimony.core.type.AntimonyFunction;
 import com.greencat.antimony.core.type.SelectObject;
 import com.greencat.antimony.core.type.SelectTable;
-import com.greencat.antimony.core.via.loader.BackwardsLoader;
-import com.greencat.antimony.core.via.loader.RewindLoader;
-import com.greencat.antimony.core.via.platform.Injector;
-import com.greencat.antimony.core.via.platform.Platform;
-import com.greencat.antimony.core.via.platform.ProviderLoader;
 import com.greencat.antimony.utils.Blur;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.Utils;
-import com.viaversion.viaversion.ViaManagerImpl;
-import com.viaversion.viaversion.api.data.MappingDataLoader;
-import com.greencat.antimony.utils.JLoggerToLog4j;
 import io.netty.channel.EventLoop;
-import io.netty.channel.local.LocalEventLoopGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
@@ -50,7 +40,6 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.apache.logging.log4j.LogManager;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -62,20 +51,20 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.logging.Logger;
 
 @Mod(modid = Antimony.MODID, name = Antimony.NAME, version = Antimony.VERSION, acceptedMinecraftVersions = "1.8.9", clientSideOnly = true)
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.1";
+    public static final String VERSION = "3.2";
     private static final String Sb = "Sb";
 
     public static float strafe;
     public static float forward;
     public static float friction;
+
+    Utils utils = new Utils();
 
     public static boolean AutoFishYawState = false;
     public static int ImageScaling = 1;
@@ -86,7 +75,6 @@ public class Antimony {
     public static String PresentFunction = "";
     public static HashMap<String, String> GroundDecorateList = new HashMap<String, String>();
     public static int versionIndex = 0;
-    Utils utils = new Utils();
     public static Boolean LabymodInstallCheck;
     public static Boolean NoSaplingBound = false;
     public static Boolean NoTreeBound = false;
@@ -265,6 +253,7 @@ public class Antimony {
         new PeltESP();
         new ForagingBot();
         new JasperESP();
+        new SynthesizerAura();
 
 
         Blur.register();
@@ -335,6 +324,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("BlackList"));
         register.RegisterFunction(new AntimonyFunction("ForagingBot"));
         register.RegisterFunction(new AntimonyFunction("JasperESP"));
+        register.RegisterFunction(new AntimonyFunction("SynthesizerAura"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -395,6 +385,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoWolfSlayer", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "CropBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "ForagingBot", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "SynthesizerAura", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
         register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
@@ -470,10 +461,15 @@ public class Antimony {
         HUDTypeMap.put("Classic",0);
         HUDTypeMap.put("White",1);
         HUDTypeMap.put("Transparent",2);
+        HashMap<String, Integer> HUDHideMap = new HashMap<String, Integer>();
+        HUDHideMap.put("Left",0);
+        HUDHideMap.put("Right",1);
+        HUDHideMap.put("Both",2);
         FunctionManager.bindFunction("HUD");
         FunctionManager.addConfiguration(new SettingInt("左上方(SelectGUI)距屏幕顶部距离","HUDHeight",0));
         FunctionManager.addConfiguration(new SettingInt("右上方(FunctionList)距屏幕顶部距离","FunctionListHeight",0));
         FunctionManager.addConfiguration(new SettingTypeSelector("HUD样式","style",2,HUDTypeMap));
+        FunctionManager.addConfiguration(new SettingTypeSelector("HUD关闭时隐藏部分","hide",2,HUDHideMap));
 
         FunctionManager.bindFunction("CustomPetNameTag");
         FunctionManager.addConfiguration(new SettingString("规则为\"原始字符=要替换的字符\",如果添加多项规则请使用\",\"分割,如果想清空自定义名称规则请填写null", "petName", "null"));
@@ -541,6 +537,7 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingLimitInt("附近最大可存在玩家数量", "limit",0,100,0));
         FunctionManager.addConfiguration(new SettingLimitInt("附近玩家大于可存在玩家数量后执行命令前冷却(游戏Tick)", "tickLimit",200,Integer.MAX_VALUE,0));
         FunctionManager.addConfiguration(new SettingString("需执行的命令", "command", "/warp home"));
+        FunctionManager.addConfiguration(new SettingBoolean("只提示声音不发送命令", "soundOnly", false));
 
         FunctionManager.bindFunction("CropBot");
         HashMap<String, Integer> crops = new HashMap<String, Integer>();
@@ -561,6 +558,9 @@ public class Antimony {
         apiSource.put("API Source 1",0);
         apiSource.put("API Source 2",1);
         FunctionManager.addConfiguration(new SettingTypeSelector("API","api",0,apiSource));
+
+        FunctionManager.bindFunction("PlayerFinder");
+        FunctionManager.addConfiguration(new SettingBoolean("是否显示头顶假人与NPC", "showNpc", true));
 
         NewUserFunction();
 

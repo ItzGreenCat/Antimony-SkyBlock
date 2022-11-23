@@ -44,10 +44,10 @@ public class EventLoader {
     public void RenderEvent(RenderGameOverlayEvent.Post event) {
         if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
             n.Notice();
+            int hidePart = (Integer) getConfigByFunctionName.get("HUD","hide");
+            int style = (Integer) getConfigByFunctionName.get("HUD","style");
             if(FunctionManager.getStatus("HUD")) {
                 if(!(Minecraft.getMinecraft().currentScreen instanceof ClickGUI) && !(Minecraft.getMinecraft().currentScreen instanceof SettingsGUI)) {
-
-                    int style = (Integer) getConfigByFunctionName.get("HUD","style");
                     if(style == 0){
                         classicSelectGui.draw();
                         classicFunctions.draw();
@@ -59,6 +59,29 @@ public class EventLoader {
                     if(style == 2){
                         transparentSelectGUI.draw();
                         transparentFunctionList.draw();
+                    }
+                }
+            } else {
+                if(hidePart == 0){
+                    if(style == 0){
+                        classicFunctions.draw();
+                    }
+                    if(style == 1){
+                        newFunctionList.draw();
+                    }
+                    if(style == 2){
+                        transparentFunctionList.draw();
+                    }
+                }
+                if(hidePart == 1){
+                    if(style == 0){
+                        classicSelectGui.draw();
+                    }
+                    if(style == 1){
+                        newSelectGui.draw();
+                    }
+                    if(style == 2){
+                        transparentSelectGUI.draw();
                     }
                 }
             }
@@ -75,7 +98,7 @@ public class EventLoader {
 
     @SubscribeEvent
     public void OnKeyPressed(InputEvent.KeyInputEvent event) throws Exception {
-        if(FunctionManager.getStatus("HUD")) {
+        if(FunctionManager.getStatus("HUD") || (Integer) getConfigByFunctionName.get("HUD","style") == 1) {
             if (KeyLoader.SelectGuiUP.isPressed()) {
                 for (SelectTable table : SelectGUIStorage.TableStorage) {
                     if (table.getID().equals(Antimony.PresentGUI)) {

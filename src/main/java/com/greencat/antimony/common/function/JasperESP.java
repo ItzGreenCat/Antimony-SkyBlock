@@ -20,16 +20,9 @@ import java.util.List;
 
 public class JasperESP {
     Utils utils = new Utils();
-    int StartY;
-    int StartX;
-    int StartZ;
+    int StartY,StartX,StartZ;
     EntityPlayer player;
-    int EndX;
-    int EndY;
-    int EndZ;
-    int NowX;
-    int NowY;
-    int NowZ;
+    int EndX,EndY,EndZ,NowX,NowY,NowZ;   //主播 是有逗号这一说的 - Pysio
     int Tick = 0;
     int RefreshTick = 200;
     List<BlockPos> Position;

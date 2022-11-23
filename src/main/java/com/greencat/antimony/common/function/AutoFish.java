@@ -7,6 +7,7 @@ import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.HUDManager;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.init.Items;
@@ -15,6 +16,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -30,6 +32,7 @@ public class AutoFish {
     static boolean MoveStatus = false;
     static Boolean AutoFishStatus = false;
     static Boolean slugFish = false;
+    float oldLevel;
     public static boolean emberStatus = false;
 
 
@@ -46,6 +49,37 @@ public class AutoFish {
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
+        }
+    }
+    @SubscribeEvent
+    public void WorldChangeTrigger(WorldEvent.Load event) {
+        if(FunctionManager.getStatus("AutoFish")) {
+            new Utils().print("检测到世界服务器改变,自动关闭AutoFish");
+            FunctionManager.setStatus("AutoFish",false);
+        }
+    }
+    @SubscribeEvent
+    public void onEnable(CustomEventHandler.FunctionEnableEvent event){
+        oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
+        Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
+    }
+    @SubscribeEvent
+    public void onDisabled(CustomEventHandler.FunctionDisabledEvent event){
+        if(event.function.getName().equals("AutoFish")){
+            KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(),false);
+            Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, oldLevel);
+        }
+    }
+    @SubscribeEvent
+    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
+        if(event.function.getName().equals("AutoFish")){
+            if(!event.status){
+                KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(),false);
+                Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, oldLevel);
+            } else {
+                oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
+                Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
+            }
         }
     }
 

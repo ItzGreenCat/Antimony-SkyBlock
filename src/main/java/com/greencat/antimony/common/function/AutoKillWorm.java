@@ -14,6 +14,7 @@ import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -151,12 +152,10 @@ public class AutoKillWorm {
         return foundStaff;
     }
     @SubscribeEvent
-    public void WorldChangeTrigger(ClientChatReceivedEvent event) {
+    public void WorldChangeTrigger(WorldEvent.Load event) {
         if(FunctionManager.getStatus("AutoKillWorm")) {
-            if (EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("You are playing on profile")) {
                 new Utils().print("检测到世界服务器改变,自动关闭AutoWormKill");
                 FunctionManager.setStatus("AutoKillWorm",false);
-            }
         }
     }
 

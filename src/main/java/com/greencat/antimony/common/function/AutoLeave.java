@@ -4,9 +4,12 @@ import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.HUDManager;
 import com.greencat.antimony.utils.Utils;
+import com.viaversion.viaversion.protocols.protocol1_13to1_12_2.data.SoundSource;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -44,8 +47,21 @@ public class AutoLeave {
                 }
                 int tickLimit = (Integer) getConfigByFunctionName.get("AutoLeave", "tickLimit");
                 if (countTick > tickLimit) {
+                    ISound sound = new PositionedSound(new ResourceLocation("random.orb")) {{
+                        volume = 1;
+                        pitch = 0.943f;
+                        repeat = false;
+                        repeatDelay = 0;
+                        attenuationType = ISound.AttenuationType.NONE;
+                    }};
                     countTick = 0;
-                    Minecraft.getMinecraft().thePlayer.sendChatMessage((String) getConfigByFunctionName.get("AutoLeave", "command"));
+                    if(!(Boolean) getConfigByFunctionName.get("AutoLeave", "soundOnly")) {
+                        Minecraft.getMinecraft().thePlayer.sendChatMessage((String) getConfigByFunctionName.get("AutoLeave", "command"));
+                    }
+                    float oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
+                    Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
+                    Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+                    Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, oldLevel);
                 }
             }
         }

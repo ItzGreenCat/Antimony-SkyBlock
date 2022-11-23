@@ -13,9 +13,11 @@ public class SettingBoolean extends AbstractSettingOptionButton {
     }
     @Override
     public void update(){
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        Minecraft.getMinecraft().fontRendererObj.drawString(name,(scaledResolution.getScaledWidth() / 2) - (Minecraft.getMinecraft().fontRendererObj.getStringWidth(name) / 2),yPosition - 10,0xFFFFFF);
-        this.displayString = ConfigLoader.getBoolean(parentFunction + "_" + ID,DefaultValue) ? "On" : "Off";
+        if(this.visible) {
+            ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+            Minecraft.getMinecraft().fontRendererObj.drawString(name, this.xPosition + (this.width / 2) - (Minecraft.getMinecraft().fontRendererObj.getStringWidth(name) / 2), yPosition - 10, 0xFFFFFF);
+            this.displayString = ConfigLoader.getBoolean(parentFunction + "_" + ID, DefaultValue) ? "On" : "Off";
+        }
     }
 
     @Override
