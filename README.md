@@ -1,6 +1,7 @@
 # Antimony - ~~Skyblock~~
 ***Really only a skyblock mod?***
 Discord https://discord.gg/drhkxRckgH  
+CurseForge: https://www.curseforge.com/minecraft/mc-mods/antimony-skyblock
 **~~Hypixel Skyblock~~ Minecraft QOL MOD made by GreenCat**
  
 # What can this mod do
