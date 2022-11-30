@@ -65,7 +65,6 @@ public class SettingsGUI extends GuiScreen {
                 optionTextField.add(textField);
             }
         }
-
         BackButton = new GuiClickGUIButton(0,10,this.height - 25,widthBound - 10,18,"Save and Back",new ResourceLocation(Antimony.MODID,"clickgui/back.png"));;
         this.buttonList.add(BackButton);
     }
@@ -75,9 +74,8 @@ public class SettingsGUI extends GuiScreen {
             pos = (int) (pos - (widthBound / Minecraft.getDebugFPS() * 2.5F));
         }
         drawRect(0,0,scaledResolution.getScaledWidth(),20,new Color(23,135,183).getRGB());
-        drawRect(0,20,widthBound - pos,scaledResolution.getScaledHeight(),new Color(255,255,255,128).getRGB());
         FontManager.QuicksandFont35.drawSmoothString("Antimony",2,2,new Color(255,255,255).getRGB());
-        Utils.drawStringScaled(TitleManager.tips,this.fontRendererObj,scaledResolution.getScaledWidth() - this.fontRendererObj.getStringWidth(TitleManager.tips) * 2,2,new Color(255,255,255).getRGB(),2);
+        drawRect(0,20,widthBound - pos,scaledResolution.getScaledHeight(),new Color(255,255,255,128).getRGB());
         String title = guiName + " 配置";
         int dWheel = Mouse.getDWheel();
         if (dWheel < 0) {
@@ -94,9 +92,9 @@ public class SettingsGUI extends GuiScreen {
              textField.xPosition = textField.OriginalXPos - pos;
         }
         for(GuiButton button : this.buttonList){
-            if(button instanceof AbstractSettingOptionButton){
-                ((AbstractSettingOptionButton) button).Excursion = this.ButtonExcursion;
-            }
+                if (button instanceof AbstractSettingOptionButton) {
+                    ((AbstractSettingOptionButton) button).Excursion = this.ButtonExcursion;
+                }
         }
         for(AbstractSettingOptionTextField textField : optionTextField){
             textField.Excursion = this.ButtonExcursion;
@@ -129,14 +127,14 @@ public class SettingsGUI extends GuiScreen {
                 mc.displayGuiScreen(parentScreen);
             }
 
-            if (button instanceof AbstractSettingOptionButton) {
-                if (button instanceof SettingBoolean) {
-                    handleBoolean((SettingBoolean) button);
+                if (button instanceof AbstractSettingOptionButton) {
+                    if (button instanceof SettingBoolean) {
+                        handleBoolean((SettingBoolean) button);
+                    }
+                    if (button instanceof SettingTypeSelector) {
+                        handleTypeSelector((SettingTypeSelector) button);
+                    }
                 }
-                if (button instanceof SettingTypeSelector) {
-                    handleTypeSelector((SettingTypeSelector) button);
-                }
-            }
         }
     }
     @Override
@@ -175,5 +173,13 @@ public class SettingsGUI extends GuiScreen {
         option.switchStatus();
         Utils utils = new Utils();
         utils.print(guiName + " 的 " + option.name + "已经设置为 " + (option.getKey()));
+    }
+    public boolean isInclude(List<Integer> list, int number){
+        for(int num : list){
+            if(num == number){
+                return true;
+            }
+        }
+        return false;
     }
 }

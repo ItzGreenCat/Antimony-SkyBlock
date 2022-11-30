@@ -19,6 +19,7 @@ import com.greencat.antimony.core.HUDManager;
 import com.greencat.antimony.core.Pathfinding;
 import com.greencat.antimony.core.blacklist.BlackList;
 import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore;
 import com.greencat.antimony.core.register.AntimonyRegister;
@@ -57,7 +58,7 @@ import java.util.logging.Logger;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.2";
+    public static final String VERSION = "3.2.2";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -78,6 +79,8 @@ public class Antimony {
     public static Boolean LabymodInstallCheck;
     public static Boolean NoSaplingBound = false;
     public static Boolean NoTreeBound = false;
+
+    public static HashMap<AntimonyFunction,Integer> KeyBinding = new HashMap<AntimonyFunction, Integer>();
 
 
     @Instance(Antimony.MODID)
@@ -129,8 +132,8 @@ public class Antimony {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) throws IOException {
         // TODO
-
         new com.greencat.antimony.core.config.ConfigLoader(event);
+        new getConfigByFunctionName();
     }
 
     @EventHandler
@@ -138,6 +141,7 @@ public class Antimony {
         // TODO
         new EventLoader();
         new KeyLoader();
+
         if (!AntimonyDirectory.exists()) {
             AntimonyDirectory.mkdir();
         }
@@ -560,9 +564,15 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingTypeSelector("API","api",0,apiSource));
 
         FunctionManager.bindFunction("PlayerFinder");
-        FunctionManager.addConfiguration(new SettingBoolean("是否显示头顶假人与NPC", "showNpc", true));
+        FunctionManager.addConfiguration(new SettingBoolean("不显示头顶假人与NPC", "showNpc", true));
+        HashMap<String, Integer> playerFinderMode = new HashMap<String, Integer>();
+        playerFinderMode.put("3D Box",0);
+        playerFinderMode.put("XRay",1);
+        FunctionManager.addConfiguration(new SettingTypeSelector("渲染模式","mode",1,playerFinderMode));
 
         NewUserFunction();
+
+        reloadKeyMapping();
 
     }
 
@@ -579,7 +589,13 @@ public class Antimony {
             ConfigLoader.setBoolean("newUser", false, true);
         }
     }
-    public static BlockPos getEntityPos(Entity entity){
-        return new BlockPos(entity.posX,entity.posY,entity.posZ);
+    public static void reloadKeyMapping(){
+        KeyBinding.clear();
+        for(AntimonyFunction function : AntimonyRegister.FunctionList){
+            int keyCode = ConfigLoader.getInt(function.getName() + "_KeyBindValue",-114514);
+            if(keyCode != -114514){
+                KeyBinding.put(function,keyCode);
+            }
+        }
     }
 }

@@ -5,9 +5,11 @@ import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.FunctionManager.SelectGuiFunctionExecutant;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.gui.ClickGUI;
+import com.greencat.antimony.core.gui.KeyBindsGUI;
 import com.greencat.antimony.core.gui.SettingsGUI;
 import com.greencat.antimony.common.key.KeyLoader;
 import com.greencat.antimony.core.storage.SelectGUIStorage;
+import com.greencat.antimony.core.type.AntimonyFunction;
 import com.greencat.antimony.core.ui.*;
 import com.greencat.antimony.core.ui.transparent.FunctionList;
 import com.greencat.antimony.core.ui.transparent.SelectGUI;
@@ -19,6 +21,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import org.lwjgl.input.Keyboard;
+
+import java.util.Map;
 
 public class EventLoader {
     NoticeManager n = new NoticeManager();
@@ -44,52 +49,53 @@ public class EventLoader {
     public void RenderEvent(RenderGameOverlayEvent.Post event) {
         if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
             n.Notice();
-            int hidePart = (Integer) getConfigByFunctionName.get("HUD","hide");
-            int style = (Integer) getConfigByFunctionName.get("HUD","style");
-            if(FunctionManager.getStatus("HUD")) {
-                if(!(Minecraft.getMinecraft().currentScreen instanceof ClickGUI) && !(Minecraft.getMinecraft().currentScreen instanceof SettingsGUI)) {
-                    if(style == 0){
+            int hidePart = (Integer) getConfigByFunctionName.get("HUD", "hide");
+            int style = (Integer) getConfigByFunctionName.get("HUD", "style");
+            if (FunctionManager.getStatus("HUD")) {
+                if (!(Minecraft.getMinecraft().currentScreen instanceof ClickGUI) && !(Minecraft.getMinecraft().currentScreen instanceof SettingsGUI)) {
+                    if (style == 0) {
                         classicSelectGui.draw();
                         classicFunctions.draw();
                     }
-                    if(style == 1){
+                    if (style == 1) {
                         newSelectGui.draw();
                         newFunctionList.draw();
                     }
-                    if(style == 2){
+                    if (style == 2) {
                         transparentSelectGUI.draw();
                         transparentFunctionList.draw();
                     }
                 }
             } else {
-                if(hidePart == 0){
-                    if(style == 0){
+                if (hidePart == 0) {
+                    if (style == 0) {
                         classicFunctions.draw();
                     }
-                    if(style == 1){
+                    if (style == 1) {
                         newFunctionList.draw();
                     }
-                    if(style == 2){
+                    if (style == 2) {
                         transparentFunctionList.draw();
                     }
                 }
-                if(hidePart == 1){
-                    if(style == 0){
+                if (hidePart == 1) {
+                    if (style == 0) {
                         classicSelectGui.draw();
                     }
-                    if(style == 1){
+                    if (style == 1) {
                         newSelectGui.draw();
                     }
-                    if(style == 2){
+                    if (style == 2) {
                         transparentSelectGUI.draw();
                     }
                 }
             }
         }
     }
+
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public void RenderEvent(RenderGameOverlayEvent event) {
-        if(!Antimony.shouldRenderBossBar) {
+        if (!Antimony.shouldRenderBossBar) {
             if (event.type == RenderGameOverlayEvent.ElementType.BOSSHEALTH) {
                 event.setCanceled(true);
             }
@@ -98,7 +104,7 @@ public class EventLoader {
 
     @SubscribeEvent
     public void OnKeyPressed(InputEvent.KeyInputEvent event) throws Exception {
-        if(FunctionManager.getStatus("HUD") || (Integer) getConfigByFunctionName.get("HUD","style") == 1) {
+        if (FunctionManager.getStatus("HUD") || (Integer) getConfigByFunctionName.get("HUD", "style") == 1) {
             if (KeyLoader.SelectGuiUP.isPressed()) {
                 for (SelectTable table : SelectGUIStorage.TableStorage) {
                     if (table.getID().equals(Antimony.PresentGUI)) {
@@ -172,10 +178,24 @@ public class EventLoader {
             Screenshot screenshot = new Screenshot();
             screenshot.CreateScreenshot(Antimony.ImageScaling);
         }
-        if(KeyLoader.OpenClickGUI.isPressed()){
-            Minecraft.getMinecraft().displayGuiScreen(new ClickGUI(Minecraft.getMinecraft().currentScreen,"root"));
+        if (KeyLoader.OpenClickGUI.isPressed()) {
+            Minecraft.getMinecraft().displayGuiScreen(new ClickGUI(Minecraft.getMinecraft().currentScreen, "root"));
+        }
+        if (KeyLoader.OpenBindGUI.isPressed()) {
+            Minecraft.getMinecraft().displayGuiScreen(new KeyBindsGUI(Minecraft.getMinecraft().currentScreen));
         }
 
+    }
+
+    @SubscribeEvent
+    public void handleFunctionKeyBinds(InputEvent.KeyInputEvent event) {
+        for(Map.Entry<AntimonyFunction,Integer> entry : Antimony.KeyBinding.entrySet()){
+            if(Keyboard.getEventKey() == entry.getValue()) {
+                if (Keyboard.getEventKeyState()) {
+                    FunctionManager.switchStatus(entry.getKey().getName());
+                }
+            }
         }
     }
+}
 

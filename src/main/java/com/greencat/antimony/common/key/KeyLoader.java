@@ -11,11 +11,10 @@ public class KeyLoader {
     public static KeyBinding SelectGuiBack;
 
     public static KeyBinding OpenClickGUI;
+    public static KeyBinding OpenBindGUI;
 
     public static KeyBinding GhostBlock;
-    public static KeyBinding SwitchVelocity;
     public static KeyBinding InstantSwitch;
-    public static KeyBinding SwitchSecretBot;
 
     public static KeyBinding HugeScreenshot;
 
@@ -27,10 +26,9 @@ public class KeyLoader {
         KeyLoader.SelectGuiBack = new KeyBinding("Antimony SelectGui返回初级菜单", Keyboard.KEY_LEFT, "Antimony-SkyBlock");
 
         KeyLoader.OpenClickGUI= new KeyBinding("Antimony 打开ClickGUI", Keyboard.KEY_RSHIFT, "Antimony-SkyBlock");
+        KeyLoader.OpenBindGUI= new KeyBinding("Antimony 打开KeyBindGUI", Keyboard.KEY_B, "Antimony-SkyBlock");
 
         KeyLoader.GhostBlock = new KeyBinding("创建Air Ghost Block", Keyboard.KEY_G, "Antimony-SkyBlock");
-        KeyLoader.SwitchVelocity = new KeyBinding("Velocity快捷开关", Keyboard.KEY_V, "Antimony-SkyBlock");
-        KeyLoader.SwitchSecretBot = new KeyBinding("SecretBot快捷开关", Keyboard.KEY_U, "Antimony-SkyBlock");
         KeyLoader.InstantSwitch = new KeyBinding("使用InstantSwitch", Keyboard.KEY_R, "Antimony-SkyBlock");
 
 
@@ -42,11 +40,10 @@ public class KeyLoader {
         ClientRegistry.registerKeyBinding(KeyLoader.SelectGuiBack);
 
         ClientRegistry.registerKeyBinding(KeyLoader.GhostBlock);
-        ClientRegistry.registerKeyBinding(KeyLoader.SwitchVelocity);
-        ClientRegistry.registerKeyBinding(KeyLoader.SwitchSecretBot);
         ClientRegistry.registerKeyBinding(KeyLoader.InstantSwitch);
 
         ClientRegistry.registerKeyBinding(KeyLoader.OpenClickGUI);
+        ClientRegistry.registerKeyBinding(KeyLoader.OpenBindGUI);
 
 
         ClientRegistry.registerKeyBinding(KeyLoader.HugeScreenshot);

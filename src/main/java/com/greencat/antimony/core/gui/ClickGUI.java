@@ -25,6 +25,7 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -78,7 +79,6 @@ public class ClickGUI extends GuiScreen {
                 }
             }
         }
-
         BackButton = new GuiClickGUIButton(0,10,this.height - 25,widthBound - 10,18,"Back",new ResourceLocation(Antimony.MODID,"clickgui/back.png"));
         this.buttonList.add(BackButton);
 
@@ -94,7 +94,6 @@ public class ClickGUI extends GuiScreen {
         }
         drawRect(0,0,scaledResolution.getScaledWidth(),20,new Color(23,135,183).getRGB());
         FontManager.QuicksandFont35.drawSmoothString("Antimony",2,2,new Color(255,255,255).getRGB());
-        Utils.drawStringScaled(TitleManager.tips,this.fontRendererObj,scaledResolution.getScaledWidth() - this.fontRendererObj.getStringWidth(TitleManager.tips) * 2,2,new Color(255,255,255).getRGB(),2);
         drawRect(0,20,widthBound - pos,scaledResolution.getScaledHeight(),new Color(255,255,255,128).getRGB());
         drawRect(5,44,widthBound - pos  - 5,46,new Color(0,0,0).getRGB());
         FontManager.QuicksandFont35.drawSmoothString("ClickGui",22 - pos,25,new Color(0,0,0).getRGB());
@@ -118,12 +117,12 @@ public class ClickGUI extends GuiScreen {
             button.visible = button.yPosition >= 53 && (button.yPosition <= this.height - 25 - 18 || button.id == 0);
         }
         for(GuiButton button : this.buttonList){
-            if(button instanceof GuiTableButton){
-                ((GuiTableButton) button).Excursion = this.ButtonExcursion;
-            }
-            if(button instanceof GuiButtonSettings){
-                ((GuiButtonSettings) button).Excursion = this.ButtonExcursion;
-            }
+                if (button instanceof GuiTableButton) {
+                    ((GuiTableButton) button).Excursion = this.ButtonExcursion;
+                }
+                if (button instanceof GuiButtonSettings) {
+                    ((GuiButtonSettings) button).Excursion = this.ButtonExcursion;
+                }
         }
         super.drawScreen(x,y,delta);
     }
@@ -131,28 +130,28 @@ public class ClickGUI extends GuiScreen {
     protected void actionPerformed(GuiButton button) {
         if(button.visible) {
             if (button == BackButton) {
-                if(parentScreen instanceof ClickGUI) {
+                if (parentScreen instanceof ClickGUI) {
                     ((ClickGUI) parentScreen).animation = false;
                 }
                 mc.displayGuiScreen(parentScreen);
             }
-            if (button.id > 0) {
-                for (Map.Entry<GuiButton, SelectObject> entry : FunctionObjectMap.entrySet()) {
-                    if (button == entry.getKey()) {
-                        if (entry.getValue().getType().equals("function")) {
-                            FunctionManager.switchStatus(entry.getValue().getName());
-                            break;
-                        } else if (entry.getValue().getType().equals("table")) {
-                            mc.displayGuiScreen(new ClickGUI(mc.currentScreen, entry.getValue().getName(),false));
+                if (button.id > 0) {
+                    for (Map.Entry<GuiButton, SelectObject> entry : FunctionObjectMap.entrySet()) {
+                        if (button == entry.getKey()) {
+                            if (entry.getValue().getType().equals("function")) {
+                                FunctionManager.switchStatus(entry.getValue().getName());
+                                break;
+                            } else if (entry.getValue().getType().equals("table")) {
+                                mc.displayGuiScreen(new ClickGUI(mc.currentScreen, entry.getValue().getName(), false));
+                            }
                         }
                     }
-                }
-            } else if (button.id < 0) {
-                for (Map.Entry<GuiButton, SelectObject> entry : FunctionObjectMap.entrySet()) {
-                    if (-button.id == entry.getKey().id) {
-                        mc.displayGuiScreen(new SettingsGUI(mc.currentScreen, Objects.requireNonNull(FunctionManager.getFunctionByName(entry.getValue().getName())).getName(), Objects.requireNonNull(FunctionManager.getFunctionByName(entry.getValue().getName())).getConfigurationList()));
+                } else if (button.id < 0) {
+                    for (Map.Entry<GuiButton, SelectObject> entry : FunctionObjectMap.entrySet()) {
+                        if (-button.id == entry.getKey().id) {
+                            mc.displayGuiScreen(new SettingsGUI(mc.currentScreen, Objects.requireNonNull(FunctionManager.getFunctionByName(entry.getValue().getName())).getName(), Objects.requireNonNull(FunctionManager.getFunctionByName(entry.getValue().getName())).getConfigurationList()));
+                        }
                     }
-                }
             }
         }
     }
@@ -201,6 +200,5 @@ public class ClickGUI extends GuiScreen {
     public void drawInformationString(String str,int x,int y){
         FontManager.QuicksandFont.drawSmoothString(str,x,y + height,0xFFFFFF);
     }
-
 
 }

@@ -53,7 +53,12 @@ public class TitleManager {
         if(tick == MaxTick) {
             tick = 0;
             tips = TipsList.get(new Random().nextInt(TipsList.size()));
-            Display.setTitle("Antimony " + Antimony.VERSION + "." + new Random().nextInt(114514) + " | " + tips + " (Minecraft " + Objects.requireNonNull(ProtocolCollection.getProtocolById(Antimony.getVersion())).getName() + ")");
+            try {
+                Display.setTitle("Antimony " + Antimony.VERSION + "." + new Random().nextInt(114514) + " | " + tips + " (Minecraft " + Objects.requireNonNull(ProtocolCollection.getProtocolById(Antimony.getVersion())).getName() + ")");
+            } catch(Exception e){
+                e.printStackTrace();
+                Display.setTitle("Antimony " + Antimony.VERSION + "." + new Random().nextInt(114514) + " | " + tips + " (Minecraft " + "1.8.9" + ")");
+            }
         } else {
             tick = tick + 1;
         }

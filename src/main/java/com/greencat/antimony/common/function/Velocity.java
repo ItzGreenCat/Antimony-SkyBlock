@@ -36,10 +36,4 @@ public class Velocity {
         }
         return true;
     }
-    @SubscribeEvent
-    public void InputEvent(InputEvent.KeyInputEvent event){
-        if(KeyLoader.SwitchVelocity.isPressed()){
-            FunctionManager.switchStatus("Velocity");
-        }
-    }
 }

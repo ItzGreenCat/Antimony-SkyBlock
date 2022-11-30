@@ -9,6 +9,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -114,7 +115,7 @@ public class ShortBowAura {
     }
 
     private boolean isValid(EntityLivingBase entity) {
-        if ((!(entity == Minecraft.getMinecraft().thePlayer) && !entity.isInvisible()) && !(entity instanceof EntityArmorStand) && !(entity instanceof EntityVillager) && (Minecraft.getMinecraft().thePlayer.canEntityBeSeen(entity)) && entity.getHealth() > 0.0F && !entity.getName().equals("Dummy") && !entity.getName().startsWith("Decoy")
+        if ((!(entity == Minecraft.getMinecraft().thePlayer) && !entity.isInvisible()) && !(entity instanceof EntityArmorStand) &&  !(entity instanceof EntityBlaze) && !(entity instanceof EntityVillager) && (Minecraft.getMinecraft().thePlayer.canEntityBeSeen(entity)) && entity.getHealth() > 0.0F && !entity.getName().equals("Dummy") && !entity.getName().startsWith("Decoy")
         && !((double)entity.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) > (Double) getConfigByFunctionName.get("ShortBowAura","range"))
         ) {
             if(entity instanceof EntityPlayer){

@@ -32,10 +32,14 @@ public class LividESP {
                     Entity entity = event.entity;
                     if (entity instanceof EntityArmorStand) {
                         if (entity.hasCustomName()) {
-                                if (entity.getCustomNameTag().split("Livid")[0].contains(getColor((EnumDyeColor) Minecraft.getMinecraft().theWorld.getBlockState(new BlockPos(5, 109, 43)).getValue((IProperty) BlockStainedGlass.COLOR)).toString())) {
+                            try{
+                                if (entity.getCustomNameTag().split("Livid")[0].contains(getColor((EnumDyeColor) Minecraft.getMinecraft().theWorld.getBlockState(new BlockPos(5, 108, 42)).getValue((IProperty) BlockStainedGlass.COLOR)).toString())) {
                                     if (entity.getCustomNameTag().contains("Livid")) {
-                                        Utils.OutlinedBoxWithESP(new AxisAlignedBB(event.entity.posX - 0.5D, event.entity.posY - 2.0D, event.entity.posZ - 0.5D, event.entity.posX + 0.5D, event.entity.posY, event.entity.posZ + 0.5D), new Color(255, 0, 182), false,3F);
+                                        Utils.OutlinedBoxWithESP(new AxisAlignedBB(event.entity.posX - 0.5D, event.entity.posY - 2.0D, event.entity.posZ - 0.5D, event.entity.posX + 0.5D, event.entity.posY, event.entity.posZ + 0.5D), new Color(255, 0, 182), false, 3F);
+                                    }
                                 }
+                            } catch (Exception e){
+                                e.printStackTrace();
                             }
                         }
                     }
@@ -47,7 +51,7 @@ public class LividESP {
     public void DrawBlockESP(RenderWorldLastEvent event){
         if (FunctionManager.getStatus("LividESP")) {
             if (isInF5()) {
-                Utils.BoxWithESP(new BlockPos(5, 109, 43),new Color(255, 0, 182),false);
+                Utils.BoxWithESP(new BlockPos(5, 108, 42),new Color(255, 0, 182),false);
             }
         }
     }

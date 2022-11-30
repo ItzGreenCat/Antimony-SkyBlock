@@ -72,13 +72,6 @@ public class SecretBot {
     }
 
     @SubscribeEvent
-    public void InputEvent(InputEvent.KeyInputEvent event) {
-        if (KeyLoader.SwitchSecretBot.isPressed()) {
-            FunctionManager.switchStatus("SecretBot");
-        }
-    }
-
-    @SubscribeEvent
     public void AutoRefreshInDungeon(ClientChatReceivedEvent event) {
         if (FunctionManager.getStatus("SecretBot")) {
             String msg = EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).toLowerCase();

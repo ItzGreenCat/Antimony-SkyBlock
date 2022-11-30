@@ -4,6 +4,8 @@ import com.greencat.Antimony;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.common.function.CustomItemName;
 import com.greencat.antimony.core.Pathfinder;
+import com.greencat.antimony.core.gui.ClickGUI;
+import com.greencat.antimony.core.gui.KeyBindsGUI;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;

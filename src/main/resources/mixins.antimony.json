@@ -35,6 +35,7 @@
     "ShaderGroupAccessor"
   ],
   "client": [
-    "MixinGuiTextField"
+    "MixinGuiTextField",
+    "RenderGlobalAccessor"
   ]
 }
