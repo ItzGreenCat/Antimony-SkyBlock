@@ -22,6 +22,7 @@ import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore;
+import com.greencat.antimony.core.nukerCore2;
 import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.antimony.core.settings.*;
 import com.greencat.antimony.core.type.AntimonyFunction;
@@ -58,7 +59,7 @@ import java.util.logging.Logger;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.2.2";
+    public static final String VERSION = "3.3";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -258,6 +259,8 @@ public class Antimony {
         new ForagingBot();
         new JasperESP();
         new SynthesizerAura();
+        new Nuker();
+        new FrozenTreasureESP();
 
 
         Blur.register();
@@ -329,6 +332,8 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("ForagingBot"));
         register.RegisterFunction(new AntimonyFunction("JasperESP"));
         register.RegisterFunction(new AntimonyFunction("SynthesizerAura"));
+        register.RegisterFunction(new AntimonyFunction("Nuker"));
+        register.RegisterFunction(new AntimonyFunction("FrozenTreasureESP"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -372,6 +377,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "NoHurtCam", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "HideFallingBlock", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "JasperESP", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "ChestFinder", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
 
@@ -390,6 +396,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "CropBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "ForagingBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "SynthesizerAura", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "Nuker", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
         register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
@@ -569,6 +576,23 @@ public class Antimony {
         playerFinderMode.put("3D Box",0);
         playerFinderMode.put("XRay",1);
         FunctionManager.addConfiguration(new SettingTypeSelector("渲染模式","mode",1,playerFinderMode));
+
+        FunctionManager.bindFunction("Nuker");
+        HashMap<String, Integer> rotation = new HashMap<String, Integer>();
+        rotation.put("ServerRotation",0);
+        rotation.put("Rotation",1);
+        FunctionManager.addConfiguration(new SettingTypeSelector("旋转模式","rotation",0,rotation));
+        HashMap<String, Integer> nukerType = new HashMap<String, Integer>();
+        nukerType.put("Gemstone(No Panel)",0);
+        nukerType.put("Gemstone",1);
+        nukerType.put("Ore",2);
+        nukerType.put("Stone",3);
+        nukerType.put("Netherrack",4);
+        nukerType.put("Sand",5);
+        nukerType.put("Gold Block",6);
+        nukerType.put("Mithril",7);
+        nukerType.put("Frozen Treasure",8);
+        FunctionManager.addConfiguration(new SettingTypeSelector("模式","type",0,nukerType));
 
         NewUserFunction();
 

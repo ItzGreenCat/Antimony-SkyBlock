@@ -59,7 +59,46 @@ public class Utils {
         keyBindMap.put(180, Minecraft.getMinecraft().gameSettings.keyBindBack);
         keyBindMap.put(270, Minecraft.getMinecraft().gameSettings.keyBindRight);
     }
+    public static void swingItem() {
+        MovingObjectPosition movingObjectPosition = Minecraft.getMinecraft().objectMouseOver;
+        if (movingObjectPosition != null && movingObjectPosition.entityHit == null) {
+            Minecraft.getMinecraft().thePlayer.swingItem();
+        }
+    }
+    public static float[] getRotation(BlockPos block, EnumFacing face) {
+        double x = (double)block.getX() + 0.5 - Minecraft.getMinecraft().thePlayer.posX + (double)face.getFrontOffsetX() / 2.0;
+        double z = (double)block.getZ() + 0.5 - Minecraft.getMinecraft().thePlayer.posZ + (double)face.getFrontOffsetZ() / 2.0;
+        double d1 = Minecraft.getMinecraft().thePlayer.posY + (double)Minecraft.getMinecraft().thePlayer.getEyeHeight() - ((double)block.getY() + 0.5);
+        double d3 = (double)MathHelper.sqrt_double(x * x + z * z);
+        float yaw = (float)(Math.atan2(z, x) * 180.0 / Math.PI) - 90.0F;
+        float pitch = (float)(Math.atan2(d1, d3) * 180.0 / Math.PI);
+        if (yaw < 0.0F) {
+            yaw += 360.0F;
+        }
 
+        return new float[]{yaw, pitch};
+    }
+    public static EnumFacing getClosestEnum(BlockPos pos) {
+        EnumFacing closestEnum = EnumFacing.UP;
+        float rotations = MathHelper.wrapAngleTo180_float(getRotation(pos, EnumFacing.UP)[0]);
+        if (rotations >= 45.0F && rotations <= 135.0F) {
+            closestEnum = EnumFacing.EAST;
+        } else if ((!(rotations >= 135.0F) || !(rotations <= 180.0F)) && (!(rotations <= -135.0F) || !(rotations >= -180.0F))) {
+            if (rotations <= -45.0F && rotations >= -135.0F) {
+                closestEnum = EnumFacing.WEST;
+            } else if (rotations >= -45.0F && rotations <= 0.0F || rotations <= 45.0F && rotations >= 0.0F) {
+                closestEnum = EnumFacing.NORTH;
+            }
+        } else {
+            closestEnum = EnumFacing.SOUTH;
+        }
+
+        if (MathHelper.wrapAngleTo180_float(getRotation(pos, EnumFacing.UP)[1]) > 75.0F || MathHelper.wrapAngleTo180_float(getRotation(pos, EnumFacing.UP)[1]) < -75.0F) {
+            closestEnum = EnumFacing.UP;
+        }
+
+        return closestEnum;
+    }
     public static void BoxWithESP(BlockPos pos, Color c, boolean Blend) {
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
         Block block = Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock();
@@ -1214,6 +1253,26 @@ public class Utils {
         worldrenderer.begin(GL11.GL_LINE_STRIP,DefaultVertexFormats.POSITION);
         worldrenderer.pos(from.getX() - renderManager.viewerPosX,from.getY() - renderManager.viewerPosY,from.getZ() - renderManager.viewerPosZ).endVertex();
         worldrenderer.pos(to.getX() - renderManager.viewerPosX,to.getY() - renderManager.viewerPosY,to.getZ() - renderManager.viewerPosZ).endVertex();
+        tessellator.draw();
+        GL11.glLineWidth(1.0F);
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableDepth();
+
+    }
+    public static void renderTrace(Vec3 from,Vec3 to,Color c,float width){
+        RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+        GlStateManager.disableDepth();
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.enableBlend();
+        GlStateManager.color((float) c.getRed() / 255.0F, (float) c.getGreen() / 255.0F, (float) c.getBlue() / 255.0F, (float) c.getAlpha() / 255.0F);
+        GL11.glLineWidth(width);
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(GL11.GL_LINE_STRIP,DefaultVertexFormats.POSITION);
+        worldrenderer.pos(from.xCoord - renderManager.viewerPosX,from.yCoord - renderManager.viewerPosY,from.zCoord - renderManager.viewerPosZ).endVertex();
+        worldrenderer.pos(to.xCoord - renderManager.viewerPosX,to.yCoord - renderManager.viewerPosY,to.zCoord - renderManager.viewerPosZ).endVertex();
         tessellator.draw();
         GL11.glLineWidth(1.0F);
         GlStateManager.disableBlend();

@@ -2,11 +2,13 @@ package com.greencat.antimony.core.event;
 
 import com.greencat.antimony.core.type.AntimonyFunction;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.network.Packet;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -147,5 +149,14 @@ public class CustomEventHandler {
     }
     public static class PlayerUpdateEvent extends Event{
         public PlayerUpdateEvent(){}
+    }
+    public static class BlockChangeEvent extends Event {
+        public BlockPos pos;
+        public IBlockState state;
+
+        public BlockChangeEvent(BlockPos pos, IBlockState state) {
+            this.pos = pos;
+            this.state = state;
+        }
     }
 }
