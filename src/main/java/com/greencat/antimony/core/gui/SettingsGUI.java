@@ -70,8 +70,14 @@ public class SettingsGUI extends GuiScreen {
     }
     public void drawScreen(int x, int y, float delta)
     {
-        if (pos >= 0) {
-            pos = (int) (pos - (widthBound / Minecraft.getDebugFPS() * 2.5F));
+        if (pos > 0) {
+            if(Minecraft.getDebugFPS() != 0) {
+                pos = (int) (pos - (widthBound / Minecraft.getDebugFPS() * 2.5F));
+            } else {
+                pos = 0;
+            }
+        } else {
+            pos = 0;
         }
         drawRect(0,0,scaledResolution.getScaledWidth(),20,new Color(23,135,183).getRGB());
         FontManager.QuicksandFont35.drawSmoothString("Antimony",2,2,new Color(255,255,255).getRGB());

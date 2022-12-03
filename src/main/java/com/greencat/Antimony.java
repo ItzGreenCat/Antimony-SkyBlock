@@ -14,15 +14,12 @@ import com.greencat.antimony.common.function.rank.CustomRank;
 import com.greencat.antimony.common.function.rank.RankList;
 import com.greencat.antimony.common.function.title.TitleManager;
 import com.greencat.antimony.common.key.KeyLoader;
+import com.greencat.antimony.core.*;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.HUDManager;
-import com.greencat.antimony.core.Pathfinding;
 import com.greencat.antimony.core.blacklist.BlackList;
 import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
-import com.greencat.antimony.core.nukerCore;
-import com.greencat.antimony.core.nukerCore2;
 import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.antimony.core.settings.*;
 import com.greencat.antimony.core.type.AntimonyFunction;
@@ -59,7 +56,7 @@ import java.util.logging.Logger;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.3";
+    public static final String VERSION = "3.3.1";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -205,6 +202,7 @@ public class Antimony {
         new Pathfinding();
         new nukerCore();
         new BlackList();
+        new nukerWrapper();
 
         //Dev
         //Function
@@ -333,6 +331,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("JasperESP"));
         register.RegisterFunction(new AntimonyFunction("SynthesizerAura"));
         register.RegisterFunction(new AntimonyFunction("Nuker"));
+        register.RegisterFunction(new AntimonyFunction("NukerWrapper"));
         register.RegisterFunction(new AntimonyFunction("FrozenTreasureESP"));
 
 
@@ -433,6 +432,7 @@ public class Antimony {
         FunctionManager.setStatus("Pathfinding", false);
         FunctionManager.setStatus("Interface", true);
         FunctionManager.setStatus("BlackList", true);
+        nukerWrapper.disable();
 
         FunctionManager.bindFunction("Killaura");
         FunctionManager.addConfiguration(new SettingBoolean("攻击玩家", "isAttackPlayer", true));

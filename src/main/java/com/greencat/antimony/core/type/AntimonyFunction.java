@@ -17,6 +17,7 @@ public class AntimonyFunction {
     public AntimonyFunction(String FunctionName){
         Name = FunctionName;
     }
+    @Deprecated
     public int color;
     public String getName(){
         return Name;

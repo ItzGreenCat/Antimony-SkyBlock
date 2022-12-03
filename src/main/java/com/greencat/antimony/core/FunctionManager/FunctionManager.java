@@ -15,6 +15,7 @@ import net.minecraft.util.EnumChatFormatting;
 import java.util.Random;
 
 public class FunctionManager {
+    static FunctionNotice notice = new FunctionNotice();
     private static String currentFunction = "";
     public static Boolean getStatus(String Name){
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
@@ -33,9 +34,8 @@ public class FunctionManager {
                     event = new CustomEventHandler.FunctionEnableEvent(function);
                     CustomEventHandler.EVENT_BUS.post(event);
                     if(!event.isCanceled()){
-                        function.color = new Random().nextInt(4);
+                        //function.color = new Random().nextInt(4);
                         function.setStatus(true);
-                        FunctionNotice notice = new FunctionNotice();
                         notice.ShowNotice(function.getName(),function.getStatus());
                         ConfigLoader.setFunctionStateStorage();
                         utils.print(Name + EnumChatFormatting.WHITE + " 启用");
@@ -46,12 +46,56 @@ public class FunctionManager {
                     event = new CustomEventHandler.FunctionDisabledEvent(function);
                     CustomEventHandler.EVENT_BUS.post(event);
                     if(!event.isCanceled()){
-                        function.color = new Random().nextInt(4);
+                        //function.color = new Random().nextInt(4);
                         function.setStatus(false);
-                        FunctionNotice notice = new FunctionNotice();
                         notice.ShowNotice(function.getName(),function.getStatus());
                         ConfigLoader.setFunctionStateStorage();
                         utils.print(Name + EnumChatFormatting.WHITE + " 禁用");
+                    }
+                }
+            }
+        }
+    }
+    public static void switchStatusNoNotice(String Name) {
+        Utils utils = new Utils();
+        for (AntimonyFunction function : AntimonyRegister.FunctionList) {
+            if (function.getName().equals(Name)) {
+
+
+                CustomEventHandler.FunctionSwitchEvent event;
+                event = new CustomEventHandler.FunctionSwitchEvent(function, !function.getStatus());
+                CustomEventHandler.EVENT_BUS.post(event);
+                if (!event.isCanceled()) {
+                    //function.color = new Random().nextInt(4);
+                    function.SwtichStatus();
+                    ConfigLoader.setFunctionStateStorage();
+                }
+
+            }
+        }
+    }
+    public static void setStatusNoNotice(String Name,Boolean status){
+        Utils utils = new Utils();
+        for(AntimonyFunction function : AntimonyRegister.FunctionList){
+            if(function.getName().equals(Name)){
+                if(status){
+                    CustomEventHandler.FunctionEnableEvent event;
+                    event = new CustomEventHandler.FunctionEnableEvent(function);
+                    CustomEventHandler.EVENT_BUS.post(event);
+                    if(!event.isCanceled()){
+                        //function.color = new Random().nextInt(4);
+                        function.setStatus(true);
+                        ConfigLoader.setFunctionStateStorage();
+                    }
+                }
+                if(!status){
+                    CustomEventHandler.FunctionDisabledEvent event;
+                    event = new CustomEventHandler.FunctionDisabledEvent(function);
+                    CustomEventHandler.EVENT_BUS.post(event);
+                    if(!event.isCanceled()){
+                        //function.color = new Random().nextInt(4);
+                        function.setStatus(false);
+                        ConfigLoader.setFunctionStateStorage();
                     }
                 }
             }
@@ -67,9 +111,8 @@ public class FunctionManager {
                     event = new CustomEventHandler.FunctionSwitchEvent(function,!function.getStatus());
                     CustomEventHandler.EVENT_BUS.post(event);
                     if(!event.isCanceled()){
-                        function.color = new Random().nextInt(4);
+                        //function.color = new Random().nextInt(4);
                         function.SwtichStatus();
-                        FunctionNotice notice = new FunctionNotice();
                         notice.ShowNotice(Name, function.getStatus());
                         ConfigLoader.setFunctionStateStorage();
                         if(function.getStatus()){

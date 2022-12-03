@@ -30,11 +30,13 @@ public class nukerCore2 {
     private boolean reEnable = false;
     private boolean blockChange = false;
     private static float damageProgress;
+    private static String wrapperName;
     private int tick = 0;
 
-    public nukerCore2() {
+    public nukerCore2(String wrapperName) {
             MinecraftForge.EVENT_BUS.register(this);
             CustomEventHandler.EVENT_BUS.register(this);
+            nukerCore2.wrapperName = wrapperName;
     }
     public void setActive(boolean isActive){
         damageProgress = 0;
@@ -60,7 +62,7 @@ public class nukerCore2 {
     }
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event){
-        if(reEnable && blockChange && enable) {
+        /*if(reEnable && blockChange && enable) {
             if (tick + 1 > 1) {
                 init();
                 reEnable = false;
@@ -70,6 +72,9 @@ public class nukerCore2 {
             }
         } else {
             tick = 0;
+        }*/
+        if(!this.enable && nukerWrapper.enable){
+            nukerWrapper.enable();
         }
     }
     @SubscribeEvent
@@ -78,6 +83,7 @@ public class nukerCore2 {
             blockChange = true;
             requestBlock = true;
             post();
+            nukerWrapper.disable();
         }
     }
     @SubscribeEvent
@@ -106,9 +112,10 @@ public class nukerCore2 {
                             --this.hitDelay;
                             return;
                         }
+                        new Utils().devLog("dmg progress:" + damageProgress + " last pos:" + lastPos + " pos:" + pos);
                         if (damageProgress == 0.0F && (lastPos == null || pos != lastPos)) {
                             this.lastPos = pos;
-                            Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, EnumFacing.DOWN));
+                            Minecraft.getMinecraft().getNetHandler().getNetworkManager().sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, EnumFacing.DOWN));
                             reEnable = true;
                         }
 

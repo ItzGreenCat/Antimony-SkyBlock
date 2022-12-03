@@ -47,8 +47,14 @@ public class KeyBindsGUI extends GuiScreen{
     public void drawScreen(int x, int y, float delta)
     {
         if(!(parentScreen instanceof ClickGUI) && animation) {
-            if (pos >= 0) {
-                pos = pos - (widthBound / Minecraft.getDebugFPS() * 2);
+            if (pos > 0) {
+                if(Minecraft.getDebugFPS() != 0) {
+                    pos = pos - (widthBound / Minecraft.getDebugFPS() * 2);
+                } else {
+                    pos = 0;
+                }
+            } else {
+                pos = 0;
             }
         } else {
             pos = 0;

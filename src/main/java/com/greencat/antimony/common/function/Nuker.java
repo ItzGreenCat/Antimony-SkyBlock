@@ -4,6 +4,7 @@ import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore2;
+import com.greencat.antimony.core.nukerWrapper;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.block.Block;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Nuker {
-    nukerCore2 nuker = new nukerCore2();
+    nukerCore2 nuker = nukerWrapper.nuker;
     BlockPos pos;
     public Nuker(){
         MinecraftForge.EVENT_BUS.register(this);
@@ -31,27 +32,27 @@ public class Nuker {
     @SubscribeEvent
     public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
         if(event.function.getName().equals("Nuker")){
-            nuker.post();
-            nuker.enable = false;
+            nukerWrapper.enable = false;
+            nukerWrapper.disable();
         }
     }
     @SubscribeEvent
     public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
         if(event.function.getName().equals("Nuker")) {
             if (!event.status) {
-                nuker.post();
-                nuker.enable = false;
+                nukerWrapper.enable = false;
+                nukerWrapper.disable();
             } else {
-                nuker.init();
-                nuker.enable = true;
+                nukerWrapper.enable = true;
+                nukerWrapper.enable();
             }
         }
     }
     @SubscribeEvent
     public void onEnable(CustomEventHandler.FunctionEnableEvent event){
         if(event.function.getName().equals("Nuker")){
-            nuker.init();
-            nuker.enable = true;
+            nukerWrapper.enable = true;
+            nukerWrapper.enable();
         }
     }
     @SubscribeEvent
