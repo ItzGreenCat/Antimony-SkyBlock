@@ -112,7 +112,7 @@ public class nukerCore2 {
                             --this.hitDelay;
                             return;
                         }
-                        new Utils().devLog("dmg progress:" + damageProgress + " last pos:" + lastPos + " pos:" + pos);
+                        //new Utils().devLog("dmg progress:" + damageProgress + " last pos:" + lastPos + " pos:" + pos);
                         if (damageProgress == 0.0F && (lastPos == null || pos != lastPos)) {
                             this.lastPos = pos;
                             Minecraft.getMinecraft().getNetHandler().getNetworkManager().sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, EnumFacing.DOWN));
