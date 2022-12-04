@@ -14,7 +14,6 @@ import java.awt.*;
 import java.util.List;
 
 public class GuardianESP {
-    Utils utils = new Utils();
     public GuardianESP() {
         MinecraftForge.EVENT_BUS.register(this);
     }

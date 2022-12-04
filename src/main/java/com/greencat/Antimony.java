@@ -56,7 +56,7 @@ import java.util.logging.Logger;
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.3.1";
+    public static final String VERSION = "3.3.2";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -259,6 +259,7 @@ public class Antimony {
         new SynthesizerAura();
         new Nuker();
         new FrozenTreasureESP();
+        new CaveSpiderESP();
 
 
         Blur.register();
@@ -333,6 +334,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("Nuker"));
         register.RegisterFunction(new AntimonyFunction("NukerWrapper"));
         register.RegisterFunction(new AntimonyFunction("FrozenTreasureESP"));
+        register.RegisterFunction(new AntimonyFunction("CaveSpiderESP"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -367,6 +369,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "SilverfishESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "GuardianESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "GolemESP", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "CaveSpiderESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "WormLavaESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "LanternESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "PlayerFinder", "Render"));
