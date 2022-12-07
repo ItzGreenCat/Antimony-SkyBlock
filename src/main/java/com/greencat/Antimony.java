@@ -2,7 +2,6 @@ package com.greencat;
 
 import com.greencat.antimony.common.Chat.AntimonyChannel;
 import com.greencat.antimony.common.Chat.CheckConnect;
-import com.greencat.antimony.common.Chat.ReadFromServer;
 import com.greencat.antimony.common.EventLoader;
 import com.greencat.antimony.common.MainMenu.GuiMainMenuModify;
 import com.greencat.antimony.common.Via;
@@ -52,11 +51,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
+
 @Mod(modid = Antimony.MODID, name = Antimony.NAME, version = Antimony.VERSION, acceptedMinecraftVersions = "1.8.9", clientSideOnly = true)
 public class Antimony {
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.3.2";
+    public static final String VERSION = "3.4";
     private static final String Sb = "Sb";
 
     public static float strafe;
@@ -203,6 +203,7 @@ public class Antimony {
         new nukerCore();
         new BlackList();
         new nukerWrapper();
+        new IRC();
 
         //Dev
         //Function
@@ -260,6 +261,7 @@ public class Antimony {
         new Nuker();
         new FrozenTreasureESP();
         new CaveSpiderESP();
+        new KillerBot();
 
 
         Blur.register();
@@ -267,7 +269,6 @@ public class Antimony {
         new com.greencat.antimony.common.decorate.Events();
 
         new AntimonyChannel();
-        new ReadFromServer();
         new CheckConnect();
 
         new RankList();
@@ -335,6 +336,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("NukerWrapper"));
         register.RegisterFunction(new AntimonyFunction("FrozenTreasureESP"));
         register.RegisterFunction(new AntimonyFunction("CaveSpiderESP"));
+        register.RegisterFunction(new AntimonyFunction("KillerBot"));
 
 
         register.RegisterTable(new SelectTable("root"));
@@ -397,6 +399,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoWolfSlayer", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "CropBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "ForagingBot", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "KillerBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "SynthesizerAura", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "Nuker", "Macro"));
 
@@ -597,6 +600,17 @@ public class Antimony {
         nukerType.put("Frozen Treasure",8);
         FunctionManager.addConfiguration(new SettingTypeSelector("模式","type",0,nukerType));
 
+        FunctionManager.bindFunction("KillerBot");
+        HashMap<String, Integer> BotSlayMode = new HashMap<String, Integer>();
+        BotSlayMode.put("Killaura",0);
+        BotSlayMode.put("ShortBowAura",1);
+        FunctionManager.addConfiguration(new SettingTypeSelector("击杀模式","mode",0,BotSlayMode));
+        FunctionManager.addConfiguration(new SettingString("近战物品名称", "swordName", "livid"));
+        FunctionManager.addConfiguration(new SettingString("短弓名称", "bowName", "juju"));
+        HashMap<String, Integer> type = new HashMap<String, Integer>();
+        type.put("Graveyard Zombie",0);
+        FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",0,type));
+
         NewUserFunction();
 
         reloadKeyMapping();
@@ -609,11 +623,13 @@ public class Antimony {
     }
 
     public void NewUserFunction() {
-        if (ConfigLoader.getBoolean("newUser", true)) {
+        if (ConfigLoader.getBoolean("isNewUser", true)) {
             FunctionManager.setStatus("HUD", true);
             FunctionManager.setStatus("AntimonyChannel", true);
 
-            ConfigLoader.setBoolean("newUser", false, true);
+            Minecraft.getMinecraft().gameSettings.guiScale = 2;
+
+            ConfigLoader.setBoolean("isNewUser", false, true);
         }
     }
     public static void reloadKeyMapping(){

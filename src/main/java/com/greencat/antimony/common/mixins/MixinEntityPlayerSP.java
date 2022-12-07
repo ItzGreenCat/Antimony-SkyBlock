@@ -1,6 +1,6 @@
 package com.greencat.antimony.common.mixins;
 
-import com.greencat.antimony.common.Chat.SendToServer;
+import com.greencat.antimony.common.Chat.CustomChatSend;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.ServerRotation;
 import com.greencat.antimony.core.config.ConfigLoader;
@@ -54,8 +54,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
     @Inject(method = "sendChatMessage",cancellable = true,at={@At("HEAD")})
     public void sendChatMessage(String p_sendChatMessage_1_, CallbackInfo cbi) {
         if(ConfigLoader.getChatChannel() && !p_sendChatMessage_1_.startsWith("/")){
-            SendToServer sendToServer = new SendToServer();
-            sendToServer.send(Minecraft.getMinecraft().thePlayer.getName() + "MSG-!-SPLIT" + p_sendChatMessage_1_);
+            CustomChatSend.send("0|" + Minecraft.getMinecraft().thePlayer.getName() + "|" + p_sendChatMessage_1_);
             cbi.cancel();
         }
     }

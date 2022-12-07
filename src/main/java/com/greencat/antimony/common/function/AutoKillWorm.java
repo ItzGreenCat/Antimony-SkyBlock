@@ -30,6 +30,7 @@ public class AutoKillWorm {
     int rcTick = 0;
     int stageTick = 0;
     int rcCount = 0;
+    int currentSlot;
     public AutoKillWorm(){
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
@@ -102,6 +103,7 @@ public class AutoKillWorm {
                             Minecraft.getMinecraft().thePlayer.rotationYaw = rotations[0];
                             Minecraft.getMinecraft().thePlayer.rotationPitch = rotations[1];
                         }
+                        Minecraft.getMinecraft().thePlayer.inventory.currentItem = currentSlot;
                         rcCount = 0;
                         stage = 2;
                     }
@@ -140,10 +142,9 @@ public class AutoKillWorm {
             for (int i = 0; i < 8; ++i) {
                 ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.mainInventory[i];
                 if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains(((String)getConfigByFunctionName.get("AutoKillWorm","itemName")).toLowerCase())) {
-                    int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+                    currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
                     Minecraft.getMinecraft().thePlayer.inventory.currentItem = i;
                     Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, stack);
-                    Minecraft.getMinecraft().thePlayer.inventory.currentItem = currentSlot;
                     foundStaff = true;
                     break;
                 }

@@ -91,7 +91,7 @@ public class nukerCore2 {
         if(enable) {
             requestBlock = active && (pos == null || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.air);
             if (Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null && active && pos != null) {
-                if (Minecraft.getMinecraft().thePlayer.getDistance(pos.getX(), pos.getY(), pos.getZ()) > 6.0) {
+                if (Minecraft.getMinecraft().thePlayer.getDistance(pos.getX(), pos.getY(), pos.getZ()) > 5.0) {
                     pos = null;
                     blockChange = true;
                     requestBlock = true;

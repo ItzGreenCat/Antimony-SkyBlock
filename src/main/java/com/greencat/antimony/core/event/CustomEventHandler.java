@@ -159,4 +159,12 @@ public class CustomEventHandler {
             this.state = state;
         }
     }
+    public static class CustomChannelReceivedEvent extends Event{
+        public int id;
+        public List<String> context;
+        public CustomChannelReceivedEvent(int packetID,List<String> context) {
+            this.id = packetID;
+            this.context = context;
+        }
+    }
 }

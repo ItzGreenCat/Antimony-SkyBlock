@@ -16,6 +16,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -163,7 +164,12 @@ public class Killaura {
             return false;
         }
     }
-
-
+    @SubscribeEvent
+    public void WorldChangeTrigger(WorldEvent.Load event) {
+        if(FunctionManager.getStatus("Killaura")) {
+            new Utils().print("检测到世界服务器改变,自动关闭Killaura");
+            FunctionManager.setStatus("Killaura",false);
+        }
+    }
 }
 

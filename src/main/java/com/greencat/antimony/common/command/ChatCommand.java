@@ -1,6 +1,6 @@
 package com.greencat.antimony.common.command;
 
-import com.greencat.antimony.common.Chat.SendToServer;
+import com.greencat.antimony.common.Chat.CustomChatSend;
 import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -33,12 +33,11 @@ public class ChatCommand extends CommandBase {
             }
         } else {
             if(!(args.length == 1 && args[0].equals("toggle"))) {
-                String message = "";
+                StringBuilder message = new StringBuilder();
                 for (String arg : args) {
-                    message = message + arg + " ";
+                    message.append(arg).append(" ");
                 }
-                SendToServer sendToServer = new SendToServer();
-                sendToServer.send(Minecraft.getMinecraft().thePlayer.getName() + "MSG-!-SPLIT" + message);
+                CustomChatSend.send("0|" + Minecraft.getMinecraft().thePlayer.getName() + "|" + message);
             } else {
                 ConfigLoader.setChatChannel(!ConfigLoader.getChatChannel());
                 utils.print(ConfigLoader.getChatChannel() ? "进入Antimony聊天频道" : "退出Antimony聊天频道");

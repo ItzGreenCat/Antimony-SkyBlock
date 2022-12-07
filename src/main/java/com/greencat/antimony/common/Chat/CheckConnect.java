@@ -11,8 +11,6 @@ import java.io.PrintStream;
 
 public class CheckConnect {
     static int tick = 0;
-    public static boolean isConnected = false;
-    PrintStream ps;
     public CheckConnect() {
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -22,35 +20,14 @@ public class CheckConnect {
             if (tick >= 4000) {
                 new Thread(() -> {
                     try {
-                        ps = new PrintStream(AntimonyChannel.socket.getOutputStream(), false, "UTF-8");
-                        ps.println("CHECK_CONNECT");
-                        ps.flush();
-                        isConnected = true;
-                    } catch (Exception ex) {
-                        try{
-                            AntimonyChannel.socket.close();
-                        } catch(Exception exc){
-                            exc.printStackTrace();
-                        }
-                        isConnected = false;
-                        new AntimonyChannel();
-                        ReadFromServer.refreshBufferedReader();
-                        if((Boolean) getConfigByFunctionName.get("AntimonyChannel","notice")) {
-                            new Utils().print("Antimony Channel与服务器断开连接,正在重连");
-                        }
-                    }
-                    try {
                         AntimonyChannel.socket.sendUrgentData(0xFF);
-                        isConnected = true;
                     } catch (Exception ex) {
                         try{
                             AntimonyChannel.socket.close();
                         } catch(Exception exc){
                             exc.printStackTrace();
                         }
-                        isConnected = false;
-                        new AntimonyChannel();
-                        ReadFromServer.refreshBufferedReader();
+                        AntimonyChannel.reconnect();
                         if((Boolean) getConfigByFunctionName.get("AntimonyChannel","notice")) {
                             new Utils().print("Antimony Channel与服务器断开连接,正在重连");
                         }

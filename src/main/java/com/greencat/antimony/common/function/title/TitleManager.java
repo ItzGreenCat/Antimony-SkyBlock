@@ -47,6 +47,7 @@ public class TitleManager {
         TipsList.add("nothing here");
         TipsList.add("null");
         TipsList.add("Iron Punch (-70 Mana) * 3");
+        TipsList.add("kkxfj09: 你出ed了? 发我30m");
     }
     @SubscribeEvent
     public void ClientTickEvent(TickEvent.ClientTickEvent event){

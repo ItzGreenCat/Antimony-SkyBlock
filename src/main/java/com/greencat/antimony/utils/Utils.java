@@ -855,14 +855,10 @@ public class Utils {
         }
     }
 
-    public void printAntimonyChannel(String message) {
+    public static void printAntimonyChannel(String name,String message) {
         if (FunctionManager.getStatus("AntimonyChannel")) {
             if (Minecraft.getMinecraft().theWorld != null) {
-                try {
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "[" + EnumChatFormatting.WHITE + "ⒶⓂⒸ" + EnumChatFormatting.LIGHT_PURPLE + "] -> " + EnumChatFormatting.GOLD + message.split("MSG-!-SPLIT")[0] + EnumChatFormatting.WHITE + ": " + message.split("MSG-!-SPLIT")[1]));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "[" + EnumChatFormatting.WHITE + "ⒶⓂⒸ" + EnumChatFormatting.LIGHT_PURPLE + "] -> " + EnumChatFormatting.GOLD + name + EnumChatFormatting.WHITE + ": " + message));
             }
         }
     }

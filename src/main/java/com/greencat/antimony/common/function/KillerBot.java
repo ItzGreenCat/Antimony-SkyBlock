@@ -1,13 +1,13 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.Pathfinder;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
-import com.greencat.antimony.core.Pathfinder;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -18,26 +18,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.List;
 
-public class AutoWolfSlayer {
+public class KillerBot {
     EntityLivingBase target;
     public static long latest;
-    boolean inBoss;
     int disableCount = 0;
     int finderCount = 0;
     BlockPos pointPos;
-    Boolean isKilledBoss = false;
-    Boolean isSpawnedBoss = false;
     Minecraft mc = Minecraft.getMinecraft();
-    Utils utils = new Utils();
-    boolean isSpawn = false;
 
-    public AutoWolfSlayer() {
+    public KillerBot() {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
     @SubscribeEvent
     public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
-        if(event.function.getName().equals("AutoWolfSlayer")){
+        if(event.function.getName().equals("KillerBot")){
             FunctionManager.setStatus("Pathfinding",false);
             FunctionManager.setStatus("ShortBowAura", false);
             FunctionManager.setStatus("Killaura", false);
@@ -46,27 +41,22 @@ public class AutoWolfSlayer {
     @SubscribeEvent
     public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
         if(!event.status){
-            if(event.function.getName().equals("AutoWolfSlayer")){
+            if(event.function.getName().equals("KillerBot")){
                 FunctionManager.setStatus("Pathfinding",false);
                 FunctionManager.setStatus("ShortBowAura", false);
                 FunctionManager.setStatus("Killaura", false);
             }
-        } else {
-            isKilledBoss = false;
-            isSpawnedBoss = false;
         }
     }
     @SubscribeEvent
     public void onEnable(CustomEventHandler.FunctionEnableEvent event){
-        if(event.function.getName().equals("AutoWolfSlayer")){
-            isKilledBoss = false;
-            isSpawnedBoss = false;
+        if(event.function.getName().equals("KillerBot")){
         }
     }
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if (FunctionManager.getStatus("AutoWolfSlayer")) {
+        if (FunctionManager.getStatus("KillerBot")) {
             try {
                 if (target == null || target.isDead) {
                     target = getTarget();
@@ -76,12 +66,10 @@ public class AutoWolfSlayer {
                         pointPos = pos;
 
                         if (Pathfinder.hasPath()) {
-                            FunctionManager.switchStatus("Pathfinding");
+                            FunctionManager.setStatus("Pathfinding",true);
                         } else {
                             target = null;
                         }
-                    } else {
-                        utils.print("附近无法找到狼");
                     }
                 }
                 if(!FunctionManager.getStatus("Pathfinding")) {
@@ -96,44 +84,34 @@ public class AutoWolfSlayer {
                 double playerY = Minecraft.getMinecraft().thePlayer.posY;
                 double playerZ = Minecraft.getMinecraft().thePlayer.posZ;
                 int bound = 3;
-                List<EntityWolf> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityWolf.class, new AxisAlignedBB(playerX - (bound / 2d), playerY - (256 / 2d), playerZ - (bound / 2d), playerX + (bound / 2d), playerY + (256 / 2d), playerZ + (bound / 2d)), null);
+                List<EntityLivingBase> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(playerX - (bound / 2d), playerY - (256 / 2d), playerZ - (bound / 2d), playerX + (bound / 2d), playerY + (256 / 2d), playerZ + (bound / 2d)), null);
                 if (!entityList.isEmpty()) {
-                    if(!isSpawnedBoss){
-                        isSpawnedBoss = inBoss();
-                    } else {
-                        if(!isKilledBoss){
-                            isKilledBoss = true;
-                        } else {
-                            FunctionManager.setStatus("AutoWolfSlayer", false);
-                            FunctionManager.setStatus("AutoWolfSlayer", true);
-                        }
-                    }
-                    if(((Integer) getConfigByFunctionName.get("AutoWolfSlayer","mode") == 1) && !inBoss()){
+                    if(((Integer) getConfigByFunctionName.get("KillerBot","mode") == 1)){
                         if(!FunctionManager.getStatus("ShortBowAura")) {
                             FunctionManager.setStatus("ShortBowAura", true);
                             FunctionManager.setStatus("Killaura", false);
-                            checkSwitch((String) getConfigByFunctionName.get("AutoWolfSlayer","bowName"));
+                            checkSwitch((String) getConfigByFunctionName.get("KillerBot","bowName"));
                         }
                     }
-                    if(((Integer) getConfigByFunctionName.get("AutoWolfSlayer","mode") == 0) || inBoss()) {
+                    if(((Integer) getConfigByFunctionName.get("KillerBot","mode") == 0)) {
                         if (!FunctionManager.getStatus("Killaura")) {
                             FunctionManager.setStatus("Killaura", true);
-                            checkSwitch((String) getConfigByFunctionName.get("AutoWolfSlayer","swordName"));
+                            checkSwitch((String) getConfigByFunctionName.get("KillerBot","swordName"));
                         }
                     }
                     if(disableCount > 160) {
                         double x = pointPos.getX();
                         double y = pointPos.getY();
                         double z = pointPos.getZ();
-                        List<EntityWolf> atPoint = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityWolf.class, new AxisAlignedBB(x - (bound / 2d), y - (256 / 2d), z - (bound / 2d), x + (bound / 2d), y + (256 / 2d), z + (bound / 2d)), null);
+                        List<EntityLivingBase> atPoint = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(x - (bound / 2d), y - (256 / 2d), z - (bound / 2d), x + (bound / 2d), y + (256 / 2d), z + (bound / 2d)), null);
                         boolean atPos = false;
-                        for(EntityWolf entity : atPoint) {
+                        for(EntityLivingBase entity : atPoint) {
                             if(entity == target){
                                 atPos = true;
                                 break;
                             }
                         }
-                        if (!atPos) {
+                        if (!atPos && !(target == null || target.isDead)) {
                             FunctionManager.setStatus("Pathfinding", false);
                             BlockPos pos = new BlockPos(target.posX, target.posY, target.posZ);
                             Pathfinder.setup(new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector())), pos, 0.0D);
@@ -143,7 +121,7 @@ public class AutoWolfSlayer {
                         disableCount = disableCount + 1;
                     }
                 } else {
-                    if((Integer) getConfigByFunctionName.get("AutoWolfSlayer","mode") == 0) {
+                    if((Integer) getConfigByFunctionName.get("KillerBot","mode") == 0) {
                         if (FunctionManager.getStatus("Killaura")) {
                             FunctionManager.setStatus("Killaura", false);
                         }
@@ -156,40 +134,39 @@ public class AutoWolfSlayer {
     }
 
     public EntityLivingBase getTarget() {
-
-            double x = Minecraft.getMinecraft().thePlayer.posX;
-            double y = Minecraft.getMinecraft().thePlayer.posY;
-            double z = Minecraft.getMinecraft().thePlayer.posZ;
-            int bound = 50;
-            List<EntityWolf> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityWolf.class, new AxisAlignedBB(x - (bound / 2d), y - (256 / 2d), z - (bound / 2d), x + (bound / 2d), y + (256 / 2d), z + (bound / 2d)), null);
-            if (!entityList.isEmpty()) {
-                EntityWolf[] wolfArray = entityList.toArray(new EntityWolf[0]);
-                for (int i = 0; i < wolfArray.length; i++) {
-                    EntityWolf insertValue=wolfArray[i];
-                    int insertIndex=i-1;
-                    while (insertIndex>=0 && insertValue.getPositionVector().distanceTo(Minecraft.getMinecraft().thePlayer.getPositionVector()) < wolfArray[insertIndex].getPositionVector().distanceTo(Minecraft.getMinecraft().thePlayer.getPositionVector())) {
-                        wolfArray[insertIndex+1]=wolfArray[insertIndex];
-                        insertIndex--;
-                    }
-                    wolfArray[insertIndex+1]=insertValue;
+        double x = Minecraft.getMinecraft().thePlayer.posX;
+        double y = Minecraft.getMinecraft().thePlayer.posY;
+        double z = Minecraft.getMinecraft().thePlayer.posZ;
+        int bound = 500;
+        List<EntityLivingBase> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(x - (bound / 2d), y - (256 / 2d), z - (bound / 2d), x + (bound / 2d), y + (256 / 2d), z + (bound / 2d)), null);
+        if (!entityList.isEmpty()) {
+            EntityLivingBase[] Array = entityList.toArray(new EntityLivingBase[0]);
+            for (int i = 0; i < Array.length; i++) {
+                EntityLivingBase insertValue=Array[i];
+                int insertIndex=i-1;
+                while (insertIndex>=0 && insertValue.getPositionVector().distanceTo(Minecraft.getMinecraft().thePlayer.getPositionVector()) < Array[insertIndex].getPositionVector().distanceTo(Minecraft.getMinecraft().thePlayer.getPositionVector())) {
+                    Array[insertIndex+1]=Array[insertIndex];
+                    insertIndex--;
                 }
-                return wolfArray[0];
-            } else {
-                return null;
+                Array[insertIndex+1]=insertValue;
             }
-    }
-    private boolean inBoss() {
-        inBoss = false;
-        Utils utils = new Utils();
-        List<String> scoreBoardLines = utils.getSidebarLines();
-        int size = scoreBoardLines.size() - 1;
-        final String combatZoneName = "slay the boss";
-        for (int i = 0; i < scoreBoardLines.size(); i++) {
-            if (Utils.containedByCharSequence(scoreBoardLines.get(size - i).toLowerCase(), combatZoneName) && !scoreBoardLines.get(size - i).toLowerCase().contains("to")) {
-                inBoss = true;
+            for(EntityLivingBase entity : Array){
+                if(isValid(entity)){
+                    return entity;
+                }
             }
         }
-        return inBoss;
+        return null;
+    }
+    public boolean isValid(EntityLivingBase entity){
+        int type = (Integer) getConfigByFunctionName.get("KillerBot","type");
+        if(entity != null) {
+            if (type == 0 && entity instanceof EntityZombie && entity.posY >= 70) {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
     public void checkSwitch(String name){
         try {
