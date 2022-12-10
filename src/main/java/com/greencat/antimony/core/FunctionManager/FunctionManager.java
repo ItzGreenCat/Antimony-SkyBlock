@@ -15,8 +15,11 @@ import net.minecraft.util.EnumChatFormatting;
 import java.util.Random;
 
 public class FunctionManager {
+    //notice player
     static FunctionNotice notice = new FunctionNotice();
+    //The function that is currently bound
     private static String currentFunction = "";
+    //get a function's status
     public static Boolean getStatus(String Name){
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
             if(function.getName().equals(Name)){
@@ -25,6 +28,7 @@ public class FunctionManager {
         }
         return false;
     }
+    //set a funtion's status
     public static void setStatus(String Name,Boolean status){
         Utils utils = new Utils();
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
@@ -56,6 +60,7 @@ public class FunctionManager {
             }
         }
     }
+    //switch a function's status without any notice
     public static void switchStatusNoNotice(String Name) {
         Utils utils = new Utils();
         for (AntimonyFunction function : AntimonyRegister.FunctionList) {
@@ -74,6 +79,7 @@ public class FunctionManager {
             }
         }
     }
+    //set a function's status without any notice
     public static void setStatusNoNotice(String Name,Boolean status){
         Utils utils = new Utils();
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
@@ -101,6 +107,7 @@ public class FunctionManager {
             }
         }
     }
+    //switch a function's status
     public static void switchStatus(String Name){
         Utils utils = new Utils();
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
@@ -125,6 +132,7 @@ public class FunctionManager {
             }
         }
     }
+    //get the longest function name and add 20 more
     public static int getLongestTextWidthAdd20(){
         int width = 0;
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
@@ -132,6 +140,7 @@ public class FunctionManager {
         }
         return width + 20;
     }
+    //get the longest function name and add 5 more
     public static int getLongestTextWidthAdd5(){
         int width = 0;
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
@@ -139,6 +148,7 @@ public class FunctionManager {
         }
         return width + 5;
     }
+    //use function name to get a AntimonyFunction
     public static AntimonyFunction getFunctionByName(String name){
         for(AntimonyFunction function : AntimonyRegister.FunctionList) {
             if(function.getName().equals(name)){
@@ -147,9 +157,11 @@ public class FunctionManager {
         }
         return null;
     }
+    //bind a function
     public static void bindFunction(String Name){
         currentFunction = Name;
     }
+    //add a config to bound function
     public static void addConfiguration(ISettingOption option){
         try {
             if(option instanceof AbstractSettingOptionButton) {

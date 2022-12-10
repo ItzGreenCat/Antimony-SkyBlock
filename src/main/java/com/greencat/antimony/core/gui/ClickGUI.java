@@ -30,17 +30,26 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ClickGUI extends GuiScreen {
+    //Dynamic index of button ID
     private int index = 1;
+    //The current height of the button
     private int ButtonListHeight;
+    //Whether to display animations when opening the current GUI
     private boolean animation = true;
+    //Gui's name(Specified here is the name of the SelectTable, which specifies which SelectTable content is displayed by the current GUI)
     String guiName;
+    //The width of the GUI sidebar
     private final int widthBound = FunctionManager.getLongestTextWidthAdd20() + 40;
+    //Parent GUI
     private GuiScreen parentScreen;
     private GuiButton BackButton;
     ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+    //The offset value of the GUI sidebar
     private int pos;
+    //The vertical axis offset value of the button
     public int ButtonExcursion = 0;
     Blur blur = new Blur();
+    //The table that corresponds the button to the SelectObject
     HashMap<GuiButton, SelectObject> FunctionObjectMap = new HashMap<>();
     public ClickGUI(GuiScreen parent,String guiName)
     {

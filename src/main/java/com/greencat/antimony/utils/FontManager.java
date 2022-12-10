@@ -8,6 +8,7 @@ import java.awt.*;
 import java.io.InputStream;
 
 public class FontManager {
+    //get fonts
     public static Font getGothamRoundedFont(float size) {
         Font font = null;
         try {
@@ -63,6 +64,7 @@ public class FontManager {
     public static CustomFont getCustomSizeGothamRounded(int scaling){
         return CustomFont.createFontRenderer(getGothamRoundedFont(20 * scaling));
     }
+    //create custom font render
     public static CustomFont GothamRoundedFont = CustomFont.createFontRenderer(getGothamRoundedFont(20));
     public static CustomFont STXINWEIFont = CustomFont.createFontRenderer(getSTXINWEIFont(20));
     public static CustomFont QuicksandFont = CustomFont.createFontRenderer(getQuicksandFont(20));

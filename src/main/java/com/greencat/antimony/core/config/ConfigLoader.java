@@ -15,6 +15,7 @@ public class ConfigLoader {
         config = new Configuration(event.getSuggestedConfigurationFile());
         config.load();
     }
+    //save current enabled functions
     public static void setFunctionStateStorage(){
         List<String> list = new ArrayList<String>();
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
@@ -26,6 +27,7 @@ public class ConfigLoader {
         config.save();
         config.load();
     }
+    //read enabled function in config and apply it
     public static void applyFunctionState(){
         String[] functions = config.get(Configuration.CATEGORY_GENERAL, "FunctionStorage",new String[0], "Function功能开启存储").getStringList();
         for(String function : functions){
@@ -34,18 +36,20 @@ public class ConfigLoader {
         //config.save();
         config.load();
     }
+    //set antimony channel state (resident antimony channel or use /amc message)
     public static void setChatChannel(boolean status) {
         config.get(Configuration.CATEGORY_GENERAL, "ChatChannel", false, "切换聊天频道").set(status);
         config.save();
         config.load();
     }
+    //get antimony channel state (resident antimony channel or use /amc message)
     public static boolean getChatChannel() {
         boolean status = config.get(Configuration.CATEGORY_GENERAL, "ChatChannel", false, "切换聊天频道").getBoolean();
         //config.save();
         config.load();
         return status;
     }
-    //------------------------------------------
+    //Common settings
     public static void setBoolean(String key,Boolean value,Boolean defaultValue) {
         config.get(Configuration.CATEGORY_GENERAL, key, defaultValue, "").set(value);
         config.save();

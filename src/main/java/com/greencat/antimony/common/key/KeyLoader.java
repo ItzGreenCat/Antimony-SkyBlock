@@ -13,6 +13,8 @@ public class KeyLoader {
     public static KeyBinding OpenClickGUI;
     public static KeyBinding OpenBindGUI;
 
+    public static KeyBinding OpenConsole;
+
     public static KeyBinding GhostBlock;
     public static KeyBinding InstantSwitch;
 
@@ -27,6 +29,7 @@ public class KeyLoader {
 
         KeyLoader.OpenClickGUI= new KeyBinding("Antimony 打开ClickGUI", Keyboard.KEY_RSHIFT, "Antimony-SkyBlock");
         KeyLoader.OpenBindGUI= new KeyBinding("Antimony 打开KeyBindGUI", Keyboard.KEY_B, "Antimony-SkyBlock");
+        KeyLoader.OpenConsole= new KeyBinding("Open Console", Keyboard.KEY_GRAVE, "Antimony-SkyBlock");
 
         KeyLoader.GhostBlock = new KeyBinding("创建Air Ghost Block", Keyboard.KEY_G, "Antimony-SkyBlock");
         KeyLoader.InstantSwitch = new KeyBinding("使用InstantSwitch", Keyboard.KEY_R, "Antimony-SkyBlock");
@@ -44,6 +47,8 @@ public class KeyLoader {
 
         ClientRegistry.registerKeyBinding(KeyLoader.OpenClickGUI);
         ClientRegistry.registerKeyBinding(KeyLoader.OpenBindGUI);
+
+        ClientRegistry.registerKeyBinding(KeyLoader.OpenConsole);
 
 
         ClientRegistry.registerKeyBinding(KeyLoader.HugeScreenshot);

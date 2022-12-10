@@ -10,11 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AntimonyRegister {
+    //All registered functions are stored
     public static List<AntimonyFunction> FunctionList = new ArrayList<AntimonyFunction>();
+    //GUI list storage
     SelectGUIStorage SelectGuiStorage = new SelectGUIStorage();
+    //Register a function
     public void RegisterFunction(AntimonyFunction function) {
         FunctionList.add(function);
     }
+    //Reorder the list of functions to make the FunctionList more beautiful
     public static void ReList(){
         List<AntimonyFunction> originalList =FunctionList;
         AntimonyFunction originalArray[]=originalList.toArray(new AntimonyFunction[0]);
@@ -34,6 +38,7 @@ public class AntimonyRegister {
         FunctionList.clear();
         FunctionList.addAll(newList);
     }
+    //Register an object that you can select
     public void RegisterSelectObject(SelectObject object){
         List<SelectTable> NewList = new ArrayList<SelectTable>();
         for(SelectTable table : SelectGUIStorage.TableStorage){
@@ -45,6 +50,7 @@ public class AntimonyRegister {
 
         }
     }
+    //Register a empty list,you still need to invoke RegisterSelectObject to add SelectObject into list
     public void RegisterTable(SelectTable table) {
         SelectGUIStorage.TableStorage.add(table);
     }

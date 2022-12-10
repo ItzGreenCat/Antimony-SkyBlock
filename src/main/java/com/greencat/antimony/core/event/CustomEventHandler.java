@@ -24,6 +24,7 @@ import java.util.function.Function;
 
 public class CustomEventHandler {
     public static final EventBus EVENT_BUS = new EventBus();
+    //trigger on a function enable
     @Cancelable
     public static class FunctionEnableEvent extends Event {
         public AntimonyFunction function;
@@ -31,6 +32,7 @@ public class CustomEventHandler {
             this.function = function;
         }
     }
+    //trigger on a function disable
     @Cancelable
     public static class FunctionDisabledEvent extends Event {
         public AntimonyFunction function;
@@ -38,6 +40,7 @@ public class CustomEventHandler {
             this.function = function;
         }
     }
+    //trigger on a function switching state
     @Cancelable
     public static class FunctionSwitchEvent extends Event {
         public AntimonyFunction function;
@@ -47,6 +50,7 @@ public class CustomEventHandler {
             this.status = status;
         }
     }
+    @Deprecated
     public static class ClientTickEndEvent extends Event {
 
         private static int staticCount = 0;
@@ -69,6 +73,7 @@ public class CustomEventHandler {
         }
 
     }
+    //trigger on received a packet from server
     @Cancelable
     public static class PacketReceivedEvent extends Event {
         public Packet packet;
@@ -79,6 +84,7 @@ public class CustomEventHandler {
             this.context = context;
         }
     }
+    //trigger on a player motion changed
     @Cancelable
     public static class MotionChangeEvent extends Event {
         public float yaw;
@@ -119,6 +125,7 @@ public class CustomEventHandler {
             }
         }
     }
+    //trigger on client send a packet to server
     @Cancelable
     public static class PacketSentEvent extends Event {
         public Packet<?> packet;
@@ -135,6 +142,7 @@ public class CustomEventHandler {
             }
         }
     }
+    @Deprecated
     @Cancelable
     public static class MoveStrafeEvent extends Event {
         public float strafe;
@@ -147,9 +155,11 @@ public class CustomEventHandler {
             this.friction = friction;
         }
     }
+    //trigger on player LivingUpdated
     public static class PlayerUpdateEvent extends Event{
         public PlayerUpdateEvent(){}
     }
+    //trigger on a block changed
     public static class BlockChangeEvent extends Event {
         public BlockPos pos;
         public IBlockState state;
@@ -159,6 +169,7 @@ public class CustomEventHandler {
             this.state = state;
         }
     }
+    //trigger on a custom message received from antimony channel
     public static class CustomChannelReceivedEvent extends Event{
         public int id;
         public List<String> context;

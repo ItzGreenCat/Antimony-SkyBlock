@@ -19,6 +19,7 @@ import java.awt.*;
 import java.io.IOException;
 
 public class KeyBindsGUI extends GuiScreen{
+    //go to see ClickGUI.java
     private GuiScreen parentScreen;
     private int index = 1;
     private int ButtonListHeight;

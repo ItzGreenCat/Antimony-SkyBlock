@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SettingsGUI extends GuiScreen {
+    //go to see ClickGUI.java
     String guiName;
     private int index = 1;
     private GuiScreen parentScreen;

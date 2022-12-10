@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+//viaverion need this
 public class JLoggerToLog4j extends Logger {
     private final org.apache.logging.log4j.Logger base;
 

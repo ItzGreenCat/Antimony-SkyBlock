@@ -15,6 +15,7 @@ import com.greencat.antimony.core.ui.transparent.FunctionList;
 import com.greencat.antimony.core.ui.transparent.SelectGUI;
 import com.greencat.antimony.common.test.Screenshot;
 import com.greencat.antimony.core.type.SelectTable;
+import com.greencat.antimony.develop.Console;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -183,6 +184,9 @@ public class EventLoader {
         }
         if (KeyLoader.OpenBindGUI.isPressed()) {
             Minecraft.getMinecraft().displayGuiScreen(new KeyBindsGUI(Minecraft.getMinecraft().currentScreen));
+        }
+        if (KeyLoader.OpenConsole.isPressed()) {
+            Console.frame.setVisible(true);
         }
 
     }

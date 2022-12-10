@@ -13,24 +13,26 @@ import com.greencat.antimony.common.function.rank.CustomRank;
 import com.greencat.antimony.common.function.rank.RankList;
 import com.greencat.antimony.common.function.title.TitleManager;
 import com.greencat.antimony.common.key.KeyLoader;
-import com.greencat.antimony.core.*;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.HUDManager;
+import com.greencat.antimony.core.Pathfinding;
 import com.greencat.antimony.core.blacklist.BlackList;
 import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.core.nukerCore;
+import com.greencat.antimony.core.nukerWrapper;
 import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.antimony.core.settings.*;
 import com.greencat.antimony.core.type.AntimonyFunction;
 import com.greencat.antimony.core.type.SelectObject;
 import com.greencat.antimony.core.type.SelectTable;
+import com.greencat.antimony.develop.Console;
 import com.greencat.antimony.utils.Blur;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.Utils;
 import io.netty.channel.EventLoop;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -54,36 +56,56 @@ import java.util.logging.Logger;
 
 @Mod(modid = Antimony.MODID, name = Antimony.NAME, version = Antimony.VERSION, acceptedMinecraftVersions = "1.8.9", clientSideOnly = true)
 public class Antimony {
+    //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.4";
+    public static final String VERSION = "3.5";
     private static final String Sb = "Sb";
 
+    @Deprecated
     public static float strafe;
+    @Deprecated
     public static float forward;
+    @Deprecated
     public static float friction;
 
+    //init Pathfinder KeyMap in Utils
     Utils utils = new Utils();
 
+    //storage autofish yaw state
     public static boolean AutoFishYawState = false;
+    //huge screenshot scaling
     public static int ImageScaling = 1;
+    //remove bossbar when function enable/disable notice is visible
     public static boolean shouldRenderBossBar = true;
+    //antimony basic hud style color
     public static int Color = 16542622;
+    //antimony directory in .minecraft
     public static File AntimonyDirectory = new File(System.getProperty("user.dir") + "\\Antimony\\");
+    //current hud list storage
     public static String PresentGUI = "root";
+    //selected function in hud storage
     public static String PresentFunction = "";
+    //decorate at ground storage
     public static HashMap<String, String> GroundDecorateList = new HashMap<String, String>();
+    //use for viaversion
     public static int versionIndex = 0;
+    @Deprecated
+    //check is labymod istalled
     public static Boolean LabymodInstallCheck;
+    //disable sapling collision
     public static Boolean NoSaplingBound = false;
+    //disable log block collision
     public static Boolean NoTreeBound = false;
 
+    //antimony function keybind storage
     public static HashMap<AntimonyFunction,Integer> KeyBinding = new HashMap<AntimonyFunction, Integer>();
 
-
+    @Deprecated
     @Instance(Antimony.MODID)
     public static Antimony instance;
 
+    //use for viaversion
     public static void start() {
         Via.getInstance().start();
     }
@@ -130,24 +152,34 @@ public class Antimony {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) throws IOException {
         // TODO
+        //register config
         new com.greencat.antimony.core.config.ConfigLoader(event);
+        //init function config manager
         new getConfigByFunctionName();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) throws AWTException {
         // TODO
+        //init general event loader
         new EventLoader();
+        //register keys
         new KeyLoader();
 
+        //if antimony directory doesn't exist,then create one
         if (!AntimonyDirectory.exists()) {
             AntimonyDirectory.mkdir();
         }
+        //register genral command
         ClientCommandHandler.instance.registerCommand(new CommandManager());
+        //register develop command
         ClientCommandHandler.instance.registerCommand(new DevCommand());
+        //register antimony mod channel command
         ClientCommandHandler.instance.registerCommand(new ChatCommand());
+        //check labymod
         LabymodInstallCheck = utils.ModLoadCheck("labymod");
 
+        //reset gamma for FullBright
         if (Minecraft.getMinecraft().gameSettings.gammaSetting > 1) {
             Minecraft.getMinecraft().gameSettings.gammaSetting = 0;
         }
@@ -191,10 +223,14 @@ public class Antimony {
             e.printStackTrace();
         }
 
+        //register events in Utils
         CustomEventHandler.EVENT_BUS.register(new Utils());
 
+        //init console gui
+        Console.init();
 
-        //Misc
+
+        //init miscellaneous class and register miscellaneous event
         new Chroma();
         new GuiMainMenuModify();
         new CustomEventHandler.ClientTickEndEvent();
@@ -205,8 +241,7 @@ public class Antimony {
         new nukerWrapper();
         new IRC();
 
-        //Dev
-        //Function
+        //init functions and register function event
         new AutoFish();
         new AutoKillWorm();
         new WormLavaESP();
@@ -263,17 +298,21 @@ public class Antimony {
         new CaveSpiderESP();
         new KillerBot();
 
-
+        //init blur
         Blur.register();
 
+        //register decorate events
         new com.greencat.antimony.common.decorate.Events();
 
+        //init antimony channel
         new AntimonyChannel();
         new CheckConnect();
 
+        //some rank thing
         new RankList();
         new CustomRank();
 
+        //register functions
         AntimonyRegister register = new AntimonyRegister();
         register.RegisterFunction(new AntimonyFunction("AutoClicker"));
         register.RegisterFunction(new AntimonyFunction("Killaura"));
@@ -338,7 +377,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("CaveSpiderESP"));
         register.RegisterFunction(new AntimonyFunction("KillerBot"));
 
-
+        //register tables
         register.RegisterTable(new SelectTable("root"));
         register.RegisterTable(new SelectTable("Combat"));
         register.RegisterTable(new SelectTable("Render"));
@@ -349,7 +388,11 @@ public class Antimony {
         register.RegisterTable(new SelectTable("Misc"));
         register.RegisterTable(new SelectTable("Fun"));
 
-
+        //register select objects (add a select objects)
+        //SelectObjects first argument is it type,table is SelectTable,is an openable classification,Some function are included inside
+        //function is AntimonyFunction,These functions will appear in the table and can be turned on and off from here
+        //second argument is name,These names will be seen by the user
+        //third argument is parent table's name,The outermost table is called root
         register.RegisterSelectObject(new SelectObject("table", "Combat", "root"));
         register.RegisterSelectObject(new SelectObject("table", "Render", "root"));
         register.RegisterSelectObject(new SelectObject("table", "Dungeon", "root"));
@@ -430,16 +473,21 @@ public class Antimony {
 
         register.RegisterSelectObject(new SelectObject("function", "ItemTranslate", "root"));
 
+        //Rearrange the function arrays to make them look more aesthetically pleasing
         AntimonyRegister.ReList();
 
+        //Re-enable the last turned on function
         ConfigLoader.applyFunctionState();
 
+        //Manage certain functions that need to be turned on or off at startup
         FunctionManager.setStatus("CustomPetNameTag", false);
         FunctionManager.setStatus("Pathfinding", false);
         FunctionManager.setStatus("Interface", true);
         FunctionManager.setStatus("BlackList", true);
         nukerWrapper.disable();
 
+        //FunctionManage.bindFunction is bind a function to function manage
+        //addConfiguration is to apply the configuration to the currently bind function
         FunctionManager.bindFunction("Killaura");
         FunctionManager.addConfiguration(new SettingBoolean("攻击玩家", "isAttackPlayer", true));
         FunctionManager.addConfiguration(new SettingBoolean("目标实体透视", "targetESP", true));
@@ -611,8 +659,10 @@ public class Antimony {
         type.put("Graveyard Zombie",0);
         FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",0,type));
 
+        //check if new user
         NewUserFunction();
 
+        //refresh the function bind
         reloadKeyMapping();
 
     }
@@ -623,20 +673,28 @@ public class Antimony {
     }
 
     public void NewUserFunction() {
+        //check is new user
         if (ConfigLoader.getBoolean("isNewUser", true)) {
+            //if new user will setting something
             FunctionManager.setStatus("HUD", true);
             FunctionManager.setStatus("AntimonyChannel", true);
 
             Minecraft.getMinecraft().gameSettings.guiScale = 2;
 
+            //set non new user
             ConfigLoader.setBoolean("isNewUser", false, true);
         }
     }
     public static void reloadKeyMapping(){
+        //clear function key bind map
         KeyBinding.clear();
+        //Iterate through all function
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
+            //get this function's key bind config
             int keyCode = ConfigLoader.getInt(function.getName() + "_KeyBindValue",-114514);
+            //if key code equals -114514 mean it not have key bind
             if(keyCode != -114514){
+                //add function and key bind to map
                 KeyBinding.put(function,keyCode);
             }
         }

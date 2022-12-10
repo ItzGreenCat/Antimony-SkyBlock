@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+//the custom minecraft font renderer
 public class MinecraftFontRenderer extends CFont{
     CharData[] boldChars = new CharData[256];
     CharData[] italicChars = new CharData[256];
@@ -18,10 +19,12 @@ public class MinecraftFontRenderer extends CFont{
     public MinecraftFontRenderer(Font font, boolean antiAlias, boolean fractionalMetrics) {
         super(font, antiAlias, fractionalMetrics);
     }
+    //draw string use custom font
     @Override
     public int drawSmoothString(String text, double x2, float y2, int color) {
         return (int)this.drawSmoothString(text, x2, y2, color, false);
     }
+    //draw string use custom font with shadow
     public float drawSmoothString(String text, double x2, double y2, int color, boolean shadow) {
         x2 -= 1.0;
         if (text == null) {
