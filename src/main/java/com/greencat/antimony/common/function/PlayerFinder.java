@@ -72,7 +72,7 @@ public class PlayerFinder {
         }
     }
     public boolean isValid(EntityPlayer player){
-        if(!player.getName().contains("Goblin") && !player.getName().contains("Ice Walker")){
+        if(!player.getName().contains("Goblin") && !player.getName().contains("Ice Walker") && !player.getName().contains("Weakling")){
             return true;
         }
         return false;

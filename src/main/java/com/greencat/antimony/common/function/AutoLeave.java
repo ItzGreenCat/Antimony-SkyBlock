@@ -32,7 +32,7 @@ public class AutoLeave {
                 double y = Minecraft.getMinecraft().thePlayer.posY;
                 double z = Minecraft.getMinecraft().thePlayer.posZ;
                 int bound = (Integer) getConfigByFunctionName.get("AutoLeave", "radius") * 2;
-                List<EntityPlayer> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(x - (bound / 2d), y - (256 / 2d), z - (bound / 2d), x + (bound / 2d), y + (256 / 2d), z + (bound / 2d)), null);
+                List<EntityPlayer> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(x - (bound / 2d), y - (bound / 2d), z - (bound / 2d), x + (bound / 2d), y + (bound / 2d), z + (bound / 2d)), null);
                 validList.clear();
                 for (EntityPlayer entityplayer : entityList) {
                     if (isValid(entityplayer)) {
@@ -82,7 +82,7 @@ public class AutoLeave {
     }
     public Boolean isValid(EntityPlayer player){
         if(!Utils.isNPC(player) && !player.isInvisible() && player != Minecraft.getMinecraft().thePlayer){
-            if(!player.getName().contains("Goblin") && !player.getName().contains("Ice Walker")){
+            if(!player.getName().contains("Goblin") && !player.getName().contains("Ice Walker") && !player.getName().contains("Weakling")){
                 return true;
             }
             return false;

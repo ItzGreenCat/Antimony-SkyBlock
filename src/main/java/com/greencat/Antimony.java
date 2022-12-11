@@ -59,7 +59,7 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.5";
+    public static final String VERSION = "3.5.1";
     private static final String Sb = "Sb";
 
     @Deprecated
