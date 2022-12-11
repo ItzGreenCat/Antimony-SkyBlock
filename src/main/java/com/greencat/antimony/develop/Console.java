@@ -8,6 +8,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.StringUtils;
+import scala.Int;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,7 +76,8 @@ public class Console {
         startMessage(command);
         try {
             if (command.equals("help")) {
-                addMessage("clickslot [Name] - ClickInventory Slot by item name.");
+                addMessage("clickslot [String Name] [int MouseButton] [int ClickType] - ClickInventory Slot by item name.");
+                addMessage("say [String msg] say a message");
             }
             if (command.equals("clickslot")) {
                 if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
@@ -85,12 +87,16 @@ public class Console {
                         for (Slot slot : slots) {
                             if (slot != null && slot.getStack() != null && slot.getStack().hasDisplayName() && StringUtils.stripControlCodes(slot.getStack().getDisplayName()).toLowerCase().contains(args.get(0).toLowerCase())) {
                                 //Test the InventoryClicker
-                                InventoryClicker.ClickSlot(slot);
+                                //InventoryClicker.ClickSlot(slot);
+                                InventoryClicker.ClickSlot(slot, Integer.parseInt(args.get(1)),Integer.parseInt(args.get(2)));
                                 break;
                             }
                         }
                     }
                 }
+            }
+            if (command.equals("say")) {
+                Minecraft.getMinecraft().thePlayer.sendChatMessage(args.get(0));
             }
         } catch (Exception e) {
             errorMessage(command);

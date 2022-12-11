@@ -74,6 +74,7 @@ public class AutoKillWorm {
                                 } else {
                                     TranslateOn = false;
                                 }
+                                currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
                                 stage = 1;
                                 rcTick = 0;
                                 Tick = 0;
@@ -142,7 +143,6 @@ public class AutoKillWorm {
             for (int i = 0; i < 8; ++i) {
                 ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.mainInventory[i];
                 if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains(((String)getConfigByFunctionName.get("AutoKillWorm","itemName")).toLowerCase())) {
-                    currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
                     Minecraft.getMinecraft().thePlayer.inventory.currentItem = i;
                     Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, stack);
                     foundStaff = true;

@@ -3,10 +3,8 @@ package com.greencat.antimony.core.gui;
 import com.greencat.Antimony;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.register.AntimonyRegister;
-import com.greencat.antimony.core.settings.AbstractSettingOptionTextField;
 import com.greencat.antimony.core.type.AntimonyFunction;
 import com.greencat.antimony.utils.FontManager;
-import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -27,6 +25,7 @@ public class KeyBindsGUI extends GuiScreen{
     private boolean animation = true;
     private final int widthBound = FunctionManager.getLongestTextWidthAdd20() + 40;
     private GuiButton BackButton;
+    private GuiButton refreshButton;
     ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
     private int pos;
     public int ButtonExcursion = 0;
@@ -43,7 +42,9 @@ public class KeyBindsGUI extends GuiScreen{
             index = index + 1;
         }
         BackButton = new GuiClickGUIButton(0,10,this.height - 25,widthBound - 10,18,"Back",new ResourceLocation(Antimony.MODID,"clickgui/back.png"));
+        refreshButton = new GuiClickGUIButton(114514,this.width - 70,this.height - 25,70,18,"Refresh");
         this.buttonList.add(BackButton);
+        this.buttonList.add(refreshButton);
     }
     public void drawScreen(int x, int y, float delta)
     {
@@ -87,7 +88,7 @@ public class KeyBindsGUI extends GuiScreen{
             this.ButtonExcursion = this.ButtonExcursion + 10;
         }
         for(GuiButton button : this.buttonList){
-            button.visible = button.yPosition >= 53 && (button.yPosition <= this.height - 25 - 18 || button.id == 0);
+            button.visible = button.yPosition >= 53 && (button.yPosition <= this.height - 25 - 18 || (button.id == 0 || button.id == 114514));
         }
         for(GuiButton button : this.buttonList){
             if (button instanceof KeyBindButton) {
@@ -101,7 +102,9 @@ public class KeyBindsGUI extends GuiScreen{
         if(button.id == 0){
             mc.displayGuiScreen(parentScreen);
         } else {
-            if(button instanceof KeyBindButton) {
+            if(button == refreshButton) {
+                pos = 0;
+            } else if(button instanceof KeyBindButton) {
                 targetButton = (KeyBindButton) button;
             }
         }

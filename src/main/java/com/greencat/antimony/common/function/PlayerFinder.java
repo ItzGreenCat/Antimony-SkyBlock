@@ -39,15 +39,19 @@ public class PlayerFinder {
                     if (event.entity instanceof EntityPlayer) {
                         EntityPlayer player = (EntityPlayer) event.entity;
                         if (player != Minecraft.getMinecraft().thePlayer && ((!((Boolean) getConfigByFunctionName.get("PlayerFinder", "showNpc"))) || (!(player.isInvisible() || Utils.isNPC(player))))) {
-                            Utils.OutlinedBoxWithESP(player.getEntityBoundingBox(), new Color(30, 255, 243), false, 3);
-                            Utils.renderText("玩家:" + player.getName(), new BlockPos(player.posX, player.posY + 2.15, player.posZ), ((MinecraftAccessor) Minecraft.getMinecraft()).getTimer().renderPartialTicks);
+                            if(isValid((EntityPlayer) event.entity)) {
+                                Utils.OutlinedBoxWithESP(player.getEntityBoundingBox(), new Color(30, 255, 243), false, 3);
+                                Utils.renderText("玩家:" + player.getName(), new BlockPos(player.posX, player.posY + 2.15, player.posZ), ((MinecraftAccessor) Minecraft.getMinecraft()).getTimer().renderPartialTicks);
+                            }
                         }
                     }
                 }
             } else {
                 if (Minecraft.getMinecraft().theWorld != null) {
                     if (event.entity instanceof EntityPlayer) {
-                        GlStateManager.disableDepth();
+                        if(isValid((EntityPlayer) event.entity)) {
+                            GlStateManager.disableDepth();
+                        }
                     }
                 }
             }
@@ -59,11 +63,19 @@ public class PlayerFinder {
             if(mode == 1){
                 if (Minecraft.getMinecraft().theWorld != null) {
                     if (event.entity instanceof EntityPlayer) {
-                        GlStateManager.enableDepth();
+                        if(isValid((EntityPlayer) event.entity)) {
+                            GlStateManager.enableDepth();
+                        }
                     }
                 }
             }
         }
+    }
+    public boolean isValid(EntityPlayer player){
+        if(!player.getName().contains("Goblin") && !player.getName().contains("Ice Walker")){
+            return true;
+        }
+        return false;
     }
 
 }

@@ -43,6 +43,7 @@ public class ClickGUI extends GuiScreen {
     //Parent GUI
     private GuiScreen parentScreen;
     private GuiButton BackButton;
+    private GuiButton refreshButton;
     ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
     //The offset value of the GUI sidebar
     private int pos;
@@ -89,7 +90,9 @@ public class ClickGUI extends GuiScreen {
             }
         }
         BackButton = new GuiClickGUIButton(0,10,this.height - 25,widthBound - 10,18,"Back",new ResourceLocation(Antimony.MODID,"clickgui/back.png"));
+        refreshButton = new GuiClickGUIButton(114514,this.width - 70,this.height - 25,70,18,"Refresh");
         this.buttonList.add(BackButton);
+        this.buttonList.add(refreshButton);
 
     }
     public void drawScreen(int x, int y, float delta)
@@ -129,7 +132,7 @@ public class ClickGUI extends GuiScreen {
             this.ButtonExcursion = this.ButtonExcursion + 10;
         }
         for(GuiButton button : this.buttonList){
-            button.visible = button.yPosition >= 53 && (button.yPosition <= this.height - 25 - 18 || button.id == 0);
+            button.visible = button.yPosition >= 53 && (button.yPosition <= this.height - 25 - 18 || (button.id == 0 || button.id == 114514));
         }
         for(GuiButton button : this.buttonList){
                 if (button instanceof GuiTableButton) {
@@ -151,15 +154,19 @@ public class ClickGUI extends GuiScreen {
                 mc.displayGuiScreen(parentScreen);
             }
                 if (button.id > 0) {
-                    for (Map.Entry<GuiButton, SelectObject> entry : FunctionObjectMap.entrySet()) {
-                        if (button == entry.getKey()) {
-                            if (entry.getValue().getType().equals("function")) {
-                                FunctionManager.switchStatus(entry.getValue().getName());
-                                break;
-                            } else if (entry.getValue().getType().equals("table")) {
-                                mc.displayGuiScreen(new ClickGUI(mc.currentScreen, entry.getValue().getName(), false));
+                    if(button.id != 114514) {
+                        for (Map.Entry<GuiButton, SelectObject> entry : FunctionObjectMap.entrySet()) {
+                            if (button == entry.getKey()) {
+                                if (entry.getValue().getType().equals("function")) {
+                                    FunctionManager.switchStatus(entry.getValue().getName());
+                                    break;
+                                } else if (entry.getValue().getType().equals("table")) {
+                                    mc.displayGuiScreen(new ClickGUI(mc.currentScreen, entry.getValue().getName(), false));
+                                }
                             }
                         }
+                    } else {
+                        pos = 0;
                     }
                 } else if (button.id < 0) {
                     for (Map.Entry<GuiButton, SelectObject> entry : FunctionObjectMap.entrySet()) {

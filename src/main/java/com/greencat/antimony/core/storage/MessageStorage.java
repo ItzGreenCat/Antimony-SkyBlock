@@ -18,8 +18,7 @@ public class MessageStorage {
     }
     //replace this list(element) into a new list(element)
     public static void setAllList(List<Notice> list){
-        StorageList.clear();
-        StorageList.addAll(list);
+        StorageList = list;
     }
     @Deprecated
     public static void deleteFirst(){

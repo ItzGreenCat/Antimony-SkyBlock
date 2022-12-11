@@ -10,7 +10,6 @@ public class SelectGUIStorage {
     public static List<SelectTable> TableStorage = new ArrayList<SelectTable>();
     //Replace the entire array (elements in )
     public void SetWholeList(List<SelectTable> table){
-        TableStorage.clear();
-        TableStorage.addAll(table);
+        TableStorage = table;
     }
 }

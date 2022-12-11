@@ -33,7 +33,8 @@
     "MixinNetworkManagerChInit",
     "MixinRenderer",
     "S12Accessor",
-    "ShaderGroupAccessor"
+    "ShaderGroupAccessor",
+    "SlotAccessor"
   ],
   "client": [
     "GuiContainerAccessor",

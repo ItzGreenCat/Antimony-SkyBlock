@@ -5,6 +5,8 @@ import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.common.key.KeyLoader;
 import com.greencat.antimony.utils.EasyReflection;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StringUtils;
@@ -22,7 +24,7 @@ public class InstantSwitch {
     public void InputTrigger(TickEvent.ClientTickEvent event) {
         try {
             if (Keyboard.isKeyDown(KeyLoader.InstantSwitch.getKeyCode())) {
-                if (FunctionManager.getStatus("InstantSwitch")) {
+                if (FunctionManager.getStatus("InstantSwitch") && !(Minecraft.getMinecraft().currentScreen instanceof GuiChat) && !(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
                     if (Minecraft.getMinecraft().theWorld != null) {
                         InstantSwitchCore();
                     }

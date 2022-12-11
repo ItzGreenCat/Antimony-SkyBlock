@@ -23,6 +23,7 @@ public class SettingsGUI extends GuiScreen {
     private int index = 1;
     private GuiScreen parentScreen;
     private GuiButton BackButton;
+    private GuiButton refreshButton;
     private int ButtonListHeight;
     private final int widthBound = FunctionManager.getLongestTextWidthAdd20() + 160;
     private int pos;
@@ -67,7 +68,9 @@ public class SettingsGUI extends GuiScreen {
             }
         }
         BackButton = new GuiClickGUIButton(0,10,this.height - 25,widthBound - 10,18,"Save and Back",new ResourceLocation(Antimony.MODID,"clickgui/back.png"));;
+        refreshButton = new GuiClickGUIButton(114514,this.width - 70,this.height - 25,70,18,"Refresh");
         this.buttonList.add(BackButton);
+        this.buttonList.add(refreshButton);
     }
     public void drawScreen(int x, int y, float delta)
     {
@@ -110,7 +113,7 @@ public class SettingsGUI extends GuiScreen {
             textField.visible = !(textField.yPosition < 53 || textField.yPosition > (this.height - 25 - 18));
         }
         for(GuiButton button : this.buttonList){
-            button.visible = button.yPosition >= 53 && (button.yPosition <= this.height - 25 - 18 || button.id == 0);
+            button.visible = button.yPosition >= 53 && (button.yPosition <= this.height - 25 - 18 || (button.id == 0 || button.id == 114514));
         }
         Utils.drawStringScaled(title,mc.fontRendererObj,(widthBound / 2.0F) - ((mc.fontRendererObj.getStringWidth(title) * 2) / 2.0F),25,0xFFFFFF,2);
         drawRect(5,44,widthBound - pos  - 5,46,new Color(0,0,0).getRGB());
@@ -133,7 +136,9 @@ public class SettingsGUI extends GuiScreen {
                 }
                 mc.displayGuiScreen(parentScreen);
             }
-
+            if(button == refreshButton){
+                pos = 0;
+            }
                 if (button instanceof AbstractSettingOptionButton) {
                     if (button instanceof SettingBoolean) {
                         handleBoolean((SettingBoolean) button);

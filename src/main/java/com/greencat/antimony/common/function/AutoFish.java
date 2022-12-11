@@ -32,6 +32,8 @@ public class AutoFish {
     static boolean MoveStatus = false;
     static Boolean AutoFishStatus = false;
     static Boolean slugFish = false;
+    static int hookThrownCooldown = 0;
+    static boolean nextTickThrow = false;
     float oldLevel;
     public static boolean emberStatus = false;
 
@@ -62,12 +64,14 @@ public class AutoFish {
     public void onEnable(CustomEventHandler.FunctionEnableEvent event){
         oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
         Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
+        nextTickThrow = false;
     }
     @SubscribeEvent
     public void onDisabled(CustomEventHandler.FunctionDisabledEvent event){
         if(event.function.getName().equals("AutoFish")){
             KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(),false);
             Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, oldLevel);
+            nextTickThrow = false;
         }
     }
     @SubscribeEvent
@@ -76,9 +80,11 @@ public class AutoFish {
             if(!event.status){
                 KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(),false);
                 Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, oldLevel);
+                nextTickThrow = false;
             } else {
                 oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
                 Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
+                nextTickThrow = false;
             }
         }
     }
@@ -158,6 +164,44 @@ public class AutoFish {
                 hookTick = hookTick + 1;
             }
         }
+        if(FunctionManager.getStatus("AutoFish")){
+            if((Boolean)getConfigByFunctionName.get("AutoFish","throwHook")){
+                if(!isHookThrown() && Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == Items.fishing_rod){
+                    if(hookThrownCooldown + 1 > (Integer)getConfigByFunctionName.get("AutoFish","throwHookCooldown") * 40){
+                        utils.print("到达设定时间,自动抛竿");
+                        Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
+                        hookThrownCooldown = 0;
+                    } else {
+                        hookThrownCooldown = hookThrownCooldown + 1;
+                    }
+                } else {
+                    hookThrownCooldown = 0;
+                }
+            }
+            if((Boolean)getConfigByFunctionName.get("AutoFish","rethrow")){
+                if(hookTick + 1 > (Integer)getConfigByFunctionName.get("AutoFish","rethrowCooldown") * 40){
+                    if(isHookThrown()){
+                        Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
+                        nextTickThrow = true;
+                        init();
+                        AutoFishStatus = false;
+                        if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
+                            utils.print("钓鱼检测状态:关闭");
+                        }
+                        hookTick = -1;
+                    }
+                }
+            }
+            if(nextTickThrow){
+                Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
+                AutoFishStatus = true;
+                hookTick = 0;
+                if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
+                    utils.print("钓鱼检测状态:开启");
+                }
+                nextTickThrow = false;
+            }
+        }
     }
 
     @SubscribeEvent
@@ -233,5 +277,20 @@ public class AutoFish {
                 }
             }
             }
+    }
+    public boolean isHookThrown(){
+        if(Minecraft.getMinecraft().theWorld != null) {
+            boolean thrown = false;
+            List<EntityFishHook> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityFishHook.class, new AxisAlignedBB(Minecraft.getMinecraft().thePlayer.posX - (200 / 2d), Minecraft.getMinecraft().thePlayer.posY - (200 / 2d), Minecraft.getMinecraft().thePlayer.posZ - (200 / 2d), Minecraft.getMinecraft().thePlayer.posX + (200 / 2d), Minecraft.getMinecraft().thePlayer.posY + (200 / 2d), Minecraft.getMinecraft().thePlayer.posZ + (200 / 2d)), null);
+            for (EntityFishHook entity : entities) {
+                if (entity.angler == Minecraft.getMinecraft().thePlayer) {
+                    thrown = true;
+                    break;
+                }
+            }
+            return thrown;
+        } else {
+            return false;
+        }
     }
 }

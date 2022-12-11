@@ -297,6 +297,7 @@ public class Antimony {
         new FrozenTreasureESP();
         new CaveSpiderESP();
         new KillerBot();
+        new AutoTerminal();
 
         //init blur
         Blur.register();
@@ -376,6 +377,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("FrozenTreasureESP"));
         register.RegisterFunction(new AntimonyFunction("CaveSpiderESP"));
         register.RegisterFunction(new AntimonyFunction("KillerBot"));
+        register.RegisterFunction(new AntimonyFunction("AutoTerminal"));
 
         //register tables
         register.RegisterTable(new SelectTable("root"));
@@ -434,6 +436,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "HideDungeonMobNameTag", "Dungeon"));
         register.RegisterSelectObject(new SelectObject("function", "SecretBot", "Dungeon"));
         register.RegisterSelectObject(new SelectObject("function", "GhostBlock", "Dungeon"));
+        register.RegisterSelectObject(new SelectObject("function", "AutoTerminal", "Dungeon"));
         register.RegisterSelectObject(new SelectObject("function", "LividESP", "Dungeon"));
 
         register.RegisterSelectObject(new SelectObject("function", "AutoFish", "Macro"));
@@ -516,6 +519,10 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingBoolean("状态提示", "message", true));
         FunctionManager.addConfiguration(new SettingBoolean("显示抛竿计时器", "timer", true));
         FunctionManager.addConfiguration(new SettingBoolean("强制潜行", "sneak", false));
+        FunctionManager.addConfiguration(new SettingBoolean("自动抛竿", "throwHook", true));
+        FunctionManager.addConfiguration(new SettingInt("自动抛竿超时时间(秒)","throwHookCooldown",5));
+        FunctionManager.addConfiguration(new SettingBoolean("太久未上钩自动重抛竿", "rethrow", true));
+        FunctionManager.addConfiguration(new SettingLimitInt("自动重抛竿超时时间(秒)","rethrowCooldown",20,30,1));
         FunctionManager.addConfiguration(new SettingInt("抛竿计时器位置(X)", "timerX", 200));
         FunctionManager.addConfiguration(new SettingInt("抛竿计时器位置(Y)", "timerY", 100));
 
@@ -646,6 +653,7 @@ public class Antimony {
         nukerType.put("Gold Block",6);
         nukerType.put("Mithril",7);
         nukerType.put("Frozen Treasure",8);
+        nukerType.put("Mithril With Titanium",9);
         FunctionManager.addConfiguration(new SettingTypeSelector("模式","type",0,nukerType));
 
         FunctionManager.bindFunction("KillerBot");
@@ -658,6 +666,14 @@ public class Antimony {
         HashMap<String, Integer> type = new HashMap<String, Integer>();
         type.put("Graveyard Zombie",0);
         FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",0,type));
+
+        FunctionManager.bindFunction("Velocity");
+        FunctionManager.addConfiguration(new SettingBoolean("在地牢自动禁用", "disbaleInDungeon", true));
+
+        FunctionManager.bindFunction("DroppedItemESP");
+        FunctionManager.addConfiguration(new SettingInt("ESP颜色(R)", "colorR",218));
+        FunctionManager.addConfiguration(new SettingInt("ESP颜色(G)", "colorG",105));
+        FunctionManager.addConfiguration(new SettingInt("ESP颜色(B)", "colorB",156));
 
         //check if new user
         NewUserFunction();

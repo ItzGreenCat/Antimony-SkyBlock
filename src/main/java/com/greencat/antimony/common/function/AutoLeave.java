@@ -81,6 +81,12 @@ public class AutoLeave {
         }
     }
     public Boolean isValid(EntityPlayer player){
-        return !Utils.isNPC(player) && !player.isInvisible() && player != Minecraft.getMinecraft().thePlayer;
+        if(!Utils.isNPC(player) && !player.isInvisible() && player != Minecraft.getMinecraft().thePlayer){
+            if(!player.getName().contains("Goblin") && !player.getName().contains("Ice Walker")){
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 }

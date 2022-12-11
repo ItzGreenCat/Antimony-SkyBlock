@@ -142,6 +142,13 @@ public class Nuker {
                 }
             }
         }
+        if(nukerType == 9){
+            List<Block> oreList = new ArrayList<Block>();
+            oreList.add(Blocks.prismarine);
+            oreList.add(Blocks.wool);
+            oreList.add(Blocks.stone);
+            pos = nuker.closestMineableBlock(oreList,true);
+        }
         return pos;
     }
     private boolean isInCave() {

@@ -1,18 +1,18 @@
 package com.greencat.antimony.core;
 
-import com.greencat.antimony.common.mixins.EntityPlayerSPAccessor;
 import com.greencat.antimony.core.event.CustomEventHandler;
-import com.greencat.antimony.core.type.Rotation;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockStone;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Vec3;
+import net.minecraft.util.Vec3i;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -182,6 +182,45 @@ public class nukerCore2 {
                 for(Block b : block) {
                     if (blockState.getBlock() == b) {
                         chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                    }
+                }
+            }
+        }
+        double smallest = 9999;
+        Vec3 closest = null;
+        for (Vec3 chest : chests) {
+            double dist = chest.distanceTo(playerVec);
+            if (dist < smallest) {
+                smallest = dist;
+                closest = chest;
+            }
+        }
+        if (closest != null && smallest < 5) {
+            return new BlockPos(closest.xCoord, closest.yCoord, closest.zCoord);
+        }
+        return null;
+    }
+    public BlockPos closestMineableBlock(List<Block> block,Boolean titanium) {
+        int r = 6;
+        if (Minecraft.getMinecraft().thePlayer == null) return null;
+        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        playerPos = playerPos.add(0, 1, 0);
+        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3i vec3i = new Vec3i(r, r, r);
+        ArrayList<Vec3> chests = new ArrayList<>();
+        if (playerPos != null) {
+            for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
+                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
+                for(Block b : block) {
+                    if (blockState.getBlock() == b) {
+                        if(titanium && b == Blocks.stone) {
+                            int meta = blockState.getValue(BlockStone.VARIANT).getMetadata();
+                            if(meta == 4) {
+                                chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                            }
+                        } else {
+                            chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                        }
                     }
                 }
             }
