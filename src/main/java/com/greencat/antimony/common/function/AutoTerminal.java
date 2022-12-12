@@ -2,6 +2,7 @@ package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.InventoryClicker;
+import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.develop.Console;
 import net.minecraft.client.Minecraft;
@@ -27,11 +28,13 @@ import java.util.stream.Collectors;
 public class AutoTerminal {
     protected static TerminalType terminal = TerminalType.NONE;
     protected static List<Slot> clickQueue = new ArrayList<>();
+    @Deprecated
     protected static List<Slot> rightClickQueue = new ArrayList<>();
     static int cooldown = 0;
     static int threadTimer = -1;
     static int lastWindowID;
     static int targetColorIndex = -1;
+    @Deprecated
     static long lastClickTime = 0;
     static boolean threadFlag = false;
     static Thread solverThread;
@@ -83,14 +86,14 @@ public class AutoTerminal {
                     threadTimer = -1;
                     cooldown = 0;
                 } else if (terminal != TerminalType.NONE && !AutoTerminal.clickQueue.isEmpty()) {
-                    if (cooldown + 1 > 5) {
-                        if(rightClickQueue.isEmpty()) {
+                    if (cooldown + 1 > (Integer) getConfigByFunctionName.get("AutoTerminal","cooldown")) {
+                        //if(rightClickQueue.isEmpty()) {
                             InventoryClicker.ClickSlot(AutoTerminal.clickQueue.get(0), InventoryClicker.Type.LEFT/*type*/);
                             AutoTerminal.clickQueue.remove(0);
-                        } else {
-                            InventoryClicker.ClickSlot(AutoTerminal.clickQueue.get(0), InventoryClicker.Type.RIGHT/*type*/);
+                        /*} else {
+                            InventoryClicker.ClickSlot(AutoTerminal.clickQueue.get(0), InventoryClicker.Type.RIGHT);
                             AutoTerminal.rightClickQueue.remove(0);
-                        }
+                        }*/
                         cooldown = 0;
                     } else {
                         cooldown = cooldown + 1;
@@ -280,12 +283,8 @@ class Solver implements Runnable {
                         if (itemStack == null) continue;
                         if (!AutoTerminal.colorOrder.contains(itemStack.getItemDamage())) continue;
 
-                        boolean leftClick = (AutoTerminal.colorOrder.indexOf(AutoTerminal.targetColorIndex) - AutoTerminal.colorOrder.indexOf(itemStack.getItemDamage()) + AutoTerminal.colorOrder.size()) % AutoTerminal.colorOrder.size() < Math.round(AutoTerminal.colorOrder.size() / 2f);
-                        if (leftClick) {
-                            AutoTerminal.clickQueue.add(slot);
-                        } else {
-                            AutoTerminal.rightClickQueue.add(slot);
-                        }
+                        //boolean leftClick = (AutoTerminal.colorOrder.indexOf(AutoTerminal.targetColorIndex) - AutoTerminal.colorOrder.indexOf(itemStack.getItemDamage()) + AutoTerminal.colorOrder.size()) % AutoTerminal.colorOrder.size() < Math.round(AutoTerminal.colorOrder.size() / 2f);
+                        AutoTerminal.clickQueue.add(slot);
                     }
                     break;
             }

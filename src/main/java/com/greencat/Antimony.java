@@ -59,7 +59,7 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.5.1";
+    public static final String VERSION = "3.5.2";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -668,12 +668,16 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",0,type));
 
         FunctionManager.bindFunction("Velocity");
-        FunctionManager.addConfiguration(new SettingBoolean("在地牢自动禁用", "disbaleInDungeon", true));
+        FunctionManager.addConfiguration(new SettingBoolean("在地牢自动禁用", "disableInDungeon", true));
 
         FunctionManager.bindFunction("DroppedItemESP");
         FunctionManager.addConfiguration(new SettingInt("ESP颜色(R)", "colorR",218));
         FunctionManager.addConfiguration(new SettingInt("ESP颜色(G)", "colorG",105));
         FunctionManager.addConfiguration(new SettingInt("ESP颜色(B)", "colorB",156));
+
+        FunctionManager.bindFunction("AutoTerminal");
+        FunctionManager.addConfiguration(new SettingLimitInt("点击延迟", "cooldown",2,10,0));
+
 
         //check if new user
         NewUserFunction();
