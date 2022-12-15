@@ -38,6 +38,7 @@
   ],
   "client": [
     "GuiContainerAccessor",
+    "MixinFontRenderer",
     "MixinGuiTextField",
     "RenderGlobalAccessor"
   ]

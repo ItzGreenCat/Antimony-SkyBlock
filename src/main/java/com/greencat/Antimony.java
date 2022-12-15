@@ -59,7 +59,7 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.5.2";
+    public static final String VERSION = "3.5.3";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -298,6 +298,7 @@ public class Antimony {
         new CaveSpiderESP();
         new KillerBot();
         new AutoTerminal();
+        new DragonEggESP();
 
         //init blur
         Blur.register();
@@ -378,6 +379,8 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("CaveSpiderESP"));
         register.RegisterFunction(new AntimonyFunction("KillerBot"));
         register.RegisterFunction(new AntimonyFunction("AutoTerminal"));
+        register.RegisterFunction(new AntimonyFunction("NickHider"));
+        register.RegisterFunction(new AntimonyFunction("DragonEggESP"));
 
         //register tables
         register.RegisterTable(new SelectTable("root"));
@@ -427,6 +430,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "HideFallingBlock", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "JasperESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureESP", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "DragonEggESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "ChestFinder", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
 
@@ -465,6 +469,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AutoUse", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "BlackList", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "Interface", "Misc"));
+        register.RegisterSelectObject(new SelectObject("function", "NickHider", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "HUD", "Misc"));
 
         register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
@@ -678,6 +683,8 @@ public class Antimony {
         FunctionManager.bindFunction("AutoTerminal");
         FunctionManager.addConfiguration(new SettingLimitInt("点击延迟", "cooldown",2,10,0));
 
+        FunctionManager.bindFunction("NickHider");
+        FunctionManager.addConfiguration(new SettingString("名称", "name", "CoolGuy123"));
 
         //check if new user
         NewUserFunction();
