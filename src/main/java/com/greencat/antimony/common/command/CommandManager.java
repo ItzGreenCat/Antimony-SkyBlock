@@ -1,6 +1,7 @@
 package com.greencat.antimony.common.command;
 
 import com.greencat.Antimony;
+import com.greencat.antimony.common.function.FakeBan;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.common.function.CustomItemName;
 import com.greencat.antimony.core.Pathfinder;
@@ -30,7 +31,8 @@ public class CommandManager extends CommandBase {
             "/antimony ss <整数:SCALING> 设置大型截图SCALING(分辨率是窗口分辨率的SCALING倍)",
             "/antimony reloadRepo 重载远程内容",
             "/antimony getUUID 获取手持物品UUID",
-            "/antimony goto <整数:X> <整数:Y> <整数:Z> 自动寻找去某个方块的路径"
+            "/antimony goto <整数:X> <整数:Y> <整数:Z> 自动寻找去某个方块的路径",
+            "/antimony fakeban <原因> 制造FakeBan"
     };
 
     public int getRequiredPermissionLevel() {
@@ -119,6 +121,20 @@ public class CommandManager extends CommandBase {
             if (args[0].equalsIgnoreCase("ss")) {
                 Antimony.ImageScaling = Integer.parseInt(args[1]);
                 utils.print("设置完成");
+            }
+        }
+        if (args.length >= 2) {
+            if (args[0].equalsIgnoreCase("fakeban")) {
+                String str = "";
+                boolean skipped = false;
+                for(String string : args) {
+                    if(!skipped){
+                        skipped = true;
+                    } else {
+                        str = str + string + " ";
+                    }
+                }
+                FakeBan.active(str);
             }
         }
         if (args.length == 4) {

@@ -110,9 +110,6 @@ public class AutoTerminal {
             if (chestContainer instanceof ContainerChest) {
                 ContainerChest container = (ContainerChest) chestContainer;
                 String GuiName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
-                if (chestContainer.windowId != lastWindowID) {
-                    Console.addMessage("Current Gui Name: " + GuiName);
-                }
                 if (GuiName.contains("Navigate the maze!")) {
                     terminal = TerminalType.MAZE;
                 } else if (GuiName.contains("Click in order!")) {

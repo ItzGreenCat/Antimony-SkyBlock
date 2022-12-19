@@ -13,15 +13,12 @@ import com.greencat.antimony.common.function.rank.CustomRank;
 import com.greencat.antimony.common.function.rank.RankList;
 import com.greencat.antimony.common.function.title.TitleManager;
 import com.greencat.antimony.common.key.KeyLoader;
+import com.greencat.antimony.core.*;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.HUDManager;
-import com.greencat.antimony.core.Pathfinding;
 import com.greencat.antimony.core.blacklist.BlackList;
 import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
-import com.greencat.antimony.core.nukerCore;
-import com.greencat.antimony.core.nukerWrapper;
 import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.antimony.core.settings.*;
 import com.greencat.antimony.core.type.AntimonyFunction;
@@ -59,7 +56,7 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.5.3";
+    public static final String VERSION = "3.6";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -240,6 +237,7 @@ public class Antimony {
         new BlackList();
         new nukerWrapper();
         new IRC();
+        new DanmakuCore();
 
         //init functions and register function event
         new AutoFish();
@@ -299,6 +297,7 @@ public class Antimony {
         new KillerBot();
         new AutoTerminal();
         new DragonEggESP();
+        new DanmakuChat();
 
         //init blur
         Blur.register();
@@ -381,6 +380,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("AutoTerminal"));
         register.RegisterFunction(new AntimonyFunction("NickHider"));
         register.RegisterFunction(new AntimonyFunction("DragonEggESP"));
+        register.RegisterFunction(new AntimonyFunction("DanmakuChat"));
 
         //register tables
         register.RegisterTable(new SelectTable("root"));
@@ -476,6 +476,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "CustomItemSound", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Cartoon", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "MarketingGenerator", "Fun"));
+        register.RegisterSelectObject(new SelectObject("function", "DanmakuChat", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Rat", "Fun"));
 
 

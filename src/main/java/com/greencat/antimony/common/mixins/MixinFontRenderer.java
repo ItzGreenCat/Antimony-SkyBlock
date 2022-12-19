@@ -17,9 +17,20 @@ public class MixinFontRenderer {
             argsOnly = true,
             ordinal = 0)
     public String renderStringAtPos(String str){
+        return StringFactory(str);
+    }
+    @ModifyVariable(
+            method = "getStringWidth",
+            at = @At("HEAD"),
+            argsOnly = true,
+            ordinal = 0)
+    public String getStringWidth(String str){
+        return StringFactory(str);
+    }
+    private String StringFactory(String str){
         String originalString = str;
         String temp = originalString;
-        temp = temp.replace("Chum","Cum").replace("chum","cum");
+        temp = temp.replace("Chum","Cum").replace("chum","cum").replace("CHUM","CUM");
         if(FunctionManager.getStatus("NickHider") && Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().thePlayer.getName() != null){
             temp = temp.replace(Minecraft.getMinecraft().thePlayer.getName(),(String) getConfigByFunctionName.get("NickHider","name"));
         }
