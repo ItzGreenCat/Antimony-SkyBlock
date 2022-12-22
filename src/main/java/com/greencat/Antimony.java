@@ -258,7 +258,7 @@ public class Antimony {
         new AntiAFKJump();
         new Sprint();
         new Eagle();
-        new Velocity();
+        //new Velocity();
         new ItemTranslate();
         new GhostBlock();
         new InstantSwitch();
@@ -338,7 +338,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("AntiAFKJump"));
         register.RegisterFunction(new AntimonyFunction("Sprint"));
         register.RegisterFunction(new AntimonyFunction("Eagle"));
-        register.RegisterFunction(new AntimonyFunction("Velocity"));
+        //register.RegisterFunction(new AntimonyFunction("Velocity"));
         register.RegisterFunction(new AntimonyFunction("AutoCannon"));
         register.RegisterFunction(new AntimonyFunction("ItemTranslate"));
         register.RegisterFunction(new AntimonyFunction("HUD"));
@@ -459,7 +459,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "AntiAFKJump", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Sprint", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Eagle", "Movement"));
-        register.RegisterSelectObject(new SelectObject("function", "Velocity", "Movement"));
+        //register.RegisterSelectObject(new SelectObject("function", "Velocity", "Movement"));
 
 
         register.RegisterSelectObject(new SelectObject("function", "SkeletonAim", "Misc"));
@@ -673,7 +673,7 @@ public class Antimony {
         type.put("Graveyard Zombie",0);
         FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",0,type));
 
-        FunctionManager.bindFunction("Velocity");
+        //FunctionManager.bindFunction("Velocity");
         FunctionManager.addConfiguration(new SettingBoolean("在地牢自动禁用", "disableInDungeon", true));
 
         FunctionManager.bindFunction("DroppedItemESP");
