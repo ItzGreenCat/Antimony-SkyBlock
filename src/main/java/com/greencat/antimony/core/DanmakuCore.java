@@ -1,5 +1,6 @@
 package com.greencat.antimony.core;
 
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.type.DanmakuMessage;
 import com.greencat.antimony.develop.Console;
 import net.minecraft.client.Minecraft;
@@ -28,40 +29,42 @@ public class DanmakuCore {
 
     @SubscribeEvent
     public void renderGameOverlay(RenderGameOverlayEvent event) {
-        if (event.type == RenderGameOverlayEvent.ElementType.TEXT) {
-            ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-            if (!messageQueue.isEmpty()) {
-                DanmakuMessage message = messageQueue.get(0);
-                int freeTrack = getFreeTrack();
-                if (freeTrack != 0) {
-                    int yPos = getTrackPosition(freeTrack);
-                    if (!(yPos > ((scaledResolution.getScaledHeight() / 6) * 5))) {
-                        message.track = freeTrack;
-                        message.x = scaledResolution.getScaledWidth();
-                        message.refreshEndX();
-                        message.y = yPos;
-                        displayingMessage.add(message);
-                        messageQueue.remove(0);
+        if(FunctionManager.getStatus("DanmakuChat")) {
+            if (event.type == RenderGameOverlayEvent.ElementType.TEXT) {
+                ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+                if (!messageQueue.isEmpty()) {
+                    DanmakuMessage message = messageQueue.get(0);
+                    int freeTrack = getFreeTrack();
+                    if (freeTrack != 0) {
+                        int yPos = getTrackPosition(freeTrack);
+                        if (!(yPos > ((scaledResolution.getScaledHeight() / 6) * 5))) {
+                            message.track = freeTrack;
+                            message.x = scaledResolution.getScaledWidth();
+                            message.refreshEndX();
+                            message.y = yPos;
+                            displayingMessage.add(message);
+                            messageQueue.remove(0);
+                        }
                     }
                 }
-            }
-            if (cooldown + 1 > 5) {
-                move = true;
-                cooldown = 0;
-            } else {
-                cooldown = cooldown + 1;
-            }
-            if (!displayingMessage.isEmpty()) {
-                for (DanmakuMessage message : displayingMessage) {
-                    if (move) {
-                        message.x = message.x - 2;
-                    }
-                    message.draw();
+                if (cooldown + 1 > 5) {
+                    move = true;
+                    cooldown = 0;
+                } else {
+                    cooldown = cooldown + 1;
                 }
-                move = false;
-                destroyMessage();
+                if (!displayingMessage.isEmpty()) {
+                    for (DanmakuMessage message : displayingMessage) {
+                        if (move) {
+                            message.x = message.x - 2;
+                        }
+                        message.draw();
+                    }
+                    move = false;
+                    destroyMessage();
+                }
+                Console.addMessage("displayedMessage size: " + displayingMessage.size());
             }
-            Console.addMessage("displayedMessage size: " + displayingMessage.size());
         }
     }
 

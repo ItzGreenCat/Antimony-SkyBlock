@@ -27,6 +27,7 @@ import com.greencat.antimony.core.type.SelectTable;
 import com.greencat.antimony.develop.Console;
 import com.greencat.antimony.utils.Blur;
 import com.greencat.antimony.utils.Chroma;
+import com.greencat.antimony.utils.SmoothRotation;
 import com.greencat.antimony.utils.Utils;
 import io.netty.channel.EventLoop;
 import net.minecraft.client.Minecraft;
@@ -56,7 +57,7 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.6";
+    public static final String VERSION = "3.7";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -238,6 +239,7 @@ public class Antimony {
         new nukerWrapper();
         new IRC();
         new DanmakuCore();
+        new SmoothRotation();
 
         //init functions and register function event
         new AutoFish();
@@ -298,6 +300,7 @@ public class Antimony {
         new AutoTerminal();
         new DragonEggESP();
         new DanmakuChat();
+        new PowderBot();
 
         //init blur
         Blur.register();
@@ -381,6 +384,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("NickHider"));
         register.RegisterFunction(new AntimonyFunction("DragonEggESP"));
         register.RegisterFunction(new AntimonyFunction("DanmakuChat"));
+        register.RegisterFunction(new AntimonyFunction("PowderBot"));
 
         //register tables
         register.RegisterTable(new SelectTable("root"));
@@ -452,6 +456,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "KillerBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "SynthesizerAura", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "Nuker", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "PowderBot", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
         register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
@@ -687,6 +692,8 @@ public class Antimony {
         FunctionManager.bindFunction("NickHider");
         FunctionManager.addConfiguration(new SettingString("名称", "name", "CoolGuy123"));
 
+        FunctionManager.bindFunction("PowderBot");
+        FunctionManager.addConfiguration(new SettingBoolean("仅启用自动开箱", "chestOnly", false));
         //check if new user
         NewUserFunction();
 

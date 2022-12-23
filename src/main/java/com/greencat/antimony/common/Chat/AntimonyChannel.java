@@ -14,6 +14,7 @@ public class AntimonyChannel {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        new CustomChatReceive();
         CustomChatReceive.receive();
     }
     public static void reconnect(){
