@@ -6,13 +6,12 @@ import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore2;
 import com.greencat.antimony.core.nukerWrapper;
+import com.greencat.antimony.develop.Console;
 import com.greencat.antimony.utils.SmoothRotation;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S2APacketParticles;
 import net.minecraft.util.*;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -25,6 +24,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class PowderBot {
     public PowderBot() {
@@ -32,9 +32,10 @@ public class PowderBot {
         CustomEventHandler.EVENT_BUS.register(this);
     }
     static List<Vec3> ignoreList = new ArrayList<Vec3>();
+    static List<Vec3> pathIgnoreList = new ArrayList<Vec3>();
     private static Vec3 closestChest = null;
     static boolean looking = false;
-    nukerCore2 nuker = nukerWrapper.nuker;
+    static nukerCore2 nuker = nukerWrapper.nuker;
     BlockPos pos;
 
     @SubscribeEvent
@@ -43,10 +44,11 @@ public class PowderBot {
             if (FunctionManager.getStatus("PowderBot")) {
                 if (!((Boolean)getConfigByFunctionName.get("PowderBot","chestOnly"))) {
                     if (!looking) {
+                        nuker.miningType = nukerCore2.MiningType.ONE_TICK;
+                        nuker.rotation = nukerCore2.RotationType.SERVER_ROTATION;
                         if (!FunctionManager.getStatus("NukerWrapper")) {
                             nukerWrapper.enable();
                         }
-                        nuker.rotation = nukerCore2.RotationType.SERVER_ROTATION;
                         Vec3 stoneVec = closestStoneUpperThanPlayer();
                         if (stoneVec != null) {
                             pos = new BlockPos(stoneVec.xCoord, stoneVec.yCoord, stoneVec.zCoord);
@@ -56,10 +58,21 @@ public class PowderBot {
                         if (nuker.requestBlock) {
                             nuker.putBlock(pos);
                         }
-                        if (!hasStone() && !FunctionManager.getStatus("Pathfinding")) {
-                            Vec3 stone = closestStoneUpperThanPlayer(20);
-                            Pathfinder.setup(new BlockPos(Utils.floorVec(Minecraft.getMinecraft().thePlayer.getPositionVector())), new BlockPos(stone.xCoord, stone.yCoord, stone.zCoord), 0.0D);
+                        if (stoneVec == null && !FunctionManager.getStatus("Pathfinding")) {
+                            Vec3 stone = randomStoneUpperThanPlayer2Block(10);
+                            try {
+                                Pathfinder.setup(new BlockPos(Utils.floorVec(Minecraft.getMinecraft().thePlayer.getPositionVector())), new BlockPos(stone.xCoord, stone.yCoord, stone.zCoord), 0.0D);
+                            } catch(Exception e){
+
+                            }
                             if (Pathfinder.hasPath()) {
+                                //Console.addMessage("PathVec3: " + "X:" + Pathfinder.getGoal().xCoord + " Y: " + Pathfinder.getGoal().yCoord + " Z: " + Pathfinder.getGoal().zCoord + " | PlayerVec3: " + " X: " + Minecraft.getMinecraft().thePlayer.getPosition().getX() + " Y: " + Minecraft.getMinecraft().thePlayer.getPosition().getY() + " Z: " + Minecraft.getMinecraft().thePlayer.getPosition().getZ());
+                                if(vecEquals(Pathfinder.getGoal(),new Vec3((int)Minecraft.getMinecraft().thePlayer.posX,(int)Minecraft.getMinecraft().thePlayer.posY,(int)Minecraft.getMinecraft().thePlayer.posZ))){
+                                    if(pathIgnoreList.size() + 1 > 30){
+                                        pathIgnoreList.clear();
+                                    }
+                                    pathIgnoreList.add(stone);
+                                }
                                 if (!FunctionManager.getStatus("Pathfinding")) {
                                     FunctionManager.setStatus("Pathfinding", true);
                                 }
@@ -162,7 +175,7 @@ public class PowderBot {
 
     private static Vec3 closestChest() {
         if(Minecraft.getMinecraft().theWorld != null) {
-            int r = 3;
+            int r = 6;
             BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
             playerPos.add(0, 1, 0);
             Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
@@ -196,8 +209,16 @@ public class PowderBot {
     private static Vec3 closestStoneUpperThanPlayer() {
         double smallest = 9999;
         Vec3 closest = null;
+        ArrayList<BlockPos> stone = new ArrayList<>();
         for(BlockPos pos : BlockPos.getAllInBox(Minecraft.getMinecraft().thePlayer.getPosition().add(2,3,2),Minecraft.getMinecraft().thePlayer.getPosition().add(-2,0,-2))){
             if(Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.stone){
+                if(!nuker.isIgnored(pos)) {
+                    stone.add(pos);
+                }
+            }
+        }
+        if(!stone.isEmpty()) {
+            for (BlockPos pos : stone) {
                 Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
                 Vec3 vec3 = new Vec3(pos);
                 double dist = vec3.distanceTo(playerVec);
@@ -209,7 +230,7 @@ public class PowderBot {
         }
         return closest;
     }
-    private static Vec3 closestStoneUpperThanPlayer(int r) {
+    private static Vec3 randomStoneUpperThanPlayer2Block(int r) {
         if(Minecraft.getMinecraft().theWorld != null) {
             BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
             playerPos.add(0, 1, 0);
@@ -221,8 +242,11 @@ public class PowderBot {
                     IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                     if (blockState.getBlock() == Blocks.stone) {
                         Vec3 chestVec = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
-                        if (chestVec.yCoord > (Minecraft.getMinecraft().thePlayer.getPositionVector().yCoord - 1)) {
-                            stone.add(chestVec);
+                        if (chestVec.yCoord > (Minecraft.getMinecraft().thePlayer.getPositionVector().yCoord - 1) && chestVec.yCoord <= (Minecraft.getMinecraft().thePlayer.getPositionVector().yCoord + 1)) {
+                            Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
+                            if(!nuker.isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))){
+                                stone.add(vec3);
+                            }
                         }
                     }
                 }
@@ -230,10 +254,12 @@ public class PowderBot {
             double smallest = 9999;
             Vec3 closest = null;
             for (Vec3 vec3 : stone) {
-                double dist = vec3.distanceTo(playerVec);
-                if (dist < smallest) {
-                    smallest = dist;
-                    closest = vec3;
+                if(!isPathIgnored(vec3)) {
+                    double dist = vec3.distanceTo(playerVec);
+                    if (dist < smallest) {
+                        smallest = dist;
+                        closest = vec3;
+                    }
                 }
             }
             return closest;
@@ -251,18 +277,18 @@ public class PowderBot {
         }
         return isIgnored;
     }
-    private static boolean vecEquals(Vec3 vec1,Vec3 vec2){
-        return vec1.xCoord == vec2.xCoord && vec1.yCoord == vec2.yCoord && vec1.zCoord == vec2.zCoord;
-    }
-    private static boolean hasStone(){
-        boolean hasStone = false;
-        for(BlockPos pos : BlockPos.getAllInBox(Minecraft.getMinecraft().thePlayer.getPosition().add(2,3,2),Minecraft.getMinecraft().thePlayer.getPosition().add(-2,0,-2))){
-            if(Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.stone){
-                hasStone = true;
+    private static boolean isPathIgnored(Vec3 vec){
+        boolean isIgnored = false;
+        for(Vec3 ignored : ignoreList){
+            if(vecEquals(vec,ignored)){
+                isIgnored = true;
                 break;
             }
         }
-        return hasStone;
+        return isIgnored;
+    }
+    private static boolean vecEquals(Vec3 vec1,Vec3 vec2){
+        return ((int)vec1.xCoord) == ((int)vec2.xCoord) && ((int)vec1.yCoord == vec2.yCoord) && ((int)vec1.zCoord == vec2.zCoord);
     }
 
 }

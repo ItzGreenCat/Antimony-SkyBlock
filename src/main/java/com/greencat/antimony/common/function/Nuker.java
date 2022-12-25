@@ -58,6 +58,11 @@ public class Nuker {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event){
         if(FunctionManager.getStatus("Nuker")) {
+            if((Integer)getConfigByFunctionName.get("Nuker","miningType") == 0){
+                nuker.miningType = nukerCore2.MiningType.NORMAL;
+            } else if((Integer)getConfigByFunctionName.get("Nuker","miningType") == 1){
+                nuker.miningType = nukerCore2.MiningType.ONE_TICK;
+            }
             if((Integer)getConfigByFunctionName.get("Nuker","rotation") == 0){
                 nuker.rotation = nukerCore2.RotationType.SERVER_ROTATION;
             } else if((Integer)getConfigByFunctionName.get("Nuker","rotation") == 1){

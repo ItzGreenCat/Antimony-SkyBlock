@@ -57,7 +57,7 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.7";
+    public static final String VERSION = "3.7.1";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -666,6 +666,10 @@ public class Antimony {
         nukerType.put("Frozen Treasure",8);
         nukerType.put("Mithril With Titanium",9);
         FunctionManager.addConfiguration(new SettingTypeSelector("模式","type",0,nukerType));
+        HashMap<String, Integer> miningType = new HashMap<String, Integer>();
+        miningType.put("Normal",0);
+        miningType.put("Instantly",1);
+        FunctionManager.addConfiguration(new SettingTypeSelector("挖掘","miningType",0,miningType));
 
         FunctionManager.bindFunction("KillerBot");
         HashMap<String, Integer> BotSlayMode = new HashMap<String, Integer>();

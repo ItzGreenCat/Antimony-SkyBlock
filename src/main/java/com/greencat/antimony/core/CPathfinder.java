@@ -38,92 +38,95 @@ public class CPathfinder {
     }
 
     public void compute(int loops, int depth) {
-        this.path.clear();
-        this.hubsToWork.clear();
-        ArrayList<Vec3> initPath = new ArrayList();
-        initPath.add(this.startVec3);
-        this.hubsToWork.add(new CPathfinder.Hub(this.startVec3, (CPathfinder.Hub)null, initPath, this.startVec3.squareDistanceTo(this.endVec3), 0.0D, 0.0D));
+        try {
+            this.path.clear();
+            this.hubsToWork.clear();
+            ArrayList<Vec3> initPath = new ArrayList();
+            initPath.add(this.startVec3);
+            this.hubsToWork.add(new CPathfinder.Hub(this.startVec3, (CPathfinder.Hub) null, initPath, this.startVec3.squareDistanceTo(this.endVec3), 0.0D, 0.0D));
 
-        label96:
-        for(int i = 0; i < loops; ++i) {
-            Collections.sort(this.hubsToWork, new CPathfinder.CompareHub());
-            int j = 0;
-            if (this.hubsToWork.size() == 0) {
-                break;
-            }
-
-            Iterator var6 = (new ArrayList(this.hubsToWork)).iterator();
-
-            while(var6.hasNext()) {
-                CPathfinder.Hub hub = (CPathfinder.Hub)var6.next();
-                ++j;
-                if (j > depth) {
+            label96:
+            for (int i = 0; i < loops; ++i) {
+                Collections.sort(this.hubsToWork, new CPathfinder.CompareHub());
+                int j = 0;
+                if (this.hubsToWork.size() == 0) {
                     break;
                 }
 
-                this.hubsToWork.remove(hub);
-                this.hubs.add(hub);
-                Vec3[] var8 = flatCardinalDirections;
-                int var9 = var8.length;
+                Iterator var6 = (new ArrayList(this.hubsToWork)).iterator();
 
-                int var10;
-                Vec3 direction;
-                Vec3 loc;
-                for(var10 = 0; var10 < var9; ++var10) {
-                    direction = var8[var10];
-                    loc = Utils.ceilVec(hub.getLoc().add(direction));
-                    if (checkPositionValidity(loc, true)) {
-                        if (isSlab(loc.addVector(0.0D, -1.0D, 0.0D), BlockSlab.EnumBlockHalf.BOTTOM)) {
-                            if (this.addHub(hub, loc.addVector(0.0D, -0.5D, 0.0D), 0.0D)) {
+                while (var6.hasNext()) {
+                    CPathfinder.Hub hub = (CPathfinder.Hub) var6.next();
+                    ++j;
+                    if (j > depth) {
+                        break;
+                    }
+
+                    this.hubsToWork.remove(hub);
+                    this.hubs.add(hub);
+                    Vec3[] var8 = flatCardinalDirections;
+                    int var9 = var8.length;
+
+                    int var10;
+                    Vec3 direction;
+                    Vec3 loc;
+                    for (var10 = 0; var10 < var9; ++var10) {
+                        direction = var8[var10];
+                        loc = Utils.ceilVec(hub.getLoc().add(direction));
+                        if (checkPositionValidity(loc, true)) {
+                            if (isSlab(loc.addVector(0.0D, -1.0D, 0.0D), BlockSlab.EnumBlockHalf.BOTTOM)) {
+                                if (this.addHub(hub, loc.addVector(0.0D, -0.5D, 0.0D), 0.0D)) {
+                                    break label96;
+                                }
+                            } else if (this.addHub(hub, loc, 0.0D)) {
                                 break label96;
                             }
-                        } else if (this.addHub(hub, loc, 0.0D)) {
-                            break label96;
                         }
                     }
-                }
 
-                var8 = flatCardinalDirections;
-                var9 = var8.length;
+                    var8 = flatCardinalDirections;
+                    var9 = var8.length;
 
-                for(var10 = 0; var10 < var9; ++var10) {
-                    direction = var8[var10];
-                    loc = Utils.ceilVec(hub.getLoc().add(direction).addVector(0.0D, 1.0D, 0.0D));
-                    if (checkPositionValidity(loc, true) && checkPositionValidity(hub.getLoc().addVector(0.0D, 1.0D, 0.0D), false)) {
-                        if (isSlab(loc.addVector(0.0D, -1.0D, 0.0D), BlockSlab.EnumBlockHalf.BOTTOM)) {
-                            if (this.addHub(hub, loc.addVector(0.0D, -0.5D, 0.0D), 0.0D)) {
+                    for (var10 = 0; var10 < var9; ++var10) {
+                        direction = var8[var10];
+                        loc = Utils.ceilVec(hub.getLoc().add(direction).addVector(0.0D, 1.0D, 0.0D));
+                        if (checkPositionValidity(loc, true) && checkPositionValidity(hub.getLoc().addVector(0.0D, 1.0D, 0.0D), false)) {
+                            if (isSlab(loc.addVector(0.0D, -1.0D, 0.0D), BlockSlab.EnumBlockHalf.BOTTOM)) {
+                                if (this.addHub(hub, loc.addVector(0.0D, -0.5D, 0.0D), 0.0D)) {
+                                    break label96;
+                                }
+                            } else if (!isSlab(hub.getLoc(), BlockSlab.EnumBlockHalf.BOTTOM) && this.addHub(hub, loc, 0.0D)) {
                                 break label96;
                             }
-                        } else if (!isSlab(hub.getLoc(), BlockSlab.EnumBlockHalf.BOTTOM) && this.addHub(hub, loc, 0.0D)) {
-                            break label96;
                         }
                     }
-                }
 
-                var8 = flatCardinalDirections;
-                var9 = var8.length;
+                    var8 = flatCardinalDirections;
+                    var9 = var8.length;
 
-                for(var10 = 0; var10 < var9; ++var10) {
-                    direction = var8[var10];
-                    loc = Utils.ceilVec(hub.getLoc().add(direction).addVector(0.0D, -1.0D, 0.0D));
-                    if (checkPositionValidity(loc, true) && checkPositionValidity(loc.addVector(0.0D, 1.0D, 0.0D), false)) {
-                        if (isSlab(loc, BlockSlab.EnumBlockHalf.BOTTOM)) {
-                            if (this.addHub(hub, loc.addVector(0.0D, 0.5D, 0.0D), 0.0D)) {
+                    for (var10 = 0; var10 < var9; ++var10) {
+                        direction = var8[var10];
+                        loc = Utils.ceilVec(hub.getLoc().add(direction).addVector(0.0D, -1.0D, 0.0D));
+                        if (checkPositionValidity(loc, true) && checkPositionValidity(loc.addVector(0.0D, 1.0D, 0.0D), false)) {
+                            if (isSlab(loc, BlockSlab.EnumBlockHalf.BOTTOM)) {
+                                if (this.addHub(hub, loc.addVector(0.0D, 0.5D, 0.0D), 0.0D)) {
+                                    break label96;
+                                }
+                            } else if (this.addHub(hub, loc, 0.0D)) {
                                 break label96;
                             }
-                        } else if (this.addHub(hub, loc, 0.0D)) {
-                            break label96;
                         }
                     }
                 }
             }
-        }
 
-        if (this.nearest) {
-            this.hubs.sort(new CPathfinder.CompareHub());
-            this.path = ((CPathfinder.Hub)this.hubs.get(0)).getPath();
-        }
+            if (this.nearest) {
+                this.hubs.sort(new CPathfinder.CompareHub());
+                this.path = ((CPathfinder.Hub) this.hubs.get(0)).getPath();
+            }
+        } catch(Exception e){
 
+        }
     }
 
     public static boolean checkPositionValidity(Vec3 loc, boolean checkGround) {
