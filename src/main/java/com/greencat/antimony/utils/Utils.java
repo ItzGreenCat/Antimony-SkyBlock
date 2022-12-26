@@ -1327,4 +1327,16 @@ public class Utils {
     public static String MarketingAccountGenerator(String name,String event,String explain){
         return MarketingAccountTemplate.replace("&name&",name).replace("&event&",event).replace("&explain&",explain);
     }
+    private boolean checkArea(String areaName) {
+        boolean isInArea = false;
+        Utils utils = new Utils();
+        List<String> scoreBoardLines = utils.getSidebarLines();
+        int size = scoreBoardLines.size() - 1;
+        for (int i = 0; i < scoreBoardLines.size(); i++) {
+            if(Utils.containedByCharSequence(scoreBoardLines.get(size - i).toLowerCase(), areaName)){
+                isInArea = true;
+            }
+        }
+        return isInArea;
+    }
 }

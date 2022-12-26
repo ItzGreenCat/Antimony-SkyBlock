@@ -20,6 +20,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class CropBot {
@@ -49,6 +51,7 @@ public class CropBot {
     static BlockPos nearlyTarget;
     static int finderCount = 0;
     Minecraft mc = Minecraft.getMinecraft();
+    List<BlockPos> ignoreList = new ArrayList<BlockPos>();
 
     public CropBot() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -71,6 +74,7 @@ public class CropBot {
             nearlyTarget = null;
             finderCount = 0;
             nuker.pos = null;
+            FunctionManager.setStatus("Pathfinding", false);
         }
     }
 
@@ -83,6 +87,7 @@ public class CropBot {
                 nearlyTarget = null;
                 finderCount = 0;
                 nuker.pos = null;
+                FunctionManager.setStatus("Pathfinding", false);
             }
         } else {
             if (event.function.getName().equals("CropBot")) {
@@ -126,6 +131,11 @@ public class CropBot {
             if(target == null){
                 FunctionManager.setStatus("CropBot", false);
                 utils.print("无法找到对应作物");
+            } else {
+                if(ignoreList.size() + 1 > 5120){
+                    ignoreList.clear();
+                }
+                ignoreList.add(target);
             }
             if (!FunctionManager.getStatus("Pathfinding")) {
                 if (finderCount > 10) {
@@ -234,17 +244,35 @@ public class CropBot {
         return null;
     }
     private Boolean isValid(BlockPos block) {
-        if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.potatoes && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 0) {
-            return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockCrops.AGE) == 7;
+        if(!isIgnored(block)) {
+            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.potatoes && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 0) {
+                return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockCrops.AGE) == 7;
+            }
+            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.carrots && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 1) {
+                return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockCrops.AGE) == 7;
+            }
+            if ((Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.brown_mushroom || Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.red_mushroom) && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 2) {
+                return true;
+            }
+            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.nether_wart && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 3) {
+                return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockNetherWart.AGE) == 3;
+            }
         }
-        if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.carrots && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 1) {
-            return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockCrops.AGE) == 7;
+        return false;
+    }
+    private boolean isIgnored(BlockPos pos){
+        boolean isIgnored = false;
+        for(BlockPos ignored : ignoreList){
+            if(BlockPosEquals(pos,ignored)){
+                isIgnored = true;
+                break;
+            }
         }
-        if ((Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.brown_mushroom || Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.red_mushroom) && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 2) {
-            return true;
-        }
-        if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.nether_wart && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 3) {
-            return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockNetherWart.AGE) == 3;
+        return isIgnored;
+    }
+    public static boolean BlockPosEquals(BlockPos pos1,BlockPos pos2) {
+        if(pos1 != null && pos2 != null) {
+            return pos1.getX() == pos1.getX() && pos1.getY() == pos2.getY() && pos1.getZ() == pos2.getZ();
         }
         return false;
     }

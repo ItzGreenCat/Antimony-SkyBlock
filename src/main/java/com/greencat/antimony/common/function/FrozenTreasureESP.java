@@ -7,10 +7,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.awt.*;
 import java.util.List;
 
 public class FrozenTreasureESP {
@@ -28,7 +30,30 @@ public class FrozenTreasureESP {
                     for(EntityArmorStand entity : entityList) {
                         if (entity != null) {
                             if(entity.getEquipmentInSlot(4) != null && (Minecraft.getMinecraft().theWorld.getBlockState(entity.getPosition().up()).getBlock() == Blocks.ice || Minecraft.getMinecraft().theWorld.getBlockState(entity.getPosition().up()).getBlock() == Blocks.packed_ice) && isInCave()){
-                                Utils.OutlinedBoxWithESP(entity.getPosition().up(), Chroma.color,false,3);
+                                if(entity.getEquipmentInSlot(4).getDisplayName() != null && entity.getEquipmentInSlot(4).hasDisplayName()) {
+                                    String itemName = entity.getEquipmentInSlot(4).getDisplayName();
+                                    if(itemName.contains("Ice Bait") || itemName.contains("Enchanted Ice") || itemName.contains("Glacial Fragment") || (itemName.contains("Packed Ice") && !itemName.contains("Enchanted"))) {
+                                        Utils.OutlinedBoxWithESP(entity.getPosition().up(),Color.GRAY, false, 3);
+                                    }
+                                    if(itemName.contains("White Gift")){
+                                        Utils.OutlinedBoxWithESP(entity.getPosition().up(),Color.WHITE, false, 3);
+                                    }
+                                    if(itemName.contains("Green Gift")){
+                                        Utils.OutlinedBoxWithESP(entity.getPosition().up(),Color.GREEN, false, 3);
+                                    }
+                                    if(itemName.contains("Glacial Talisman")){
+                                        Utils.OutlinedBoxWithESP(entity.getPosition().up(),Color.BLUE, false, 3);
+                                    }
+                                    if(itemName.contains("Red Gift")){
+                                        Utils.OutlinedBoxWithESP(entity.getPosition().up(),Color.RED, false, 3);
+                                        Utils.renderTrace(Minecraft.getMinecraft().thePlayer.getPositionVector(),new Vec3(entity.getPosition().up()).addVector(0.5,0.5,0.5),Color.RED,2.5F);
+                                    }
+                                    if(itemName.contains("Enchanted Packed Ice")){
+                                        Utils.OutlinedBoxWithESP(entity.getPosition().up(),Color.CYAN, false, 3);
+                                        Utils.renderTrace(Minecraft.getMinecraft().thePlayer.getPositionVector(),new Vec3(entity.getPosition().up()).addVector(0.5,0.5,0.5),Color.CYAN,2.5F);
+                                    }
+                                    Utils.renderText(itemName, entity.getPosition().up(), event.partialTicks);
+                                }
                             }
                         }
                     }

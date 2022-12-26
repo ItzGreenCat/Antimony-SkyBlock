@@ -141,13 +141,8 @@ public class CPathfinder {
     }
 
     public static boolean isSlab(Vec3 loc, BlockSlab.EnumBlockHalf slabType) {
-        try {
-            IBlockState bs = mc.theWorld.getBlockState(new BlockPos(loc));
-            return bs.getBlock() instanceof BlockSlab && bs.getValue(BlockSlab.HALF) == slabType;
-        } catch(Exception e){
-            e.printStackTrace();
-            return false;
-        }
+        IBlockState bs = mc.theWorld.getBlockState(new BlockPos(loc));
+        return bs.getBlock() instanceof BlockSlab && bs.getValue(BlockSlab.HALF) == slabType;
     }
 
     private static boolean isBlockSolid(BlockPos block) {

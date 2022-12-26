@@ -8,6 +8,7 @@ import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -162,6 +163,12 @@ public class KillerBot {
         int type = (Integer) getConfigByFunctionName.get("KillerBot","type");
         if(entity != null) {
             if (type == 0 && entity instanceof EntityZombie && entity.posY >= 70) {
+                return true;
+            }
+            if (type == 1 && entity instanceof EntityZombie && entity.posY < 70) {
+                return true;
+            }
+            if (type == 2 && entity instanceof EntityPlayer && entity.getName().toLowerCase().contains("crystal sentry")) {
                 return true;
             }
             return false;

@@ -57,7 +57,7 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.7.1";
+    public static final String VERSION = "3.7.2";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -301,6 +301,7 @@ public class Antimony {
         new DragonEggESP();
         new DanmakuChat();
         new PowderBot();
+        new FrozenTreasureBot();
 
         //init blur
         Blur.register();
@@ -385,6 +386,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("DragonEggESP"));
         register.RegisterFunction(new AntimonyFunction("DanmakuChat"));
         register.RegisterFunction(new AntimonyFunction("PowderBot"));
+        register.RegisterFunction(new AntimonyFunction("FrozenTreasureBot"));
 
         //register tables
         register.RegisterTable(new SelectTable("root"));
@@ -457,6 +459,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "SynthesizerAura", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "Nuker", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "PowderBot", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureBot", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
         register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
@@ -680,6 +683,8 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingString("短弓名称", "bowName", "juju"));
         HashMap<String, Integer> type = new HashMap<String, Integer>();
         type.put("Graveyard Zombie",0);
+        type.put("Crypt Zombie",1);
+        type.put("Star Sentry",2);
         FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",0,type));
 
         FunctionManager.bindFunction("Velocity");

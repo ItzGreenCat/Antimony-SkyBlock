@@ -245,7 +245,9 @@ public class PowderBot {
                         if (chestVec.yCoord > (Minecraft.getMinecraft().thePlayer.getPositionVector().yCoord - 1) && chestVec.yCoord <= (Minecraft.getMinecraft().thePlayer.getPositionVector().yCoord + 1)) {
                             Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
                             if(!nuker.isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))){
-                                stone.add(vec3);
+                                if(!isPathIgnored(vec3)) {
+                                    stone.add(vec3);
+                                }
                             }
                         }
                     }
@@ -254,12 +256,10 @@ public class PowderBot {
             double smallest = 9999;
             Vec3 closest = null;
             for (Vec3 vec3 : stone) {
-                if(!isPathIgnored(vec3)) {
-                    double dist = vec3.distanceTo(playerVec);
-                    if (dist < smallest) {
-                        smallest = dist;
-                        closest = vec3;
-                    }
+                double dist = vec3.distanceTo(playerVec);
+                if (dist < smallest) {
+                    smallest = dist;
+                    closest = vec3;
                 }
             }
             return closest;
