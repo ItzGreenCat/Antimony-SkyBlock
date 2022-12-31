@@ -10,6 +10,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemSword;
@@ -147,7 +148,7 @@ public class Killaura {
     }
 
     private boolean isValid(EntityLivingBase entity) {
-        if ((!(entity == Minecraft.getMinecraft().thePlayer) && !entity.isInvisible()) && !(entity instanceof EntityArmorStand) && !(entity instanceof EntityVillager) && (Minecraft.getMinecraft().thePlayer.canEntityBeSeen(entity)) && entity.getHealth() > 0.0F && entity.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) <= (entityTarget != null && entityTarget != entity ? this.range : Math.max(this.rotationRange, this.range)) && Utils.isWithinFOV(entity, this.fov + 5.0D) && Utils.isWithinPitch(entity, this.fov + 5.0D)) {
+        if ((!(entity == Minecraft.getMinecraft().thePlayer) && !entity.isInvisible()) && !(entity instanceof EntityArmorStand) && !(entity instanceof EntityVillager) && !(entity instanceof EntityPigZombie && entity.isChild()) && (Minecraft.getMinecraft().thePlayer.canEntityBeSeen(entity)) && entity.getHealth() > 0.0F && entity.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) <= (entityTarget != null && entityTarget != entity ? this.range : Math.max(this.rotationRange, this.range)) && Utils.isWithinFOV(entity, this.fov + 5.0D) && Utils.isWithinPitch(entity, this.fov + 5.0D)) {
             if(entity instanceof EntityPlayer){
                 if(Utils.isTeamMember(entity, Minecraft.getMinecraft().thePlayer) && checkTeam) {
                     return false;

@@ -9,7 +9,7 @@ public class getConfigByFunctionName {
     public static CachePool<String,Object> cache;
     public getConfigByFunctionName(){
         //Instantiate a cache pool
-        cache = new CachePool<String,Object>(3,20,2);
+        cache = new CachePool<>(5, 20, 2);
     }
     //get a config value by function name
     //will get it at cache first, if cannot find in cache,then will get it at config file and put it into cache pool

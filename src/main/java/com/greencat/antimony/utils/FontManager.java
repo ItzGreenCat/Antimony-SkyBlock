@@ -61,13 +61,26 @@ public class FontManager {
         }
         return font;
     }
-    public static CustomFont getCustomSizeGothamRounded(int scaling){
-        return CustomFont.createFontRenderer(getGothamRoundedFont(20 * scaling));
+    private static Font getQuicksandBoldFont(float size) {
+        Font font = null;
+        try {
+            InputStream is = Minecraft.getMinecraft().getResourceManager()
+                    .getResource(new ResourceLocation(Antimony.MODID,"font/quicksand_bold.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(0, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            font = new Font("default", 0, +10);
+        }
+        return font;
     }
     //create custom font render
-    public static CustomFont GothamRoundedFont = CustomFont.createFontRenderer(getGothamRoundedFont(20));
-    public static CustomFont STXINWEIFont = CustomFont.createFontRenderer(getSTXINWEIFont(20));
-    public static CustomFont QuicksandFont = CustomFont.createFontRenderer(getQuicksandFont(20));
-    public static CustomFont QuicksandFont35 = CustomFont.createFontRenderer(getQuicksandFont(35));
-    public static CustomFont ExpressaSerialBigFont = CustomFont.createFontRenderer(getExpressaSerialFont(40));
+    public static MinecraftFontRenderer GothamRoundedFont = new MinecraftFontRenderer(getGothamRoundedFont(20),true);
+    public static MinecraftFontRenderer STXINWEIFont = new MinecraftFontRenderer(getSTXINWEIFont(20),true);
+    public static MinecraftFontRenderer QuicksandBoldFont = new MinecraftFontRenderer(getQuicksandBoldFont(17),true);
+    public static MinecraftFontRenderer QuicksandFont = new MinecraftFontRenderer(getQuicksandFont(20),true);
+    public static MinecraftFontRenderer QuicksandFont24 = new MinecraftFontRenderer(getQuicksandFont(24),true);
+    public static MinecraftFontRenderer QuicksandFont35 = new MinecraftFontRenderer(getQuicksandFont(35),true);
+    public static MinecraftFontRenderer QuicksandFont47 = new MinecraftFontRenderer(getQuicksandFont(47),true);
+    public static MinecraftFontRenderer ExpressaSerialBigFont = new MinecraftFontRenderer(getExpressaSerialFont(40),true);
 }

@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -851,14 +852,14 @@ public class Utils {
 
     public void print(String message) {
         if (Minecraft.getMinecraft().theWorld != null) {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "[" + EnumChatFormatting.WHITE + "Antimony" + EnumChatFormatting.LIGHT_PURPLE + "] " + message + "."));
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA + "[" + EnumChatFormatting.WHITE + "Antimony" + EnumChatFormatting.AQUA + "]" + EnumChatFormatting.WHITE + " -> " + message + "."));
         }
     }
 
     public static void printAntimonyChannel(String name,String message) {
         if (FunctionManager.getStatus("AntimonyChannel")) {
             if (Minecraft.getMinecraft().theWorld != null) {
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "[" + EnumChatFormatting.WHITE + "ⒶⓂⒸ" + EnumChatFormatting.LIGHT_PURPLE + "] -> " + EnumChatFormatting.GOLD + name + EnumChatFormatting.WHITE + ": " + message));
+                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA + "[" + EnumChatFormatting.WHITE + "ⒶⓂⒸ" + EnumChatFormatting.AQUA + "] -> " + EnumChatFormatting.GOLD + name + EnumChatFormatting.WHITE + ": " + message));
             }
         }
     }
@@ -1205,7 +1206,7 @@ public class Utils {
      * @return 读取到的HashMap对象
      */
     public static HashMap<String, String> getHashMapInJsonFile(String FilePath) {
-        InputStream path = Utils.class.getResourceAsStream(FilePath);
+        /*InputStream path = Utils.class.getResourceAsStream(FilePath);
         StringBuffer content = new StringBuffer();
         BufferedReader reader = null;
         try {
@@ -1224,8 +1225,10 @@ public class Utils {
                 e.printStackTrace();
             }
         }
-                Type type = new TypeToken<HashMap<String, String>>() {}.getType();
-        return gson.fromJson(content.toString(), type);
+        Type type = new TypeToken<HashMap<String, String>>() {}.getType();
+        return gson.fromJson(content.toString(), type);*/
+        //有人跟我报告这部分代码导致无法启动，先注释了
+        return null;
     }
 
     /**
@@ -1339,4 +1342,24 @@ public class Utils {
         }
         return isInArea;
     }
+    public static float calculateGaussianValue(float x, float sigma) {
+        double PI = 3.141592653;
+        double output = 1.0 / Math.sqrt(2.0 * PI * (sigma * sigma));
+        return (float) (output * Math.exp(-(x * x) / (2.0 * (sigma * sigma))));
+    }
+    public static Framebuffer createFrameBuffer(Framebuffer framebuffer) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (framebuffer == null || framebuffer.framebufferWidth != mc.displayWidth
+                || framebuffer.framebufferHeight != mc.displayHeight) {
+            if (framebuffer != null) {
+                framebuffer.deleteFramebuffer();
+            }
+            return new Framebuffer(mc.displayWidth, mc.displayHeight, true);
+        }
+        return framebuffer;
+    }
+    public static void bindTexture(int texture) {
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+    }
+
 }

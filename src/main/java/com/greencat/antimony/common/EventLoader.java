@@ -11,10 +11,16 @@ import com.greencat.antimony.common.key.KeyLoader;
 import com.greencat.antimony.core.storage.SelectGUIStorage;
 import com.greencat.antimony.core.type.AntimonyFunction;
 import com.greencat.antimony.core.ui.*;
+import com.greencat.antimony.core.ui.QSF.QSFFunctionList;
+import com.greencat.antimony.core.ui.QSF.QSFSelectGUI;
+import com.greencat.antimony.core.ui.classic.ClassicFunctionList;
+import com.greencat.antimony.core.ui.classic.ClassicSelectGUI;
 import com.greencat.antimony.core.ui.transparent.FunctionList;
 import com.greencat.antimony.core.ui.transparent.SelectGUI;
 import com.greencat.antimony.common.test.Screenshot;
 import com.greencat.antimony.core.type.SelectTable;
+import com.greencat.antimony.core.ui.white.NewFunctionList;
+import com.greencat.antimony.core.ui.white.NewSelectGUI;
 import com.greencat.antimony.develop.Console;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -34,6 +40,8 @@ public class EventLoader {
     ClassicFunctionList classicFunctions = new ClassicFunctionList();
     SelectGUI transparentSelectGUI = new SelectGUI();
     FunctionList transparentFunctionList = new FunctionList();
+    QSFSelectGUI qsfSelectGUI = new QSFSelectGUI();
+    QSFFunctionList qsfFunctionList = new QSFFunctionList();
     SelectGuiFunctionExecutant exec = new SelectGuiFunctionExecutant();
 
     int KeyTime = 0;
@@ -66,6 +74,10 @@ public class EventLoader {
                         transparentSelectGUI.draw();
                         transparentFunctionList.draw();
                     }
+                    if (style == 3) {
+                        qsfSelectGUI.draw();
+                        qsfFunctionList.draw();
+                    }
                 }
             } else {
                 if (hidePart == 0) {
@@ -78,6 +90,9 @@ public class EventLoader {
                     if (style == 2) {
                         transparentFunctionList.draw();
                     }
+                    if(style == 3){
+                        qsfFunctionList.draw();
+                    }
                 }
                 if (hidePart == 1) {
                     if (style == 0) {
@@ -88,6 +103,9 @@ public class EventLoader {
                     }
                     if (style == 2) {
                         transparentSelectGUI.draw();
+                    }
+                    if (style == 3) {
+                        qsfSelectGUI.draw();
                     }
                 }
             }

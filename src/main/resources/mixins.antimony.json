@@ -34,12 +34,12 @@
     "MixinRenderer",
     "S12Accessor",
     "ShaderGroupAccessor",
-    "SlotAccessor"
-  ],
-  "client": [
+    "SlotAccessor",
     "GuiContainerAccessor",
     "MixinFontRenderer",
     "MixinGuiTextField",
     "RenderGlobalAccessor"
+  ],
+  "client": [
   ]
 }

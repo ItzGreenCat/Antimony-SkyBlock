@@ -31,12 +31,12 @@ public class GuiClickGUIButton extends GuiButton {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             boolean isCoveredByMouse = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
             if(icon == null) {
-                FontManager.QuicksandFont.drawSmoothString(this.displayString, this.xPosition + (this.width / 2.0F) - FontManager.QuicksandFont.getStringWidth(this.displayString) / 2.0F, this.yPosition + (this.height / 2.0F) - 2, new Color(0, 0, 0, 255).getRGB());
+                FontManager.QuicksandFont.drawString(this.displayString, this.xPosition + (this.width / 2.0F) - FontManager.QuicksandFont.getStringWidth(this.displayString) / 2.0F, this.yPosition + (this.height / 2.0F) - 2, new Color(0, 0, 0, 255).getRGB());
             } else {
                 Minecraft.getMinecraft().renderEngine.bindTexture(icon);
                 int min = Math.min(this.width,this.height);
                 drawModalRectWithCustomSizedTexture(this.xPosition + 3,this.yPosition,0,0,min,min,min,min);
-                FontManager.QuicksandFont.drawSmoothString(this.displayString,this.xPosition + min + 5,this.yPosition + (this.height / 2.0F) - 2, new Color(0,0,0, 255).getRGB());
+                FontManager.QuicksandFont.drawString(this.displayString,this.xPosition + min + 5,this.yPosition + (this.height / 2.0F) - 2, new Color(0,0,0, 255).getRGB());
             }
             if(isCoveredByMouse){
                 drawRect(this.xPosition,this.yPosition,this.xPosition + this.width,this.yPosition + this.height,new Color(0,0,0,30).getRGB());

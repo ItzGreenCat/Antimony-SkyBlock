@@ -26,7 +26,7 @@ public class GuiTableButton extends GuiClickGUIButton{
             }
             int min = Math.min(this.width,this.height);
             drawModalRectWithCustomSizedTexture(this.xPosition + 3,this.yPosition,0,0,min,min,min,min);
-            FontManager.QuicksandFont.drawSmoothString(this.displayString,this.xPosition + min + 5,this.yPosition + (this.height / 2.0F) - 2, new Color(0,0,0, 255).getRGB());
+            FontManager.QuicksandFont.drawString(this.displayString,this.xPosition + min + 5,this.yPosition + (this.height / 2.0F) - 2, new Color(0,0,0, 255).getRGB());
             if(isCoveredByMouse){
                 drawRect(this.xPosition,this.yPosition,this.xPosition + this.width,this.yPosition + this.height,new Color(0,0,0,30).getRGB());
             }

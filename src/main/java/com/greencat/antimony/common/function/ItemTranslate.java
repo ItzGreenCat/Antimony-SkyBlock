@@ -13,8 +13,8 @@ public class ItemTranslate {
     public static HashMap<String,String> normalMapping = new HashMap<>();
 
     public ItemTranslate(){
-        HighLevelMapping = Utils.getHashMapInJsonFile("/HighLevelMapping.json");
-        normalMapping = Utils.getHashMapInJsonFile("/NormalMapping.json");
+        //HighLevelMapping = Utils.getHashMapInJsonFile("/HighLevelMapping.json");
+        //normalMapping = Utils.getHashMapInJsonFile("/NormalMapping.json");
     }
     public String modifyName(String CustomName){
         if(FunctionManager.getStatus("ItemTranslate")) {

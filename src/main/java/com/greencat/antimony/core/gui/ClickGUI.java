@@ -49,6 +49,8 @@ public class ClickGUI extends GuiScreen {
     private int pos;
     //The vertical axis offset value of the button
     public int ButtonExcursion = 0;
+    //FPS Limit
+    private int limit;
     Blur blur = new Blur();
     //The table that corresponds the button to the SelectObject
     HashMap<GuiButton, SelectObject> FunctionObjectMap = new HashMap<>();
@@ -64,6 +66,8 @@ public class ClickGUI extends GuiScreen {
         this.animation = animation;
     }
     public void initGui(){
+        limit = Minecraft.getMinecraft().gameSettings.limitFramerate;
+        Minecraft.getMinecraft().gameSettings.limitFramerate = 60;
         pos = widthBound;
         index = 1;
         ButtonListHeight = 53;
@@ -111,10 +115,10 @@ public class ClickGUI extends GuiScreen {
             pos = 0;
         }
         drawRect(0,0,scaledResolution.getScaledWidth(),20,new Color(23,135,183).getRGB());
-        FontManager.QuicksandFont35.drawSmoothString("Antimony",2,2,new Color(255,255,255).getRGB());
+        FontManager.QuicksandFont35.drawString("Antimony",2,2,new Color(255,255,255).getRGB());
         drawRect(0,20,widthBound - pos,scaledResolution.getScaledHeight(),new Color(255,255,255,128).getRGB());
         drawRect(5,44,widthBound - pos  - 5,46,new Color(0,0,0).getRGB());
-        FontManager.QuicksandFont35.drawSmoothString("ClickGui",22 - pos,25,new Color(0,0,0).getRGB());
+        FontManager.QuicksandFont35.drawString("ClickGui",22 - pos,25,new Color(0,0,0).getRGB());
         Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(Antimony.MODID,"clickgui/GuiIcon.png"));
         drawModalRectWithCustomSizedTexture(-pos,22,0,0,20,20,20,20);
         for(GuiButton button : this.buttonList){
@@ -220,7 +224,11 @@ public class ClickGUI extends GuiScreen {
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
     public void drawInformationString(String str,int x,int y){
-        FontManager.QuicksandFont.drawSmoothString(str,x,y + height,0xFFFFFF);
+        FontManager.QuicksandFont.drawString(str,x,y + height,0xFFFFFF);
+    }
+    @Override
+    public void onGuiClosed(){
+        Minecraft.getMinecraft().gameSettings.limitFramerate = limit;
     }
 
 }

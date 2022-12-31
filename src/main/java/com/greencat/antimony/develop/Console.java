@@ -30,6 +30,11 @@ public class Console {
         frame.setLayout(new BorderLayout());
         scrollPane.setBounds(0, 0, 384, 200);
         scrollPane.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        int height=10;
+        Point p = new Point();
+        p.setLocation(0,textArea.getLineCount()*height);
+        scrollPane.getViewport().setViewPosition(p);
+
         textPanel.setLayout(new BorderLayout());
         textPanel.add(scrollPane, BorderLayout.CENTER);
         inputArea.addKeyListener(new KeyAdapter() {

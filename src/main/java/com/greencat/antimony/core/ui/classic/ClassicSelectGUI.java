@@ -1,4 +1,4 @@
-package com.greencat.antimony.core.ui;
+package com.greencat.antimony.core.ui.classic;
 
 import com.greencat.Antimony;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
@@ -10,9 +10,6 @@ import net.minecraft.client.Minecraft;
 public class ClassicSelectGUI {
     Minecraft mc = Minecraft.getMinecraft();
     public void draw(){
-
-
-
         int height = (Integer) getConfigByFunctionName.get("HUD","HUDHeight") + 10;
         int width = 0;
         mc.fontRendererObj.drawString("Antimony",0, (Integer) getConfigByFunctionName.get("HUD","HUDHeight"), Antimony.Color);

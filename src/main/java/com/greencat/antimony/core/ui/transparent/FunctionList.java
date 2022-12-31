@@ -15,7 +15,7 @@ public class FunctionList {
 
     public void draw() {
         ScaledResolution scaledResolution = new ScaledResolution(mc);
-        FontManager.GothamRoundedFont.drawSmoothString("",0,0,0xFFFFFF);
+        FontManager.GothamRoundedFont.drawString("",0,0,0xFFFFFF);
         int height = (Integer) getConfigByFunctionName.get("HUD","FunctionListHeight");
 
         ResourceLocation resourceLocation = new ResourceLocation(Antimony.MODID, "hud2.png");
@@ -23,7 +23,7 @@ public class FunctionList {
             if(function.getStatus()) {
                 Minecraft.getMinecraft().renderEngine.bindTexture(resourceLocation);
                 Gui.drawModalRectWithCustomSizedTexture((int) (scaledResolution.getScaledWidth() - FontManager.GothamRoundedFont.getStringWidth(function.getName()) - 6),height,0,0, (int) FontManager.GothamRoundedFont.getStringWidth(function.getName()) + 6,14, (float) FontManager.GothamRoundedFont.getStringWidth(function.getName()) + 6,28);
-                FontManager.GothamRoundedFont.drawSmoothString(function.getName(),scaledResolution.getScaledWidth() - FontManager.GothamRoundedFont.getStringWidth(function.getName()) - 3,height + 5,0xFFFFFF);
+                FontManager.GothamRoundedFont.drawString(function.getName(),scaledResolution.getScaledWidth() - FontManager.GothamRoundedFont.getStringWidth(function.getName()) - 3,height + 5,0xFFFFFF);
                 height = height + 14;
             }
         }

@@ -1,6 +1,8 @@
 package com.greencat.antimony.utils.timer;
 
 public class SystemTimer {
+    //idk how its work
+    //just copy these code from github LOL
     private long time = -1L;
 
     public Boolean hasTimePassed(Long s){

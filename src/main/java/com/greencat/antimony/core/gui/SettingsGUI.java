@@ -21,6 +21,8 @@ public class SettingsGUI extends GuiScreen {
     //go to see ClickGUI.java
     String guiName;
     private int index = 1;
+    //FPS Limit
+    private int limit;
     private GuiScreen parentScreen;
     private GuiButton BackButton;
     private GuiButton refreshButton;
@@ -38,6 +40,8 @@ public class SettingsGUI extends GuiScreen {
         options = list;
     }
     public void initGui() {
+        limit = Minecraft.getMinecraft().gameSettings.limitFramerate;
+        Minecraft.getMinecraft().gameSettings.limitFramerate = 60;
         Keyboard.enableRepeatEvents(true);
         pos = widthBound;
         index = 1;
@@ -84,7 +88,7 @@ public class SettingsGUI extends GuiScreen {
             pos = 0;
         }
         drawRect(0,0,scaledResolution.getScaledWidth(),20,new Color(23,135,183).getRGB());
-        FontManager.QuicksandFont35.drawSmoothString("Antimony",2,2,new Color(255,255,255).getRGB());
+        FontManager.QuicksandFont35.drawString("Antimony",2,2,new Color(255,255,255).getRGB());
         drawRect(0,20,widthBound - pos,scaledResolution.getScaledHeight(),new Color(255,255,255,128).getRGB());
         String title = guiName + " 配置";
         int dWheel = Mouse.getDWheel();
@@ -175,6 +179,7 @@ public class SettingsGUI extends GuiScreen {
     @Override
     public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
+        Minecraft.getMinecraft().gameSettings.limitFramerate = limit;
     }
     private void handleBoolean(SettingBoolean option){
         option.switchStatus();

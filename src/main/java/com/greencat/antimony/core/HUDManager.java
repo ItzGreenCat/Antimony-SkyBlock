@@ -12,6 +12,6 @@ public class HUDManager {
     }
     public static void Render(String Name,Object Value,int x,int y){
         Utils.drawRoundRect2(x,y, (float) (FontManager.STXINWEIFont.getStringWidth(Name + ": " + Value) + 4),14,3, new Color(0,0,0, 60).getRGB());
-        FontManager.STXINWEIFont.drawSmoothString(Name + ": " + Value,x + 2,y + 6, new Color(255, 255, 255, 255).getRGB());
+        FontManager.STXINWEIFont.drawString(Name + ": " + Value,x + 2,y + 6, new Color(255, 255, 255, 255).getRGB());
     }
 }

@@ -1,18 +1,20 @@
 package com.greencat.antimony.core.config;
 
+import com.greencat.Antimony;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.antimony.core.type.AntimonyFunction;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigLoader {
     private static Configuration config;
     public ConfigLoader(FMLPreInitializationEvent event) {
-        config = new Configuration(event.getSuggestedConfigurationFile());
+        config = new Configuration(new File(Antimony.AntimonyDirectory,"config.cfg"));
         config.load();
     }
     //save current enabled functions

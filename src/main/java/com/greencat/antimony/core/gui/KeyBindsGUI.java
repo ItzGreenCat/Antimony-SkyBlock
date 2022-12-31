@@ -22,6 +22,8 @@ public class KeyBindsGUI extends GuiScreen{
     private int index = 1;
     private int ButtonListHeight;
     private KeyBindButton targetButton;
+    //FPS Limit
+    private int limit;
     private boolean animation = true;
     private final int widthBound = FunctionManager.getLongestTextWidthAdd20() + 40;
     private GuiButton BackButton;
@@ -33,6 +35,8 @@ public class KeyBindsGUI extends GuiScreen{
         this.parentScreen = parentScreen;
     }
     public void initGui() {
+        limit = Minecraft.getMinecraft().gameSettings.limitFramerate;
+        Minecraft.getMinecraft().gameSettings.limitFramerate = 60;
         pos = widthBound;
         index = 1;
         ButtonListHeight = 53;
@@ -71,10 +75,10 @@ public class KeyBindsGUI extends GuiScreen{
             }
         }
         drawRect(0,0,scaledResolution.getScaledWidth(),20,new Color(23,135,183).getRGB());
-        FontManager.QuicksandFont35.drawSmoothString("Antimony",2,2,new Color(255,255,255).getRGB());
+        FontManager.QuicksandFont35.drawString("Antimony",2,2,new Color(255,255,255).getRGB());
         drawRect(0,20,widthBound - pos,scaledResolution.getScaledHeight(),new Color(255,255,255,128).getRGB());
         drawRect(5,44,widthBound - pos  - 5,46,new Color(0,0,0).getRGB());
-        FontManager.QuicksandFont35.drawSmoothString("KeyBinds",2 - pos,25,new Color(0,0,0).getRGB());
+        FontManager.QuicksandFont35.drawString("KeyBinds",2 - pos,25,new Color(0,0,0).getRGB());
         drawModalRectWithCustomSizedTexture(-pos,22,0,0,20,20,20,20);
         for(GuiButton button : this.buttonList){
             if(button instanceof KeyBindButton){
@@ -128,5 +132,9 @@ public class KeyBindsGUI extends GuiScreen{
     @Override
     public boolean doesGuiPauseGame() {
         return false;
+    }
+    @Override
+    public void onGuiClosed(){
+        Minecraft.getMinecraft().gameSettings.limitFramerate = limit;
     }
 }

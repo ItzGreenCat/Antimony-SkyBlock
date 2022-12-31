@@ -7,6 +7,7 @@ import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -169,6 +170,9 @@ public class KillerBot {
                 return true;
             }
             if (type == 2 && entity instanceof EntityPlayer && entity.getName().toLowerCase().contains("crystal sentry")) {
+                return true;
+            }
+            if (type == 3 && entity instanceof EntityEnderman) {
                 return true;
             }
             return false;

@@ -20,12 +20,12 @@ public class AntimonyRegister {
     }
     //Reorder the list of functions to make the FunctionList more beautiful
     public static void ReList(){
-        List<AntimonyFunction> originalList =FunctionList;
-        AntimonyFunction originalArray[]=originalList.toArray(new AntimonyFunction[0]);
+        List<AntimonyFunction> originalList = FunctionList;
+        AntimonyFunction originalArray[] = originalList.toArray(new AntimonyFunction[0]);
         for (int i = 0; i < originalArray.length; i++) {
             AntimonyFunction insertValue=originalArray[i];
             int insertIndex=i-1;
-            while (insertIndex>=0 && FontManager.GothamRoundedFont.getStringWidth(insertValue.getName()) < FontManager.GothamRoundedFont.getStringWidth(originalArray[insertIndex].getName())) {
+            while (insertIndex>=0 && FontManager.QuicksandBoldFont.getStringWidth(insertValue.getName()) < FontManager.QuicksandBoldFont.getStringWidth(originalArray[insertIndex].getName())) {
                 originalArray[insertIndex+1]=originalArray[insertIndex];
                 insertIndex--;
             }
