@@ -850,7 +850,7 @@ public class Utils {
         GlStateManager.translate(-x, -y, 0.0D);
     }
 
-    public void print(String message) {
+    public static void print(String message) {
         if (Minecraft.getMinecraft().theWorld != null) {
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA + "[" + EnumChatFormatting.WHITE + "Antimony" + EnumChatFormatting.AQUA + "]" + EnumChatFormatting.WHITE + " -> " + message + "."));
         }

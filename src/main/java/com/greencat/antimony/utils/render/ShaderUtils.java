@@ -63,7 +63,7 @@ public class ShaderUtils {
     }
 
     public ShaderUtils(String fragmentShaderLoc) {
-        this(fragmentShaderLoc, "Melody/GLSL/Shaders/vertex.vsh");
+        this(fragmentShaderLoc, "misc/vertex.vsh");
     }
 
 

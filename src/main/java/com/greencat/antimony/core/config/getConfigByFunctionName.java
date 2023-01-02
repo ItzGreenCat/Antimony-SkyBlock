@@ -27,6 +27,7 @@ public class getConfigByFunctionName {
                     } catch (NoSuchConfigurationException e) {
                         e.printStackTrace();
                     }
+                    break;
                 }
             }
         }

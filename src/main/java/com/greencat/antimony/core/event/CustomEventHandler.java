@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.network.Packet;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
@@ -176,6 +177,14 @@ public class CustomEventHandler {
         public CustomChannelReceivedEvent(int packetID,List<String> context) {
             this.id = packetID;
             this.context = context;
+        }
+    }
+    @Cancelable
+    public static class RenderTileEntityPreEvent extends Event {
+        public TileEntity entity;
+
+        public RenderTileEntityPreEvent(TileEntity entity) {
+            this.entity = entity;
         }
     }
 }

@@ -15,26 +15,13 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class CustomChatReceive {
-    private static boolean active = true;
-    static int tick = 0;
+    static Thread thread;
     public CustomChatReceive() {
         MinecraftForge.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
-    public void ClientTick(TickEvent.ClientTickEvent event){
-        if(event.phase == TickEvent.Phase.END){
-           if(tick + 1 > 20){
-               tick = 0;
-               active = true;
-           } else {
-               tick = tick + 1;
-           }
-        }
-    }
     public static void receive(){
-        Thread thread = new Thread(() -> {
+         thread = new Thread(() -> {
             while(true) {
-                if(active) {
                     String context = null;
                     try {
                         DataInputStream out = new DataInputStream(AntimonyChannel.socket.getInputStream());
@@ -58,6 +45,10 @@ public class CustomChatReceive {
                         }
                     } catch (Exception e) {
                     }
+                try {
+                    thread.wait(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }

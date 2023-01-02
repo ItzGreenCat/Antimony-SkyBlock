@@ -101,6 +101,7 @@ public class ClickGUI extends GuiScreen {
     }
     public void drawScreen(int x, int y, float delta)
     {
+        //animation
         if(!(parentScreen instanceof ClickGUI) && animation) {
             if (pos > 0) {
                 if(Minecraft.getDebugFPS() != 0) {
@@ -114,6 +115,7 @@ public class ClickGUI extends GuiScreen {
         } else {
             pos = 0;
         }
+        //basic rect and text
         drawRect(0,0,scaledResolution.getScaledWidth(),20,new Color(23,135,183).getRGB());
         FontManager.QuicksandFont35.drawString("Antimony",2,2,new Color(255,255,255).getRGB());
         drawRect(0,20,widthBound - pos,scaledResolution.getScaledHeight(),new Color(255,255,255,128).getRGB());
@@ -121,6 +123,7 @@ public class ClickGUI extends GuiScreen {
         FontManager.QuicksandFont35.drawString("ClickGui",22 - pos,25,new Color(0,0,0).getRGB());
         Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(Antimony.MODID,"clickgui/GuiIcon.png"));
         drawModalRectWithCustomSizedTexture(-pos,22,0,0,20,20,20,20);
+        //animation
         for(GuiButton button : this.buttonList){
             if(button instanceof GuiClickGUIButton){
                 button.xPosition = ((GuiClickGUIButton) button).OriginalXPos - pos;
@@ -129,15 +132,18 @@ public class ClickGUI extends GuiScreen {
                 button.xPosition = ((GuiButtonSettings) button).OriginalXPos - pos;
             }
         }
+        //move up and down by mouse wheel
         int dWheel = Mouse.getDWheel();
         if (dWheel < 0) {
             this.ButtonExcursion = this.ButtonExcursion - 10;
         } else if (dWheel > 0) {
             this.ButtonExcursion = this.ButtonExcursion + 10;
         }
+        //hide some part if shouldn't visible
         for(GuiButton button : this.buttonList){
             button.visible = button.yPosition >= 53 && (button.yPosition <= this.height - 25 - 18 || (button.id == 0 || button.id == 114514));
         }
+        //move up and down by mouse wheel at here change location
         for(GuiButton button : this.buttonList){
                 if (button instanceof GuiTableButton) {
                     ((GuiTableButton) button).Excursion = this.ButtonExcursion;

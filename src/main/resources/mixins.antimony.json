@@ -5,6 +5,7 @@
   "package": "com.greencat.antimony.common.mixins",
   "mixins": [
     "EntityPlayerSPAccessor",
+    "GuiContainerAccessor",
     "GuiTextFieldAccessor",
     "MinecraftAccessor",
     "MixinBlock",
@@ -17,6 +18,7 @@
     "MixinEntityPlayerSP",
     "MixinEntityPlayerSP2",
     "MixinEntityRenderer",
+    "MixinFontRenderer",
     "MixinGuiConnecting",
     "MixinGuiDisconnected",
     "MixinGuiMainMenu",
@@ -24,21 +26,21 @@
     "MixinGuiScreen",
     "MixinGuiScreenAddServer",
     "MixinGuiScreenServerList",
+    "MixinGuiTextField",
     "MixinHideAntimony",
     "MixinItemStack",
+    "MixinLeavesBlock",
     "MixinLivingEntityBase",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinNetworkManager",
     "MixinNetworkManagerChInit",
     "MixinRenderer",
+    "RenderGlobalAccessor",
     "S12Accessor",
     "ShaderGroupAccessor",
     "SlotAccessor",
-    "GuiContainerAccessor",
-    "MixinFontRenderer",
-    "MixinGuiTextField",
-    "RenderGlobalAccessor"
+    "MixinEntityRendererDispatcher"
   ],
   "client": [
   ]

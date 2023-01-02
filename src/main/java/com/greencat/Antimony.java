@@ -58,7 +58,7 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.8";
+    public static final String VERSION = "3.9";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -232,13 +232,12 @@ public class Antimony {
         //init miscellaneous class and register miscellaneous event
         new Chroma();
         new GuiMainMenuModify();
-        new CustomEventHandler.ClientTickEndEvent();
+        //new CustomEventHandler.ClientTickEndEvent();
         new HUDManager();
         new Pathfinding();
         new nukerCore();
         new BlackList();
         new nukerWrapper();
-        //disable until server back to work
         //new IRC();
         new DanmakuCore();
         new SmoothRotation();
@@ -307,6 +306,8 @@ public class Antimony {
         new DanmakuChat();
         new PowderBot();
         new FrozenTreasureBot();
+        new SapphireGrottoESP();
+        new FPSAccelerator();
 
         //init blur
         Blur.register();
@@ -316,7 +317,8 @@ public class Antimony {
 
         //init antimony channel
         //disable until server back to work
-        /*new AntimonyChannel();
+        /*
+        new AntimonyChannel();
         new CheckConnect();*/
 
         //some rank thing
@@ -393,6 +395,8 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("DanmakuChat"));
         register.RegisterFunction(new AntimonyFunction("PowderBot"));
         register.RegisterFunction(new AntimonyFunction("FrozenTreasureBot"));
+        register.RegisterFunction(new AntimonyFunction("SapphireGrottoESP"));
+        register.RegisterFunction(new AntimonyFunction("FPS Accelerator"));
 
         //register tables
         register.RegisterTable(new SelectTable("root"));
@@ -443,8 +447,10 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "JasperESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "DragonEggESP", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "SapphireGrottoESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "ChestFinder", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "FPS Accelerator","Render"));
 
         register.RegisterSelectObject(new SelectObject("function", "StarredMobESP", "Dungeon"));
         register.RegisterSelectObject(new SelectObject("function", "DungeonKeyESP", "Dungeon"));
@@ -675,6 +681,7 @@ public class Antimony {
         nukerType.put("Mithril",7);
         nukerType.put("Frozen Treasure",8);
         nukerType.put("Mithril With Titanium",9);
+        nukerType.put("Foraging",10);
         FunctionManager.addConfiguration(new SettingTypeSelector("模式","type",0,nukerType));
         HashMap<String, Integer> miningType = new HashMap<String, Integer>();
         miningType.put("Normal",0);
@@ -711,6 +718,20 @@ public class Antimony {
 
         FunctionManager.bindFunction("PowderBot");
         FunctionManager.addConfiguration(new SettingBoolean("仅启用自动开箱", "chestOnly", false));
+
+        FunctionManager.bindFunction("DragonEggESP");
+        FunctionManager.addConfiguration(new SettingInt("线程数量", "thread",5));
+        FunctionManager.addConfiguration(new SettingInt("扫描步长", "step",32));
+
+        FunctionManager.bindFunction("SapphireGrottoESP");
+        FunctionManager.addConfiguration(new SettingInt("线程数量", "thread",5));
+        FunctionManager.addConfiguration(new SettingInt("扫描步长", "step",64));
+
+        FunctionManager.bindFunction("FPS Accelerator");
+        FunctionManager.addConfiguration(new SettingLimitInt("盔甲架渲染距离","armorStandDistance",16,128,1));
+        FunctionManager.addConfiguration(new SettingLimitInt("TileEntity渲染距离","tileEntityDistance",32,128,1));
+        FunctionManager.addConfiguration(new SettingBoolean("树叶面剔除", "leaveCulling", true));
+
         //check if new user
         NewUserFunction();
 

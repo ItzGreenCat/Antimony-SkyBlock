@@ -154,6 +154,12 @@ public class Nuker {
             oreList.add(Blocks.stone);
             pos = nuker.closestMineableBlock(oreList,true);
         }
+        if(nukerType == 10){
+            List<Block> oreList = new ArrayList<Block>();
+            oreList.add(Blocks.log);
+            oreList.add(Blocks.log2);
+            pos = nuker.closestMineableBlock(oreList);
+        }
         return pos;
     }
     private boolean isInCave() {

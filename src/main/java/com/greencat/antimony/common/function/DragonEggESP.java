@@ -1,7 +1,11 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.utils.BlockScanner;
 import com.greencat.antimony.utils.Utils;
+import com.greencat.antimony.utils.timer.CustomTimer;
 import net.minecraft.block.BlockStainedGlass;
 import net.minecraft.block.BlockStainedGlassPane;
 import net.minecraft.client.Minecraft;
@@ -20,57 +24,45 @@ import java.util.List;
 
 public class DragonEggESP {
     Utils utils = new Utils();
-    int StartY,StartX,StartZ;
-    EntityPlayer player;
-    int EndX,EndY,EndZ,NowX,NowY,NowZ;   //主播 是有逗号这一说的 - Pysio
+    //int StartY,StartX,StartZ;
+    //EntityPlayer player;
+    //int EndX,EndY,EndZ,NowX,NowY,NowZ;   //主播 是有逗号这一说的 - Pysio
     int Tick = 0;
-    int RefreshTick = 200;
+    static boolean checked;
     List<BlockPos> Position;
+    BlockScanner scanner = new BlockScanner();
     public DragonEggESP() {
         MinecraftForge.EVENT_BUS.register(this);
     }
     @SubscribeEvent
-    public void TickEvent(TickEvent.ClientTickEvent event){
-        if(FunctionManager.getStatus("DragonEggESP")){
-            if(Minecraft.getMinecraft().theWorld != null) {
-                if (Tick == RefreshTick) {
-                    Position = new ArrayList<BlockPos>();
-                    this.player = Minecraft.getMinecraft().thePlayer;
-                    this.StartY = 0;
-                    this.StartX = (int) (this.player.posX - 128.0D);
-                    this.StartZ = (int) (this.player.posZ - 128.0D);
-                    this.EndX = (int) (this.player.posX + 128.0D);
-                    this.EndY = 256;
-                    this.EndZ = (int) (this.player.posZ + 128.0D);
-
-                    this.NowX = this.StartX;
-                    this.NowY = this.StartY;
-                    this.NowZ = this.StartZ;
-                    while (NowY != EndY) {
-                        if (this.NowX == this.EndX) {
-                            if (this.NowZ == this.EndZ) {
-
-                                this.NowZ = this.StartZ;
-                                this.NowX = this.StartX;
-                                NowY = NowY + 1;
-                            } else {
-                                this.NowX = this.StartX;
-                                NowZ = NowZ + 1;
-                            }
-                        } else {
-                            NowX = NowX + 1;
-                        }
-                        if (Minecraft.getMinecraft().theWorld.getBlockState(new BlockPos(NowX, NowY, NowZ)).getBlock() == Blocks.dragon_egg) {
-                            Position.add(new BlockPos(NowX, NowY, NowZ));
-                        }
-                    }
-                    this.NowX = this.StartX;
-                    this.NowY = this.StartY;
-                    this.NowZ = this.StartZ;
-                    Tick = 0;
-                    utils.print("刷新完成，找到" + Position.size() + "个龙蛋");
-                } else {
-                    Tick = Tick + 1;
+    public void onEnable(CustomEventHandler.FunctionEnableEvent event){
+        if (event.function.getName().equals("DragonEggESP")) {
+            init();
+        }
+    }
+    @SubscribeEvent
+    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
+        if (event.function.getName().equals("DragonEggESP") && event.status) {
+            init();
+        }
+    }
+    public void init(){
+        if(Minecraft.getMinecraft().theWorld != null) {
+            checked = false;
+            Utils.print("开始扫描,重开启功能可以再次扫描");
+            scanner.start(
+                    new BlockPos(Minecraft.getMinecraft().thePlayer.posX + 256, 0, Minecraft.getMinecraft().thePlayer.posZ + 256),
+                    new BlockPos(Minecraft.getMinecraft().thePlayer.posX - 256, 256, Minecraft.getMinecraft().thePlayer.posZ - 256),
+                    Blocks.dragon_egg, (Integer) getConfigByFunctionName.get("DragonEggESP", "step"), (Integer) getConfigByFunctionName.get("DragonEggESP", "thread")
+            );
+        }
+    }
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent event) {
+        if (FunctionManager.getStatus("DragonEggESP")) {
+            if (event.phase == TickEvent.Phase.END) {
+                if (scanner.finished && !checked) {
+                    Position = scanner.finalList;
                 }
             }
         }

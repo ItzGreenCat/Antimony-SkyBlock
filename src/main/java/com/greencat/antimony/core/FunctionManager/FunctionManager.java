@@ -57,6 +57,7 @@ public class FunctionManager {
                         utils.print(Name + EnumChatFormatting.WHITE + " 禁用");
                     }
                 }
+                break;
             }
         }
     }
@@ -75,6 +76,7 @@ public class FunctionManager {
                     function.SwtichStatus();
                     ConfigLoader.setFunctionStateStorage();
                 }
+                break;
 
             }
         }
@@ -104,6 +106,7 @@ public class FunctionManager {
                         ConfigLoader.setFunctionStateStorage();
                     }
                 }
+                break;
             }
         }
     }
@@ -128,7 +131,7 @@ public class FunctionManager {
                             utils.print(Name + EnumChatFormatting.WHITE + " 禁用");
                         }
                     }
-
+                break;
             }
         }
     }
