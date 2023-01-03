@@ -19,7 +19,6 @@ public class BlackList {
 	public static Minecraft mc = Minecraft.getMinecraft();
 
 	public BlackList() {
-		BlackListManager.registerTimer();
 		MinecraftForge.EVENT_BUS.register(this);
 		CustomEventHandler.EVENT_BUS.register(this);
 	}

@@ -147,7 +147,7 @@ public class AutoFish {
                         KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindLeft.getKeyCode(), false);
                         KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindRight.getKeyCode(), true);
                     }
-                } else if (Tick == 32) {
+                } else if (Tick == 31) {
                     if (MoveStatus) {
                         KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindLeft.getKeyCode(), false);
                     } else {

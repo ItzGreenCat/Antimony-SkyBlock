@@ -143,6 +143,13 @@ public class CustomEventHandler {
             }
         }
     }
+    @Cancelable
+    public static class PacketEvent extends Event{
+        public Packet<?> packet;
+        public PacketEvent(Packet<?> packet) {
+            this.packet = packet;
+        }
+    }
     @Deprecated
     @Cancelable
     public static class MoveStrafeEvent extends Event {

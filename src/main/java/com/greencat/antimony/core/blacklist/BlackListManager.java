@@ -28,16 +28,9 @@ public class BlackListManager {
 	
 	public static volatile Map<String, BlackListPlayer> gaoNengs = new HashMap<String, BlackListPlayer>();
 	public static volatile Map<String, BlackListPlayer> loading_gaoNengs = new HashMap<String, BlackListPlayer>();
-	public static TimerThread tth;
 	
 	public static String[] url = new String[] { "https://api.scamlist.cn/rank.json",
 	"https://black.maid.ink/rank.json" };
-
-	public static void registerTimer() {
-		tth = new TimerThread();
-		tth.setName("BlackListPlayer Manager");
-		tth.start();
-	}
 
 	public static void load() {
 		try {

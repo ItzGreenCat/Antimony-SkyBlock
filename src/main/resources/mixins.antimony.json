@@ -18,6 +18,7 @@
     "MixinEntityPlayerSP",
     "MixinEntityPlayerSP2",
     "MixinEntityRenderer",
+    "MixinEntityRendererDispatcher",
     "MixinFontRenderer",
     "MixinGuiConnecting",
     "MixinGuiDisconnected",
@@ -29,7 +30,6 @@
     "MixinGuiTextField",
     "MixinHideAntimony",
     "MixinItemStack",
-    "MixinLeavesBlock",
     "MixinLivingEntityBase",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
@@ -37,10 +37,10 @@
     "MixinNetworkManagerChInit",
     "MixinRenderer",
     "RenderGlobalAccessor",
+    "S08PacketPlayerPosLookAccessor",
     "S12Accessor",
     "ShaderGroupAccessor",
-    "SlotAccessor",
-    "MixinEntityRendererDispatcher"
+    "SlotAccessor"
   ],
   "client": [
   ]

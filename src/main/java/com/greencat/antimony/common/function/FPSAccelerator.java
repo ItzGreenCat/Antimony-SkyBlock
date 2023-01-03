@@ -16,8 +16,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 public class FPSAccelerator {
     static int armorStandDistance = 0;
     static int tileEntityDistance = 0;
-    public static boolean leaveCulling = false;
-    static boolean enable = false;
+    public static boolean enable = false;
     public FPSAccelerator(){
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
@@ -29,7 +28,6 @@ public class FPSAccelerator {
                 enable = true;
                 armorStandDistance = (Integer) getConfigByFunctionName.get("FPS Accelerator","armorStandDistance");
                 tileEntityDistance = (Integer) getConfigByFunctionName.get("FPS Accelerator","tileEntityDistance");
-                leaveCulling = (boolean) getConfigByFunctionName.get("FPS Accelerator","leaveCulling");
             } else {
                 enable = false;
             }

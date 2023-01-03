@@ -188,8 +188,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
             at = {@At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/entity/AbstractClientPlayer;onLivingUpdate()V"
-            )},
-            cancellable = true
+            )}
     )
     public void onLivingUpdate(CallbackInfo ci) {
         try {

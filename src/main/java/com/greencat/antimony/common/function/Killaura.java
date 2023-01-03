@@ -29,14 +29,15 @@ import java.util.List;
 
 public class Killaura {
     public static EntityLivingBase entityTarget;
-    public boolean wasDown;
-    public double maxRotationPitch = 100.0D;
-    public double maxRotationYaw = 120.0D;
-    public double range = 0.0D;
-    public double rotationRange = 6.0D;
-    public double fov = 270.0D;
-    public boolean checkTeam = false;
-    public boolean checkNPC = false;
+    public static boolean wasDown;
+    public static double maxRotationPitch = 100.0D;
+    public static double maxRotationYaw = 120.0D;
+    public static double range = 0.0D;
+    public static double rotationRange = 6.0D;
+    public static double fov = 270.0D;
+    public static boolean checkTeam = false;
+    public static boolean checkNPC = false;
+    public static boolean autoBlock = false;
     public static boolean attackPlayer = false;
     public static Double[] currentHeight = {0.0D};
     public static Boolean[] RenderStatus = {true};
@@ -50,7 +51,7 @@ public class Killaura {
     public void onTick(ClientTickEvent event) {
         if(FunctionManager.getStatus("Killaura")) {
             if (Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null) {
-                this.wasDown = Mouse.isButtonDown(2) && Minecraft.getMinecraft().currentScreen == null;
+                wasDown = Mouse.isButtonDown(2) && Minecraft.getMinecraft().currentScreen == null;
             }
         }
     }
@@ -81,6 +82,7 @@ public class Killaura {
                 fov = (Double)getConfigByFunctionName.get("Killaura","Fov");
                 checkTeam = !(boolean) getConfigByFunctionName.get("Killaura", "isAttackTeamMember");
                 checkNPC = !(boolean) getConfigByFunctionName.get("Killaura", "isAttackNPC");
+                autoBlock = (boolean) getConfigByFunctionName.get("Killaura", "autoBlock");
             } catch(Exception e){
                 e.printStackTrace();
             }
@@ -113,7 +115,7 @@ public class Killaura {
                         Minecraft.getMinecraft().playerController.attackEntity(Minecraft.getMinecraft().thePlayer, entityTarget);
                     }
 
-                    if (!Minecraft.getMinecraft().thePlayer.isUsingItem() && Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof ItemSword && /*blockfalse*/ false) {
+                    if (!Minecraft.getMinecraft().thePlayer.isUsingItem() && Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof ItemSword && autoBlock) {
                         Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
                     }
                 }

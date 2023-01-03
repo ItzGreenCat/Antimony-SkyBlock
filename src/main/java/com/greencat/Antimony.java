@@ -30,6 +30,7 @@ import com.greencat.antimony.utils.Blur;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.SmoothRotation;
 import com.greencat.antimony.utils.Utils;
+import com.greencat.antimony.utils.packet.PacketEvent;
 import io.netty.channel.EventLoop;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -52,13 +53,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
+import static com.greencat.antimony.core.config.getConfigByFunctionName.get;
+
 
 @Mod(modid = Antimony.MODID, name = Antimony.NAME, version = Antimony.VERSION, acceptedMinecraftVersions = "1.8.9", clientSideOnly = true)
 public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.9";
+    public static final String VERSION = "3.9.1";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -241,6 +244,7 @@ public class Antimony {
         //new IRC();
         new DanmakuCore();
         new SmoothRotation();
+        new PacketEvent();
 
 
 
@@ -308,6 +312,8 @@ public class Antimony {
         new FrozenTreasureBot();
         new SapphireGrottoESP();
         new FPSAccelerator();
+        new Disabler();
+        new Timer();
 
         //init blur
         Blur.register();
@@ -397,6 +403,9 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("FrozenTreasureBot"));
         register.RegisterFunction(new AntimonyFunction("SapphireGrottoESP"));
         register.RegisterFunction(new AntimonyFunction("FPS Accelerator"));
+        register.RegisterFunction(new AntimonyFunction("Disabler"));
+        register.RegisterFunction(new AntimonyFunction("Timer"));
+
 
         //register tables
         register.RegisterTable(new SelectTable("root"));
@@ -480,6 +489,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "Sprint", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Eagle", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Velocity", "Movement"));
+        register.RegisterSelectObject(new SelectObject("function", "Timer", "Movement"));
 
 
         register.RegisterSelectObject(new SelectObject("function", "SkeletonAim", "Misc"));
@@ -490,6 +500,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "BlackList", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "Interface", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "NickHider", "Misc"));
+        register.RegisterSelectObject(new SelectObject("function", "Disabler", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "HUD", "Misc"));
 
         register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
@@ -526,6 +537,7 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingLimitDouble("在此项值内视场角生物为可攻击生物", "Fov", 270.0D,360.0D,90.0D));
         FunctionManager.addConfiguration(new SettingBoolean("攻击NPC", "isAttackNPC", false));
         FunctionManager.addConfiguration(new SettingBoolean("攻击同队伍玩家", "isAttackTeamMember", false));
+        FunctionManager.addConfiguration(new SettingBoolean("自动格挡", "autoBlock", false));
 
         FunctionManager.bindFunction("InstantSwitch");
         FunctionManager.addConfiguration(new SettingString("物品名称", "itemName", "of the End"));
@@ -730,7 +742,20 @@ public class Antimony {
         FunctionManager.bindFunction("FPS Accelerator");
         FunctionManager.addConfiguration(new SettingLimitInt("盔甲架渲染距离","armorStandDistance",16,128,1));
         FunctionManager.addConfiguration(new SettingLimitInt("TileEntity渲染距离","tileEntityDistance",32,128,1));
-        FunctionManager.addConfiguration(new SettingBoolean("树叶面剔除", "leaveCulling", true));
+
+        FunctionManager.bindFunction("Disabler");
+        FunctionManager.addConfiguration(new SettingBoolean("Ban警告", "banWarning", true));
+        FunctionManager.addConfiguration(new SettingBoolean("Timer Disabler", "timer", true));
+        FunctionManager.addConfiguration(new SettingLimitInt("Strafe Packets数量","strafePackets",70,120,60));
+        FunctionManager.addConfiguration(new SettingBoolean("Strafe Disabler", "strafeDisabler", false));
+        FunctionManager.addConfiguration(new SettingBoolean("禁用C03", "noC03", true));
+        FunctionManager.addConfiguration(new SettingBoolean("Anti Watchdog(更少的标记)", "antiWatchdog", true));
+        FunctionManager.addConfiguration(new SettingBoolean("禁用C00", "C00Disabler", false));
+        FunctionManager.addConfiguration(new SettingBoolean("禁用C0B", "C0BDisabler", false));
+
+        FunctionManager.bindFunction("Timer");
+        FunctionManager.addConfiguration(new SettingLimitDouble("速度","speed",2.0,10.0,0.1));
+        FunctionManager.addConfiguration(new SettingBoolean("仅移动时可用", "onlyMoving", false));
 
         //check if new user
         NewUserFunction();
@@ -754,6 +779,7 @@ public class Antimony {
         if (ConfigLoader.getBoolean("isNewUser", true)) {
             //if new user will setting something
             FunctionManager.setStatus("HUD", true);
+            FunctionManager.setStatus("Disabler", true);
             FunctionManager.setStatus("AntimonyChannel", true);
 
             Minecraft.getMinecraft().gameSettings.guiScale = 2;

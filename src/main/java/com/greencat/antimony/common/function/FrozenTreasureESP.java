@@ -32,10 +32,10 @@ public class FrozenTreasureESP {
                             if(entity.getEquipmentInSlot(4) != null && (Minecraft.getMinecraft().theWorld.getBlockState(entity.getPosition().up()).getBlock() == Blocks.ice || Minecraft.getMinecraft().theWorld.getBlockState(entity.getPosition().up()).getBlock() == Blocks.packed_ice) && isInCave()){
                                 if(entity.getEquipmentInSlot(4).getDisplayName() != null && entity.getEquipmentInSlot(4).hasDisplayName()) {
                                     String itemName = entity.getEquipmentInSlot(4).getDisplayName();
-                                    if(itemName.contains("Ice Bait") || itemName.contains("Enchanted Ice") || itemName.contains("Glacial Fragment") || (itemName.contains("Packed Ice") && !itemName.contains("Enchanted"))) {
+                                    if(itemName.contains("Ice Bait") || itemName.contains("Glacial Fragment") || (itemName.contains("Packed Ice") && !itemName.contains("Enchanted"))) {
                                         Utils.OutlinedBoxWithESP(entity.getPosition().up(),Color.GRAY, false, 3);
                                     }
-                                    if(itemName.contains("White Gift")){
+                                    if(itemName.contains("White Gift") || itemName.contains("Enchanted Ice")){
                                         Utils.OutlinedBoxWithESP(entity.getPosition().up(),Color.WHITE, false, 3);
                                     }
                                     if(itemName.contains("Green Gift")){

@@ -1,7 +1,10 @@
 package com.greencat.antimony.common.mixins;
 
 import com.greencat.Antimony;
+import com.greencat.antimony.common.function.FPSAccelerator;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
@@ -15,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Block.class)
-public abstract class MixinBlock {
+public class MixinBlock {
     @Inject(method = "isCollidable", at = @At("HEAD"), cancellable = true)
     private void isCollidable(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         if(Antimony.NoSaplingBound && (Block.getIdFromBlock((Block) (Object) this) == Block.getIdFromBlock(Blocks.sapling))){
@@ -25,6 +28,4 @@ public abstract class MixinBlock {
             callbackInfoReturnable.setReturnValue(false);
         }
     }
-    @Shadow
-    public abstract boolean shouldSideBeRendered(IBlockAccess p_shouldSideBeRendered_1_, BlockPos p_shouldSideBeRendered_2_, EnumFacing p_shouldSideBeRendered_3_);
 }
