@@ -61,7 +61,7 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.9.1";
+    public static final String VERSION = "3.9.2";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -314,6 +314,7 @@ public class Antimony {
         new FPSAccelerator();
         new Disabler();
         new Timer();
+        new MacroerDetector();
 
         //init blur
         Blur.register();
@@ -362,7 +363,6 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("HUD"));
         register.RegisterFunction(new AntimonyFunction("GhostBlock"));
         register.RegisterFunction(new AntimonyFunction("InstantSwitch"));
-        register.RegisterFunction(new AntimonyFunction("NoHurtCam"));
         register.RegisterFunction(new AntimonyFunction("NoSlow"));
         register.RegisterFunction(new AntimonyFunction("TerminalESP"));
         register.RegisterFunction(new AntimonyFunction("HideDungeonMobNameTag"));
@@ -405,6 +405,8 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("FPS Accelerator"));
         register.RegisterFunction(new AntimonyFunction("Disabler"));
         register.RegisterFunction(new AntimonyFunction("Timer"));
+        register.RegisterFunction(new AntimonyFunction("MacroerDetector"));
+        register.RegisterFunction(new AntimonyFunction("Camera"));
 
 
         //register tables
@@ -451,7 +453,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "FullBright", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "DroppedItemESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "PeltESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "NoHurtCam", "Render"));
+        register.RegisterSelectObject(new SelectObject("function", "Camera", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "HideFallingBlock", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "JasperESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureESP", "Render"));
@@ -508,6 +510,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "Cartoon", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "MarketingGenerator", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "DanmakuChat", "Fun"));
+        register.RegisterSelectObject(new SelectObject("function", "MacroerDetector", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Rat", "Fun"));
 
 
@@ -694,10 +697,14 @@ public class Antimony {
         nukerType.put("Frozen Treasure",8);
         nukerType.put("Mithril With Titanium",9);
         nukerType.put("Foraging",10);
+        nukerType.put("Stone With Cobblestone",11);
         FunctionManager.addConfiguration(new SettingTypeSelector("模式","type",0,nukerType));
+        FunctionManager.addConfiguration(new SettingBoolean("周围有人自动停止", "disable", false));
+        FunctionManager.addConfiguration(new SettingInt("检测半径", "radius",30));
         HashMap<String, Integer> miningType = new HashMap<String, Integer>();
         miningType.put("Normal",0);
         miningType.put("Instantly",1);
+        miningType.put("Core 1",2);
         FunctionManager.addConfiguration(new SettingTypeSelector("挖掘","miningType",0,miningType));
 
         FunctionManager.bindFunction("KillerBot");
@@ -712,6 +719,7 @@ public class Antimony {
         type.put("Crypt Zombie",1);
         type.put("Star Sentry",2);
         type.put("Enderman",3);
+        type.put("Treasure Hoarder",4);
         FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",0,type));
 
         FunctionManager.bindFunction("Velocity");
@@ -756,6 +764,14 @@ public class Antimony {
         FunctionManager.bindFunction("Timer");
         FunctionManager.addConfiguration(new SettingLimitDouble("速度","speed",2.0,10.0,0.1));
         FunctionManager.addConfiguration(new SettingBoolean("仅移动时可用", "onlyMoving", false));
+
+        FunctionManager.bindFunction("MacroerDetector");
+        FunctionManager.addConfiguration(new SettingLimitInt("范围","range",250,2000,100));
+
+        FunctionManager.bindFunction("Camera");
+        FunctionManager.addConfiguration(new SettingLimitDouble("相机距离","distance",2.0,10000,0.01));
+        FunctionManager.addConfiguration(new SettingBoolean("取消受伤镜头", "noHurtCamera", true));
+        FunctionManager.addConfiguration(new SettingBoolean("相机穿墙", "clip", true));
 
         //check if new user
         NewUserFunction();

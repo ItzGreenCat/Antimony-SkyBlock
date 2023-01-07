@@ -175,6 +175,9 @@ public class KillerBot {
             if (type == 3 && entity instanceof EntityEnderman) {
                 return true;
             }
+            if (type == 4 && entity instanceof EntityPlayer && entity.getName().toLowerCase().contains("treasu") && entity.getName().toLowerCase().contains("hunter")) {
+                return true;
+            }
             return false;
         }
         return false;

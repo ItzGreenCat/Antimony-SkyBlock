@@ -7,12 +7,15 @@ import net.minecraft.block.BlockStone;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 import net.minecraft.util.Vec3i;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -30,6 +33,7 @@ public class nukerCore2 {
     public boolean requestBlock = false;
     private float damageProgress;
     private String wrapperName;
+    private int refreshTick = 0;
     List<BlockPos> ignoreList = new ArrayList<>();
 
     public nukerCore2(String wrapperName) {
@@ -61,6 +65,12 @@ public class nukerCore2 {
     public void onTick(TickEvent.ClientTickEvent event){
         if(!this.enable && nukerWrapper.enable){
             nukerWrapper.enable();
+        }
+        if (refreshTick + 1 > 60) {
+            refreshTick = 0;
+            ignoreList.clear();
+        } else {
+            refreshTick = refreshTick + 1;
         }
     }
     @SubscribeEvent

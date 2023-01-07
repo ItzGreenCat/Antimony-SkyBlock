@@ -1,6 +1,7 @@
 package com.greencat.antimony.common.mixins;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.config.getConfigByFunctionName;
 import net.minecraft.client.renderer.EntityRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,7 +14,7 @@ public abstract class MixinRenderer {
             at = {@At("HEAD")},
             cancellable = true)
     public void noHurtCam(float effect,CallbackInfo cbi) {
-        if(FunctionManager.getStatus("NoHurtCam")) {
+        if(FunctionManager.getStatus("Camera") && (Boolean) getConfigByFunctionName.get("Camera","noHurtCamera")) {
             cbi.cancel();
         }
     }
