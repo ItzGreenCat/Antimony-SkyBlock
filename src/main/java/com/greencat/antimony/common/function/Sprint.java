@@ -13,7 +13,7 @@ public class Sprint {
     @SubscribeEvent
     public void ClientTickEvent(TickEvent.ClientTickEvent event){
         if (Minecraft.getMinecraft().theWorld != null) {
-            if(FunctionManager.getStatus("Sprint") && Minecraft.getMinecraft().gameSettings.keyBindForward.isPressed()){
+            if(FunctionManager.getStatus("Sprint")){
                 Minecraft.getMinecraft().thePlayer.setSprinting(true);
             }
         }

@@ -3,18 +3,23 @@ package com.greencat.antimony.core.gui;
 import com.greencat.Antimony;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.register.AntimonyRegister;
+import com.greencat.antimony.core.settings.AbstractSettingOptionTextField;
 import com.greencat.antimony.core.type.AntimonyFunction;
 import com.greencat.antimony.utils.FontManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import javax.print.DocFlavor;
 import java.awt.*;
 import java.io.IOException;
+
+import static org.yaml.snakeyaml.tokens.Token.ID.Key;
 
 public class KeyBindsGUI extends GuiScreen{
     //go to see ClickGUI.java
@@ -28,25 +33,41 @@ public class KeyBindsGUI extends GuiScreen{
     private final int widthBound = FunctionManager.getLongestTextWidthAdd20() + 40;
     private GuiButton BackButton;
     private GuiButton refreshButton;
+    private GuiTextField field;
     ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
     private int pos;
+    private String rule = null;
     public int ButtonExcursion = 0;
     public KeyBindsGUI(GuiScreen parentScreen) {
         this.parentScreen = parentScreen;
     }
+    public KeyBindsGUI(GuiScreen parentScreen,String rule) {
+        this.parentScreen = parentScreen;
+        this.rule = rule;
+    }
     public void initGui() {
         limit = Minecraft.getMinecraft().gameSettings.limitFramerate;
+        Keyboard.enableRepeatEvents(true);
         Minecraft.getMinecraft().gameSettings.limitFramerate = 60;
         pos = widthBound;
         index = 1;
         ButtonListHeight = 53;
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
-            this.buttonList.add(new KeyBindButton(index, 10, ButtonListHeight, widthBound - 10, 18,function));
-            ButtonListHeight = ButtonListHeight + 20;
-            index = index + 1;
+            if(rule == null) {
+                this.buttonList.add(new KeyBindButton(index, 10, ButtonListHeight, widthBound - 10, 18, function));
+                ButtonListHeight = ButtonListHeight + 20;
+                index = index + 1;
+            } else {
+                if(function.getName().toLowerCase().contains(rule.toLowerCase())){
+                    this.buttonList.add(new KeyBindButton(index, 10, ButtonListHeight, widthBound - 10, 18, function));
+                    ButtonListHeight = ButtonListHeight + 20;
+                    index = index + 1;
+                }
+            }
         }
         BackButton = new GuiClickGUIButton(0,10,this.height - 25,widthBound - 10,18,"Back",new ResourceLocation(Antimony.MODID,"clickgui/back.png"));
-        refreshButton = new GuiClickGUIButton(114514,this.width - 70,this.height - 25,70,18,"Refresh");
+        refreshButton = new GuiClickGUIButton(114514,this.width - 70,this.height - 45,70,18,"Refresh");
+        field = new GuiTextField(783468230,Minecraft.getMinecraft().fontRendererObj,this.width - 90,this.height - 25,87,18);
         this.buttonList.add(BackButton);
         this.buttonList.add(refreshButton);
     }
@@ -99,6 +120,7 @@ public class KeyBindsGUI extends GuiScreen{
                 ((KeyBindButton) button).Excursion = this.ButtonExcursion;
             }
         }
+        field.drawTextBox();
         super.drawScreen(x,y,delta);
     }
     @Override
@@ -126,8 +148,20 @@ public class KeyBindsGUI extends GuiScreen{
             }
             Antimony.reloadKeyMapping();
         } else {
-            super.keyTyped(typeChar, keyCode);
+            if(keyCode == Keyboard.KEY_RETURN && field.isFocused()) {
+                Minecraft.getMinecraft().displayGuiScreen(new KeyBindsGUI(parentScreen,field.getText()));
+            } else {
+                field.textboxKeyTyped(typeChar, keyCode);
+                super.keyTyped(typeChar, keyCode);
+            }
         }
+    }
+    @Override
+    protected void mouseClicked(int par1, int par2, int par3) throws IOException {
+        if(field.getVisible()) {
+            field.mouseClicked(par1, par2, par3);
+        }
+        super.mouseClicked(par1, par2, par3);
     }
     @Override
     public boolean doesGuiPauseGame() {
@@ -135,6 +169,7 @@ public class KeyBindsGUI extends GuiScreen{
     }
     @Override
     public void onGuiClosed(){
+        Keyboard.enableRepeatEvents(false);
         Minecraft.getMinecraft().gameSettings.limitFramerate = limit;
     }
 }

@@ -1,0 +1,10 @@
+{
+  "function.enable":{
+  "category":"player",
+  "sounds":["antimony:enable"]
+  },
+  "function.disable":{
+  "category":"player",
+  "sounds":["antimony:disable"]
+  }
+}

@@ -15,6 +15,11 @@ public class KeyLoader {
 
     public static KeyBinding OpenConsole;
 
+    public static KeyBinding AddAOTV;
+    public static KeyBinding ClearAOTV;
+    public static KeyBinding UndoAOTV;
+    public static KeyBinding LoadAOTV;
+
     public static KeyBinding GhostBlock;
     public static KeyBinding InstantSwitch;
 
@@ -34,6 +39,10 @@ public class KeyLoader {
         KeyLoader.GhostBlock = new KeyBinding("创建Air Ghost Block", Keyboard.KEY_G, "Antimony-SkyBlock");
         KeyLoader.InstantSwitch = new KeyBinding("使用InstantSwitch", Keyboard.KEY_R, "Antimony-SkyBlock");
 
+        KeyLoader.AddAOTV = new KeyBinding("添加EtherWarp点位", Keyboard.KEY_V, "Antimony-SkyBlock");
+        KeyLoader.ClearAOTV = new KeyBinding("清空EtherWarp点位", Keyboard.KEY_C, "Antimony-SkyBlock");
+        KeyLoader.UndoAOTV = new KeyBinding("撤回EtherWarp点位", Keyboard.KEY_Z, "Antimony-SkyBlock");
+        KeyLoader.LoadAOTV = new KeyBinding("从配置文件加载EtherWarp点位", Keyboard.KEY_L, "Antimony-SkyBlock");
 
         KeyLoader.HugeScreenshot = new KeyBinding("大型截图", Keyboard.KEY_NUMPAD2, "Antimony-SkyBlock");
 
@@ -44,6 +53,11 @@ public class KeyLoader {
 
         ClientRegistry.registerKeyBinding(KeyLoader.GhostBlock);
         ClientRegistry.registerKeyBinding(KeyLoader.InstantSwitch);
+
+        ClientRegistry.registerKeyBinding(KeyLoader.AddAOTV);
+        ClientRegistry.registerKeyBinding(KeyLoader.ClearAOTV);
+        ClientRegistry.registerKeyBinding(KeyLoader.UndoAOTV);
+        ClientRegistry.registerKeyBinding(KeyLoader.LoadAOTV);
 
         ClientRegistry.registerKeyBinding(KeyLoader.OpenClickGUI);
         ClientRegistry.registerKeyBinding(KeyLoader.OpenBindGUI);

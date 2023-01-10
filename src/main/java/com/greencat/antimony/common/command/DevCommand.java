@@ -1,5 +1,6 @@
 package com.greencat.antimony.common.command;
 
+import com.greencat.antimony.core.EtherwarpTeleport;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
@@ -14,7 +15,7 @@ public class DevCommand extends CommandBase {
     public static boolean renderNode = false;
     Utils utils = new Utils();
     String[] Usage = {"/antimonydev 主命令",
-    "SelfName"
+    "SelfName","aotvadd","aotvnext","aotvclear"
     };
     public int getRequiredPermissionLevel() {
         return 0;
@@ -40,6 +41,15 @@ public class DevCommand extends CommandBase {
         if(args.length == 1){
             if (args[0].equalsIgnoreCase("selfname")) {
                 utils.devLog("玩家自身名字(去除特殊符号):" + Minecraft.getMinecraft().thePlayer.getDisplayNameString());
+            }
+            if (args[0].equalsIgnoreCase("aotvadd")) {
+                EtherwarpTeleport.add(new BlockPos(Minecraft.getMinecraft().thePlayer.getPositionVector()).down());
+            }
+            if (args[0].equalsIgnoreCase("aotvnext")) {
+                EtherwarpTeleport.next();
+            }
+            if (args[0].equalsIgnoreCase("aotvclear")) {
+                EtherwarpTeleport.clear();
             }
         }
     }

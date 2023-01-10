@@ -66,7 +66,7 @@ public class nukerCore2 {
         if(!this.enable && nukerWrapper.enable){
             nukerWrapper.enable();
         }
-        if (refreshTick + 1 > 60) {
+        if (refreshTick + 1 > 10) {
             refreshTick = 0;
             ignoreList.clear();
         } else {

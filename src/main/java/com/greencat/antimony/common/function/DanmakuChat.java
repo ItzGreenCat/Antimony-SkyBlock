@@ -14,7 +14,7 @@ public class DanmakuChat {
     public DanmakuChat() {
         MinecraftForge.EVENT_BUS.register(this);
     }
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void ClientChatReceived(ClientChatReceivedEvent event){
         if(FunctionManager.getStatus("DanmakuChat")) {
             if (event.type != 2) {

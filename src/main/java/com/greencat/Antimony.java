@@ -1,8 +1,5 @@
 package com.greencat;
 
-import com.greencat.antimony.common.Chat.AntimonyChannel;
-import com.greencat.antimony.common.Chat.CheckConnect;
-import com.greencat.antimony.common.Chat.CustomChatSend;
 import com.greencat.antimony.common.EventLoader;
 import com.greencat.antimony.common.MainMenu.GuiMainMenuModify;
 import com.greencat.antimony.common.Via;
@@ -18,8 +15,10 @@ import com.greencat.antimony.core.*;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.blacklist.BlackList;
 import com.greencat.antimony.core.config.ConfigLoader;
+import com.greencat.antimony.core.config.EtherwarpWaypoints;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.core.notice.NoticeManager;
 import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.antimony.core.settings.*;
 import com.greencat.antimony.core.type.AntimonyFunction;
@@ -34,6 +33,7 @@ import com.greencat.antimony.utils.packet.PacketEvent;
 import io.netty.channel.EventLoop;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -53,15 +53,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
-import static com.greencat.antimony.core.config.getConfigByFunctionName.get;
-
 
 @Mod(modid = Antimony.MODID, name = Antimony.NAME, version = Antimony.VERSION, acceptedMinecraftVersions = "1.8.9", clientSideOnly = true)
 public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.9.2";
+    public static final String VERSION = "3.9.3";
     private static final String Sb = "Sb";
 
     @Deprecated
@@ -156,8 +154,12 @@ public class Antimony {
         // TODO
         //register config
         new com.greencat.antimony.core.config.ConfigLoader(event);
+        new EtherwarpWaypoints(event);
         //init function config manager
         new getConfigByFunctionName();
+        EtherwarpTeleport ether = new EtherwarpTeleport();
+        MinecraftForge.EVENT_BUS.register(ether);
+        CustomEventHandler.EVENT_BUS.register(ether);
     }
 
     @EventHandler
@@ -245,6 +247,7 @@ public class Antimony {
         new DanmakuCore();
         new SmoothRotation();
         new PacketEvent();
+        new NoticeManager();
 
 
 
@@ -265,7 +268,7 @@ public class Antimony {
         new LanternESP();
         new SkeletonAim();
         new TitleManager();
-        new AntiAFKJump();
+        new AntiAFK();
         new Sprint();
         new Eagle();
         new Velocity();
@@ -277,7 +280,6 @@ public class Antimony {
         new HideDungeonMobNameTag();
         new PlayerFinder();
         new SecretBot();
-        new LividESP();
         new AutoCannon();
         new DroppedItemESP();
         new MouseISwitch();
@@ -315,6 +317,8 @@ public class Antimony {
         new Disabler();
         new Timer();
         new MacroerDetector();
+        new RainbowEntity();
+        new AutoArmadillo();
 
         //init blur
         Blur.register();
@@ -354,7 +358,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("CustomPetNameTag"));
         register.RegisterFunction(new AntimonyFunction("CustomItemSound"));
         register.RegisterFunction(new AntimonyFunction("SkeletonAim"));
-        register.RegisterFunction(new AntimonyFunction("AntiAFKJump"));
+        register.RegisterFunction(new AntimonyFunction("AntiAFK"));
         register.RegisterFunction(new AntimonyFunction("Sprint"));
         register.RegisterFunction(new AntimonyFunction("Eagle"));
         register.RegisterFunction(new AntimonyFunction("Velocity"));
@@ -366,7 +370,6 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("NoSlow"));
         register.RegisterFunction(new AntimonyFunction("TerminalESP"));
         register.RegisterFunction(new AntimonyFunction("HideDungeonMobNameTag"));
-        register.RegisterFunction(new AntimonyFunction("LividESP"));
         register.RegisterFunction(new AntimonyFunction("PlayerFinder"));
         register.RegisterFunction(new AntimonyFunction("SecretBot"));
         register.RegisterFunction(new AntimonyFunction("DroppedItemESP"));
@@ -407,6 +410,8 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("Timer"));
         register.RegisterFunction(new AntimonyFunction("MacroerDetector"));
         register.RegisterFunction(new AntimonyFunction("Camera"));
+        register.RegisterFunction(new AntimonyFunction("RainbowEntity"));
+        register.RegisterFunction(new AntimonyFunction("AutoArmadillo"));
 
 
         //register tables
@@ -470,7 +475,6 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "SecretBot", "Dungeon"));
         register.RegisterSelectObject(new SelectObject("function", "GhostBlock", "Dungeon"));
         register.RegisterSelectObject(new SelectObject("function", "AutoTerminal", "Dungeon"));
-        register.RegisterSelectObject(new SelectObject("function", "LividESP", "Dungeon"));
 
         register.RegisterSelectObject(new SelectObject("function", "AutoFish", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "AutoKillWorm", "Macro"));
@@ -481,13 +485,14 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "KillerBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "SynthesizerAura", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "Nuker", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "AutoArmadillo", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "PowderBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureBot", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
         register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
 
-        register.RegisterSelectObject(new SelectObject("function", "AntiAFKJump", "Movement"));
+        register.RegisterSelectObject(new SelectObject("function", "AntiAFK", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Sprint", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Eagle", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Velocity", "Movement"));
@@ -511,6 +516,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "MarketingGenerator", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "DanmakuChat", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "MacroerDetector", "Fun"));
+        register.RegisterSelectObject(new SelectObject("function", "RainbowEntity", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Rat", "Fun"));
 
 
@@ -772,6 +778,12 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingLimitDouble("相机距离","distance",2.0,10000,0.01));
         FunctionManager.addConfiguration(new SettingBoolean("取消受伤镜头", "noHurtCamera", true));
         FunctionManager.addConfiguration(new SettingBoolean("相机穿墙", "clip", true));
+
+        FunctionManager.bindFunction("AntiAFK");
+        HashMap<String, Integer> antiAFKType = new HashMap<String, Integer>();
+        antiAFKType.put("Jump",0);
+        antiAFKType.put("Move Left and Right",1);
+        FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",1,antiAFKType));
 
         //check if new user
         NewUserFunction();

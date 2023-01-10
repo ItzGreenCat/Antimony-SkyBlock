@@ -15,8 +15,6 @@ import net.minecraft.util.EnumChatFormatting;
 import java.util.Random;
 
 public class FunctionManager {
-    //notice player
-    static FunctionNotice notice = new FunctionNotice();
     //The function that is currently bound
     private static String currentFunction = "";
     //get a function's status
@@ -30,7 +28,6 @@ public class FunctionManager {
     }
     //set a funtion's status
     public static void setStatus(String Name,Boolean status){
-        Utils utils = new Utils();
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
             if(function.getName().equals(Name)){
                 if(status){
@@ -40,9 +37,9 @@ public class FunctionManager {
                     if(!event.isCanceled()){
                         //function.color = new Random().nextInt(4);
                         function.setStatus(true);
-                        notice.ShowNotice(function.getName(),function.getStatus());
+                        FunctionNotice.ShowNotice(function.getName(),function.getStatus());
                         ConfigLoader.setFunctionStateStorage();
-                        utils.print(Name + EnumChatFormatting.WHITE + " 启用");
+                        Utils.print(Name + EnumChatFormatting.WHITE + " 启用");
                     }
                 }
                 if(!status){
@@ -52,9 +49,9 @@ public class FunctionManager {
                     if(!event.isCanceled()){
                         //function.color = new Random().nextInt(4);
                         function.setStatus(false);
-                        notice.ShowNotice(function.getName(),function.getStatus());
+                        FunctionNotice.ShowNotice(function.getName(),function.getStatus());
                         ConfigLoader.setFunctionStateStorage();
-                        utils.print(Name + EnumChatFormatting.WHITE + " 禁用");
+                        Utils.print(Name + EnumChatFormatting.WHITE + " 禁用");
                     }
                 }
                 break;
@@ -63,7 +60,7 @@ public class FunctionManager {
     }
     //switch a function's status without any notice
     public static void switchStatusNoNotice(String Name) {
-        Utils utils = new Utils();
+        
         for (AntimonyFunction function : AntimonyRegister.FunctionList) {
             if (function.getName().equals(Name)) {
 
@@ -83,7 +80,7 @@ public class FunctionManager {
     }
     //set a function's status without any notice
     public static void setStatusNoNotice(String Name,Boolean status){
-        Utils utils = new Utils();
+        
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
             if(function.getName().equals(Name)){
                 if(status){
@@ -112,23 +109,20 @@ public class FunctionManager {
     }
     //switch a function's status
     public static void switchStatus(String Name){
-        Utils utils = new Utils();
         for(AntimonyFunction function : AntimonyRegister.FunctionList){
             if(function.getName().equals(Name)){
-
-
                     CustomEventHandler.FunctionSwitchEvent event;
                     event = new CustomEventHandler.FunctionSwitchEvent(function,!function.getStatus());
                     CustomEventHandler.EVENT_BUS.post(event);
                     if(!event.isCanceled()){
                         //function.color = new Random().nextInt(4);
                         function.SwtichStatus();
-                        notice.ShowNotice(Name, function.getStatus());
+                        FunctionNotice.ShowNoticeSound(Name, function.getStatus());
                         ConfigLoader.setFunctionStateStorage();
                         if(function.getStatus()){
-                            utils.print(Name + EnumChatFormatting.WHITE + " 启用");
+                            Utils.print(Name + EnumChatFormatting.WHITE + " 启用");
                         } else {
-                            utils.print(Name + EnumChatFormatting.WHITE + " 禁用");
+                            Utils.print(Name + EnumChatFormatting.WHITE + " 禁用");
                         }
                     }
                 break;

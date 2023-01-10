@@ -81,9 +81,13 @@ public class AutoLeave {
         }
     }
     public Boolean isValid(EntityPlayer player){
-        if(!Utils.isNPC(player) && !player.isInvisible() && player != Minecraft.getMinecraft().thePlayer){
+        if(!Utils.isNPC(player)  && player != Minecraft.getMinecraft().thePlayer){
             if(!player.getName().contains("Goblin") && !player.getName().contains("Ice Walker") && !player.getName().contains("Weakling") && !player.getName().contains("Frozen Steve")){
-                return true;
+                if(!player.isInvisible()) {
+                    return true;
+                } else {
+                    return player.getEquipmentInSlot(0) != null || player.getEquipmentInSlot(1) != null || player.getEquipmentInSlot(2) != null || player.getEquipmentInSlot(3) != null || player.getEquipmentInSlot(4) != null;
+                }
             }
             return false;
         }

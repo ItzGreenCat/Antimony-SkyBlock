@@ -1,8 +1,10 @@
 package com.greencat.antimony.common;
 
 import com.greencat.Antimony;
+import com.greencat.antimony.core.EtherwarpTeleport;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.FunctionManager.SelectGuiFunctionExecutant;
+import com.greencat.antimony.core.config.EtherwarpWaypoints;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.gui.ClickGUI;
 import com.greencat.antimony.core.gui.KeyBindsGUI;
@@ -22,18 +24,22 @@ import com.greencat.antimony.core.type.SelectTable;
 import com.greencat.antimony.core.ui.white.NewFunctionList;
 import com.greencat.antimony.core.ui.white.NewSelectGUI;
 import com.greencat.antimony.develop.Console;
+import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 
+import java.awt.*;
 import java.util.Map;
 
 public class EventLoader {
-    NoticeManager n = new NoticeManager();
     ClassicSelectGUI classicSelectGui = new ClassicSelectGUI();
     NewSelectGUI newSelectGui = new NewSelectGUI();
     NewFunctionList newFunctionList = new NewFunctionList();
@@ -57,7 +63,6 @@ public class EventLoader {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public void RenderEvent(RenderGameOverlayEvent.Post event) {
         if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
-            n.Notice();
             int hidePart = (Integer) getConfigByFunctionName.get("HUD", "hide");
             int style = (Integer) getConfigByFunctionName.get("HUD", "style");
             if (FunctionManager.getStatus("HUD")) {
@@ -206,7 +211,18 @@ public class EventLoader {
         if (KeyLoader.OpenConsole.isPressed()) {
             Console.frame.setVisible(true);
         }
-
+        if(KeyLoader.AddAOTV.isPressed()){
+            EtherwarpTeleport.add(new BlockPos(Minecraft.getMinecraft().thePlayer.getPositionVector()).down());
+        }
+        if(KeyLoader.ClearAOTV.isPressed()){
+            EtherwarpTeleport.clear();
+        }
+        if(KeyLoader.UndoAOTV.isPressed()){
+            EtherwarpTeleport.undo();
+        }
+        if(KeyLoader.LoadAOTV.isPressed()){
+            EtherwarpWaypoints.load();
+        }
     }
 
     @SubscribeEvent
@@ -219,5 +235,9 @@ public class EventLoader {
             }
         }
     }
+    /*@SubscribeEvent
+    public void clientRender(RenderWorldLastEvent event) {
+        Utils.OutlinedBoxWithESP(new BlockPos(Minecraft.getMinecraft().thePlayer.getPositionVector()).down(),Color.CYAN,false,2.5F);
+    }*/
 }
 
