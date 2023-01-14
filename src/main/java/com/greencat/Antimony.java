@@ -725,7 +725,7 @@ public class Antimony {
         type.put("Crypt Zombie",1);
         type.put("Star Sentry",2);
         type.put("Enderman",3);
-        type.put("Treasure Hoarder",4);
+        type.put("Treasuer Hoarder",4);
         FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",0,type));
 
         FunctionManager.bindFunction("Velocity");
