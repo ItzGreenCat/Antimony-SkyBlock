@@ -10,7 +10,7 @@ CurseForge: https://www.curseforge.com/minecraft/mc-mods/antimony-skyblock
 - Auto Fish
 - Auto KillWorm
 - Velocity
-- GhostBolck
+- GhostBlock
 - Macro
 - Block and Mobs ESP
 - Custom Pet Name
