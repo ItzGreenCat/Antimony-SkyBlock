@@ -5,13 +5,15 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.Pathfinding;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.common.mixins.EntityPlayerSPAccessor;
 import com.greencat.antimony.core.type.Rotation;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFence;
+import net.minecraft.block.BlockFenceGate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
@@ -24,6 +26,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
@@ -39,14 +42,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-import static java.lang.Math.sqrt;
+import static java.lang.Math.*;
 
 public class Utils {
     public static float lastReportedPitch;
@@ -701,19 +702,19 @@ public class Utils {
 
         int i;
         for (i = 0; i <= 90; i += 3) {
-            GL11.glVertex2d((double) (x + radius) + Math.sin((double) i * 3.141592653589793D / 180.0D) * (double) (radius * -1.0F), (double) (y + radius) + Math.cos((double) i * 3.141592653589793D / 180.0D) * (double) (radius * -1.0F));
+            GL11.glVertex2d((double) (x + radius) + sin((double) i * 3.141592653589793D / 180.0D) * (double) (radius * -1.0F), (double) (y + radius) + cos((double) i * 3.141592653589793D / 180.0D) * (double) (radius * -1.0F));
         }
 
         for (i = 90; i <= 180; i += 3) {
-            GL11.glVertex2d((double) (x + radius) + Math.sin((double) i * 3.141592653589793D / 180.0D) * (double) (radius * -1.0F), y1 - (double) radius + Math.cos((double) i * 3.141592653589793D / 180.0D) * (double) (radius * -1.0F));
+            GL11.glVertex2d((double) (x + radius) + sin((double) i * 3.141592653589793D / 180.0D) * (double) (radius * -1.0F), y1 - (double) radius + cos((double) i * 3.141592653589793D / 180.0D) * (double) (radius * -1.0F));
         }
 
         for (i = 0; i <= 90; i += 3) {
-            GL11.glVertex2d(x1 - (double) radius + Math.sin((double) i * 3.141592653589793D / 180.0D) * (double) radius, y1 - (double) radius + Math.cos((double) i * 3.141592653589793D / 180.0D) * (double) radius);
+            GL11.glVertex2d(x1 - (double) radius + sin((double) i * 3.141592653589793D / 180.0D) * (double) radius, y1 - (double) radius + cos((double) i * 3.141592653589793D / 180.0D) * (double) radius);
         }
 
         for (i = 90; i <= 180; i += 3) {
-            GL11.glVertex2d(x1 - (double) radius + Math.sin((double) i * 3.141592653589793D / 180.0D) * (double) radius, (double) (y + radius) + Math.cos((double) i * 3.141592653589793D / 180.0D) * (double) radius);
+            GL11.glVertex2d(x1 - (double) radius + sin((double) i * 3.141592653589793D / 180.0D) * (double) radius, (double) (y + radius) + cos((double) i * 3.141592653589793D / 180.0D) * (double) radius);
         }
 
         GL11.glEnd();
@@ -843,7 +844,7 @@ public class Utils {
 
         for (double i = 0.0D; i < (double) points; ++i) {
             double radians = Math.toRadians(i / (double) points * 90.0D + (double) angleStart);
-            worldrenderer.pos((double) radius * Math.sin(radians), (double) radius * Math.cos(radians), 0.0D).endVertex();
+            worldrenderer.pos((double) radius * sin(radians), (double) radius * cos(radians), 0.0D).endVertex();
         }
 
         tessellator.draw();
@@ -1150,8 +1151,8 @@ public class Utils {
 
     private static final Map<Integer, KeyBinding> keyBindMap = new HashMap<Integer, KeyBinding>();
 
-    public static List<KeyBinding> getNeededKeyPresses(Vec3 from, Vec3 to) {
-        List<KeyBinding> neededKeyPresses = new ArrayList();
+    public static ArrayList<KeyBinding> getNeededKeyPresses(Vec3 from, Vec3 to) {
+        ArrayList<KeyBinding> neededKeyPresses = new ArrayList();
         Rotation neededRot = Utils.getNeededChange(Utils.getRotation(from, to));
         double neededYaw = neededRot.getYaw() * -1.0F;
         keyBindMap.forEach((k, v) -> {
@@ -1161,6 +1162,16 @@ public class Utils {
 
         });
         return neededKeyPresses;
+    }
+    public static Vec3 getLook(final Vec3 vec) {
+        final double diffX = vec.xCoord - mc.thePlayer.posX;
+        final double diffY = vec.yCoord - (mc.thePlayer.posY + mc.thePlayer.getEyeHeight());
+        final double diffZ = vec.zCoord - mc.thePlayer.posZ;
+        final double dist = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
+        return getVectorForRotation((float)(-(MathHelper.atan2(diffY, dist) * 180.0 / 3.141592653589793)), (float)(MathHelper.atan2(diffZ, diffX) * 180.0 / 3.141592653589793 - 90.0));
+    }
+    public static Vec3 scaleVec(Vec3 vec, float scale) {
+        return new Vec3(vec.xCoord * scale, vec.yCoord * scale, vec.zCoord * scale);
     }
 
     public static void drawLines(List<Vec3> poses, float thickness, float partialTicks) {
@@ -1291,6 +1302,63 @@ public class Utils {
 
         return sb.toString();
     }
+    public static boolean canVecBeSeenFromVec(Vec3 from, Vec3 to, float step) {
+        double dist = from.distanceTo(to);
+
+        for (double d = step; d < dist; d += step) {
+
+            Vec3 pos1 = new Vec3(
+                    from.xCoord + (to.xCoord - from.xCoord) *  d / dist,
+                    from.yCoord + (to.yCoord - from.yCoord) * d / dist,
+                    from.zCoord + (to.zCoord - from.zCoord) * d / dist
+            );
+
+            if ((int) pos1.xCoord == (int) from.xCoord &&
+                    (int) pos1.yCoord == (int) from.yCoord &&
+                    (int) pos1.zCoord == (int) from.zCoord) {
+                continue;
+            }
+
+            if ((int) pos1.xCoord == (int) to.xCoord &&
+                    (int) pos1.yCoord == (int) to.yCoord &&
+                    (int) pos1.zCoord == (int) to.zCoord) {
+                continue;
+            }
+
+            if (mc.theWorld.getBlockState(new BlockPos(pos1)).getBlock() != Blocks.air) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    static Minecraft mc = Minecraft.getMinecraft();
+    public static ArrayList<BlockPos> getAllTeleportableBlocksNew(Vec3 vec, float range) {
+        long timestamp = System.currentTimeMillis();
+        BlockPos origin = new BlockPos(vec);
+        Iterable<BlockPos> blocks = BlockPos.getAllInBox(origin.subtract(new Vec3i(range, 16, range)), origin.add(new Vec3i(range, 16, range)));
+        ArrayList<BlockPos> validBlocks = (ArrayList<BlockPos>) StreamSupport.stream(
+                blocks.spliterator(), false
+        ).filter(blockPos ->
+                mc.theWorld.getBlockState(blockPos).getBlock().isCollidable() && mc.theWorld.getBlockState(blockPos).getBlock() != Blocks.carpet &&
+                        mc.theWorld.getBlockState(blockPos).getBlock() != Blocks.skull && mc.theWorld.getBlockState(blockPos).getBlock() != Blocks.wall_sign &&
+                        mc.theWorld.getBlockState(blockPos).getBlock() != Blocks.standing_sign &&
+                        !(mc.theWorld.getBlockState(blockPos).getBlock() instanceof BlockFence) &&
+                        !(mc.theWorld.getBlockState(blockPos).getBlock() instanceof BlockFenceGate) &&
+                        mc.theWorld.getBlockState(blockPos).getBlock().getCollisionBoundingBox(mc.theWorld, blockPos, mc.theWorld.getBlockState(blockPos)) != null &&
+                        mc.theWorld.getBlockState(blockPos.add(0, 1, 0)).getBlock() == Blocks.air &&
+                        mc.theWorld.getBlockState(blockPos.add(0, 2, 0)).getBlock() == Blocks.air &&
+                        vec.distanceTo(new Vec3(blockPos.getX() + 0.5, blockPos.getY() + 0.95, blockPos.getZ() + 0.5)) <= 61 &&
+                        canBlockBeeSeenFromVecNew(vec, blockPos)
+        ).collect(Collectors.toList());
+        return validBlocks;
+    }
+
+    public static boolean canBlockBeeSeenFromVecNew(Vec3 from, BlockPos blockPos) {
+        Vec3 to = new Vec3(blockPos.getX() + 0.5, blockPos.getY() + 0.95, blockPos.getZ() + 0.5);
+        MovingObjectPosition movingObjectPosition = mc.theWorld.rayTraceBlocks(from, to);
+        return movingObjectPosition != null && movingObjectPosition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && movingObjectPosition.getBlockPos().equals(blockPos);
+    }
 
     public static String nextString(int lenght) {
         Random random = new Random();
@@ -1360,6 +1428,33 @@ public class Utils {
     }
     public static void bindTexture(int texture) {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+    }
+    public static Float getSpeed(){
+        Minecraft mc = Minecraft.getMinecraft();
+        return ((Double)sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ)).floatValue();
+    }
+    public static Double getDirection(){
+        Minecraft mc = Minecraft.getMinecraft();
+        float rotationYaw = mc.thePlayer.rotationYaw;
+        if (mc.thePlayer.moveForward < 0f) rotationYaw += 180f;
+        float forward = 1f;
+        if (mc.thePlayer.moveForward < 0f) {forward = -0.5f;} else if (mc.thePlayer.moveForward > 0f) {forward = 0.5f;}
+        if (mc.thePlayer.moveStrafing > 0f) rotationYaw -= 90f * forward;
+        if (mc.thePlayer.moveStrafing < 0f) rotationYaw += 90f * forward;
+        return Math.toRadians(((Float)rotationYaw).doubleValue());
+    }
+    public static void strafe(){
+        if (isMoving()) {
+            Minecraft.getMinecraft().thePlayer.motionX = -sin(getDirection()) * getSpeed();
+            Minecraft.getMinecraft().thePlayer.motionZ = cos(getDirection()) * getSpeed();
+        }
+    }
+    public static Vec3 getVectorForRotation(float pitch, float yaw) {
+        float f = MathHelper.cos((float) (Math.toRadians(-yaw) - (float) Math.PI));
+        float f1 = MathHelper.sin((float) (Math.toRadians(-yaw) - (float) Math.PI));
+        float f2 = -MathHelper.cos((float) Math.toRadians(-pitch));
+        float f3 = MathHelper.sin((float) Math.toRadians(-pitch));
+        return new Vec3(f1 * f2, f3, f * f2);
     }
 
 }

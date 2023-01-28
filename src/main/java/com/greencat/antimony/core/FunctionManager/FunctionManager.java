@@ -117,7 +117,11 @@ public class FunctionManager {
                     if(!event.isCanceled()){
                         //function.color = new Random().nextInt(4);
                         function.SwtichStatus();
-                        FunctionNotice.ShowNoticeSound(Name, function.getStatus());
+                        if(!Name.equals("Pathfinding")) {
+                            FunctionNotice.ShowNoticeSound(Name, function.getStatus());
+                        } else {
+                            FunctionNotice.ShowNotice(Name,function.getStatus());
+                        }
                         ConfigLoader.setFunctionStateStorage();
                         if(function.getStatus()){
                             Utils.print(Name + EnumChatFormatting.WHITE + " 启用");

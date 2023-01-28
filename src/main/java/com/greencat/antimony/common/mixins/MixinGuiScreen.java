@@ -1,6 +1,8 @@
 package com.greencat.antimony.common.mixins;
 
+import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.inputfix.GuiScreenFix;
 import com.greencat.antimony.utils.Blur;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -51,5 +53,12 @@ public abstract class MixinGuiScreen extends Gui {
             e.printStackTrace();
         }
         cib.cancel();
+    }
+    @Inject(method = "handleKeyboardInput",at=@At("HEAD"),cancellable = true)
+    public void inputFixMixin(CallbackInfo ci){
+        if(FunctionManager.getStatus("InputFix")){
+            GuiScreenFix.handleKeyboardInput((GuiScreen)(Object)this);
+            ci.cancel();
+        }
     }
 }

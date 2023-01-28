@@ -14,6 +14,9 @@ buildscript {
             url = "https://repo.spongepowered.org/maven"
         }
         maven { url 'https://plugins.gradle.org/m2' }
+        maven {
+            url = "https://mvnrepository.com/artifact/com.alibaba/fastjson"
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
@@ -32,7 +35,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "3.9.3"
+version = "4.0"
 group= "com.greencat" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Antimony-Client"
 
@@ -64,6 +67,7 @@ tasks.withType(JavaCompile) {
 dependencies {
     //implementation 'org.jetbrains:annotations:20.1.0'
     implementation 'org.jetbrains:annotations:23.0.0'
+    implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.83'
     //implementation 'com.google.code.gson:gson:2.10'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 

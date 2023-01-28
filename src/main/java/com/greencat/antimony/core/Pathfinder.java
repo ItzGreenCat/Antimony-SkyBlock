@@ -4,6 +4,8 @@ package com.greencat.antimony.core;
 
 import java.util.List;
 
+
+import com.greencat.antimony.core.pathfinding.WalkPathfinder;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 
@@ -20,6 +22,13 @@ public class Pathfinder {
         pathfinder.compute();
         path = pathfinder.getPath();
     }
+    public static void setup(BlockPos from, BlockPos to, double minDistance,int loop) {
+        fromPos = from;
+        toPos = to;
+        pathfinder = new CPathfinder(new Vec3(from), new Vec3(to), minDistance);
+        pathfinder.compute(loop,4);
+        path = pathfinder.getPath();
+    }
 
     public static Vec3 getCurrent() {
         return path != null && !path.isEmpty() ? (Vec3)path.get(0) : null;
@@ -34,13 +43,13 @@ public class Pathfinder {
     }
 
     public static boolean goNext() {
-            if (path != null && path.size() > 1) {
-                path.remove(0);
-                return true;
-            } else {
-                path = null;
-                return false;
-            }
+        if (path != null && path.size() > 1) {
+            path.remove(0);
+            return true;
+        } else {
+            path = null;
+            return false;
+        }
     }
 
     public static boolean hasPath() {

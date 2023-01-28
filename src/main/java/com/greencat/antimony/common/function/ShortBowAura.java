@@ -54,7 +54,7 @@ public class ShortBowAura {
             priority = EventPriority.LOWEST
     )
     public void onUpdate(CustomEventHandler.MotionChangeEvent.Pre event) {
-        if (Killaura.entityTarget == null && FunctionManager.getStatus("ShortBowAura") && (double)Minecraft.getMinecraft().thePlayer.ticksExisted % (Double) getConfigByFunctionName.get("ShortBowAura","delay") == 0.0D) {
+        if (Killaura.target == null && FunctionManager.getStatus("ShortBowAura") && (double)Minecraft.getMinecraft().thePlayer.ticksExisted % (Double) getConfigByFunctionName.get("ShortBowAura","delay") == 0.0D) {
             boolean hasShortBow = Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == Items.bow;
             if (hasShortBow) {
                 target = this.getTarget(target);

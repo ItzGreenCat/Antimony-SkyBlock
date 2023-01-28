@@ -5,8 +5,7 @@ import com.greencat.antimony.common.function.FakeBan;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.common.function.CustomItemName;
 import com.greencat.antimony.core.Pathfinder;
-import com.greencat.antimony.core.gui.ClickGUI;
-import com.greencat.antimony.core.gui.KeyBindsGUI;
+import com.greencat.antimony.core.PathfinderProxy;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
@@ -137,18 +136,17 @@ public class CommandManager extends CommandBase {
                 FakeBan.active(str);
             }
         }
-        if (args.length == 4) {
+        if (args.length == 5) {
             if(args[0].equalsIgnoreCase("goto")){
                 try {
-                    Minecraft mc = Minecraft.getMinecraft();
-                    Pathfinder.setup(new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector())), new BlockPos(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])), 0.0D);
-                    if(Pathfinder.hasPath()){
-                        FunctionManager.switchStatus("Pathfinding");
-                    } else {
-                        utils.print("无法找到去此方块的路径");
+                    PathfinderProxy.calcPathDistance(new BlockPos(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])), Integer.parseInt(args[4]));
+                    if (!PathfinderProxy.running && Pathfinder.hasPath()) {
+                        if (!FunctionManager.getStatus("Pathfinding")) {
+                            FunctionManager.setStatus("Pathfinding", true);
+                        }
                     }
                 } catch (Exception e) {
-                    utils.print("寻找路径时出错");
+                    Utils.print("寻找路径时出错");
                     e.printStackTrace();
                 }
 

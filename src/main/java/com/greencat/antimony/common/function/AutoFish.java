@@ -27,7 +27,7 @@ public class AutoFish {
     public static boolean emberStatus = false;
     static int Tick = 40;
     static int hookTick = -1;
-    static int maxHookTick = 1400;
+    static int maxHookTick = 920;
     static boolean MoveStatus = false;
     static Boolean AutoFishStatus = false;
     static Boolean slugFish = false;
@@ -58,7 +58,7 @@ public class AutoFish {
     @SubscribeEvent
     public void WorldChangeTrigger(WorldEvent.Load event) {
         if (FunctionManager.getStatus("AutoFish")) {
-            new Utils().print("检测到世界服务器改变,自动关闭AutoFish");
+            Utils.print("检测到世界服务器改变,自动关闭AutoFish");
             FunctionManager.setStatus("AutoFish", false);
         }
     }
@@ -174,7 +174,7 @@ public class AutoFish {
                 if ((Boolean) getConfigByFunctionName.get("AutoFish", "throwHook")) {
                     if (!isHookThrown() && Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == Items.fishing_rod) {
                         if (hookThrownCooldown + 1 > (Integer) getConfigByFunctionName.get("AutoFish", "throwHookCooldown") * 40) {
-                            utils.print("到达设定时间,自动抛竿");
+                            Utils.print("到达设定时间,自动抛竿");
                             Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
                             hookThrownCooldown = 0;
                         } else {
@@ -193,7 +193,7 @@ public class AutoFish {
                         init();
                         AutoFishStatus = false;
                         if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
-                            utils.print("钓鱼检测状态:关闭");
+                            Utils.print("钓鱼检测状态:关闭");
                         }
                         hookTick = -1;
                     }
@@ -204,7 +204,7 @@ public class AutoFish {
                 AutoFishStatus = true;
                 hookTick = 0;
                 if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
-                    utils.print("钓鱼检测状态:开启");
+                    Utils.print("钓鱼检测状态:开启");
                 }
                 nextTickThrow = false;
             }
@@ -229,7 +229,7 @@ public class AutoFish {
                                         init();
                                         AutoFishStatus = false;
                                         if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
-                                            utils.print("钓鱼检测状态:关闭");
+                                            Utils.print("钓鱼检测状态:关闭");
                                         }
                                         hookTick = -1;
                                     }
@@ -237,7 +237,7 @@ public class AutoFish {
                                     init();
                                     AutoFishStatus = false;
                                     if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
-                                        utils.print("钓鱼检测状态:关闭");
+                                        Utils.print("钓鱼检测状态:关闭");
                                     }
                                     hookTick = -1;
                                 }
@@ -247,7 +247,7 @@ public class AutoFish {
                         AutoFishStatus = true;
                         hookTick = 0;
                         if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
-                            utils.print("钓鱼检测状态:开启");
+                            Utils.print("钓鱼检测状态:开启");
                         }
                     }
                 }
@@ -263,7 +263,7 @@ public class AutoFish {
                     if (AutoFishStatus) {
                         AutoFishStatus = false;
                         if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
-                            utils.print("钓鱼检测状态:关闭");
+                            Utils.print("钓鱼检测状态:关闭");
                         }
                     }
                 }

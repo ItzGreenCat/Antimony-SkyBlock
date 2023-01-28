@@ -42,6 +42,7 @@ public class AntiAFK {
                     }
                     if (tick == maxTick) {
                         KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindRight.getKeyCode(), false);
+                        tick = 0;
                     }
                 }
             }

@@ -17,6 +17,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StringUtils;
@@ -34,7 +35,6 @@ public class ForagingBot {
     static EnumStage stage;
     static nukerCore nuker = new nukerCore();
     static int tick = 0;
-    static Utils utils = new Utils();
 
     List<BlockPos> dirtList = new ArrayList<BlockPos>();
     public static long latest;
@@ -49,7 +49,7 @@ public class ForagingBot {
         if (event.function.getName().equals("ForagingBot")) {
             if (!init()) {
                 event.setCanceled(true);
-                utils.print("无法找到附近泥土");
+                Utils.print("无法找到附近泥土");
             }
         }
     }
@@ -60,7 +60,7 @@ public class ForagingBot {
             if (event.status) {
                 if (!init()) {
                     event.setCanceled(true);
-                    utils.print("无法找到附近泥土");
+                    Utils.print("无法找到附近泥土");
                 }
             } else {
                 post();
@@ -103,8 +103,13 @@ public class ForagingBot {
                                     Minecraft.getMinecraft().thePlayer.rotationPitch = rotation.getPitch();
                                     //KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(), true);
                                     //EnumFacing facing = Utils.calculateEnumfacingLook(new Vec3(pos));
+                                    if(Minecraft.getMinecraft().thePlayer.getHeldItem() != null) {
+                                        if(Minecraft.getMinecraft().theWorld.getBlockState(pos.up()).getBlock() == Blocks.air) {
+                                            C08PacketPlayerBlockPlacement c08 = new C08PacketPlayerBlockPlacement(pos, EnumFacing.UP.getIndex(), Minecraft.getMinecraft().thePlayer.getHeldItem(), 0.0F, 0.0F, 0.0F);
+                                            Minecraft.getMinecraft().getNetHandler().getNetworkManager().sendPacket(c08);
+                                        }
+                                    }
                                     //Minecraft.getMinecraft().playerController.onPlayerRightClick(Minecraft.getMinecraft().thePlayer,Minecraft.getMinecraft().theWorld,Minecraft.getMinecraft().thePlayer.getHeldItem(),pos.up(),EnumFacing.fromAngle(Minecraft.getMinecraft().thePlayer.rotationYaw), new Vec3(0.0D, 0.0D, 0.0D));
-                                    ((MinecraftAccessor) Minecraft.getMinecraft()).rightClickMouse();
                                 }
                         } else {
                             if(Antimony.NoSaplingBound){
@@ -172,10 +177,13 @@ public class ForagingBot {
                                     NowZ = StartZ;
                                 }
                                 if (!posList.isEmpty()) {
-                                    Rotation rotation = Utils.getRotation(reListNoBack(posList).get(0));
+                                    BlockPos pos = reListNoBack(posList).get(0);
+                                    Rotation rotation = Utils.getRotation(pos);
                                     Minecraft.getMinecraft().thePlayer.rotationYaw = rotation.getYaw();
                                     Minecraft.getMinecraft().thePlayer.rotationPitch = rotation.getPitch();
-                                    KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(), true);
+                                    if(Minecraft.getMinecraft().thePlayer.getHeldItem() != null) {
+                                        ((MinecraftAccessor)Minecraft.getMinecraft()).rightClickMouse();
+                                    }
                                 }
                             } else {
                                 if(Antimony.NoTreeBound){
@@ -183,6 +191,7 @@ public class ForagingBot {
                                 }
                             }
                             if (stage == EnumStage.LOG) {
+                                checkSwitch("jungle axe");
                                 checkSwitch("treecap");
                                 BlockPos target = null;
                                 if (Minecraft.getMinecraft().theWorld != null) {

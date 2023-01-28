@@ -2,13 +2,15 @@ package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.Pathfinder;
+import com.greencat.antimony.core.PathfinderProxy;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore2;
 import com.greencat.antimony.core.nukerWrapper;
-import com.greencat.antimony.develop.Console;
 import com.greencat.antimony.utils.SmoothRotation;
 import com.greencat.antimony.utils.Utils;
+import net.minecraft.block.BlockOre;
+import net.minecraft.block.BlockPrismarine;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
@@ -24,7 +26,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class PowderBot {
     public PowderBot() {
@@ -33,8 +34,10 @@ public class PowderBot {
     }
     static List<Vec3> ignoreList = new ArrayList<Vec3>();
     static List<Vec3> pathIgnoreList = new ArrayList<Vec3>();
+    static Long lastPathfinding = 0L;
     private static Vec3 closestChest = null;
     static boolean looking = false;
+    private static Long lastLooking = 0L;
     static nukerCore2 nuker = nukerWrapper.nuker;
     BlockPos pos;
 
@@ -43,8 +46,10 @@ public class PowderBot {
         if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().thePlayer != null) {
             if (FunctionManager.getStatus("PowderBot")) {
                 if (!((Boolean)getConfigByFunctionName.get("PowderBot","chestOnly"))) {
+                    if(looking && System.currentTimeMillis() - lastLooking > 10000){
+                        looking = false;
+                    }
                     if (!looking) {
-                        nuker.miningType = nukerCore2.MiningType.ONE_TICK;
                         nuker.rotation = nukerCore2.RotationType.SERVER_ROTATION;
                         if (!FunctionManager.getStatus("NukerWrapper")) {
                             nukerWrapper.enable();
@@ -59,22 +64,25 @@ public class PowderBot {
                             nuker.putBlock(pos);
                         }
                         if (stoneVec == null && !FunctionManager.getStatus("Pathfinding")) {
-                            Vec3 stone = randomStoneUpperThanPlayer2Block(10);
-                            try {
-                                Pathfinder.setup(new BlockPos(Utils.floorVec(Minecraft.getMinecraft().thePlayer.getPositionVector())), new BlockPos(stone.xCoord, stone.yCoord, stone.zCoord), 0.0D);
-                            } catch(Exception e){
-
-                            }
-                            if (Pathfinder.hasPath()) {
-                                //Console.addMessage("PathVec3: " + "X:" + Pathfinder.getGoal().xCoord + " Y: " + Pathfinder.getGoal().yCoord + " Z: " + Pathfinder.getGoal().zCoord + " | PlayerVec3: " + " X: " + Minecraft.getMinecraft().thePlayer.getPosition().getX() + " Y: " + Minecraft.getMinecraft().thePlayer.getPosition().getY() + " Z: " + Minecraft.getMinecraft().thePlayer.getPosition().getZ());
-                                if(vecEquals(Pathfinder.getGoal(),new Vec3((int)Minecraft.getMinecraft().thePlayer.posX,(int)Minecraft.getMinecraft().thePlayer.posY,(int)Minecraft.getMinecraft().thePlayer.posZ))){
-                                    if(pathIgnoreList.size() + 1 > 30){
-                                        pathIgnoreList.clear();
+                            if(System.currentTimeMillis() - lastPathfinding > 500) {
+                                Vec3 stone = randomStoneUpperThanPlayer2Block(30);
+                                try {
+                                    PathfinderProxy.calcPathDistance(new BlockPos(stone.xCoord, stone.yCoord, stone.zCoord), 6);
+                                    if (!PathfinderProxy.running && Pathfinder.hasPath()) {
+                                        lastPathfinding = System.currentTimeMillis();
+                                        //Console.addMessage("PathVec3: " + "X:" + Pathfinder.getGoal().xCoord + " Y: " + Pathfinder.getGoal().yCoord + " Z: " + Pathfinder.getGoal().zCoord + " | PlayerVec3: " + " X: " + Minecraft.getMinecraft().thePlayer.getPosition().getX() + " Y: " + Minecraft.getMinecraft().thePlayer.getPosition().getY() + " Z: " + Minecraft.getMinecraft().thePlayer.getPosition().getZ());
+                                            if (pathIgnoreList.size() + 1 > 30) {
+                                                pathIgnoreList.clear();
+                                            }pathIgnoreList.add(stone);
+                                        if (!FunctionManager.getStatus("Pathfinding")) {
+                                            FunctionManager.setStatus("Pathfinding", true);
+                                        }
+                                    } else {
+                                        pathIgnoreList.add(stone);
                                     }
-                                    pathIgnoreList.add(stone);
-                                }
-                                if (!FunctionManager.getStatus("Pathfinding")) {
-                                    FunctionManager.setStatus("Pathfinding", true);
+                                } catch (Exception ignored) {
+                                    FunctionManager.setStatus("PowderBot", false);
+                                    Utils.print("PowderBot无法在附近找到石头");
                                 }
                             }
                         }
@@ -130,6 +138,7 @@ public class PowderBot {
                         double dist = closestChest.distanceTo(particlePos);
                         if (dist < 1) {
                             looking = true;
+                            lastLooking = System.currentTimeMillis();
                             SmoothRotation.smoothLook(Utils.getRotation(particlePos), 5, () -> {
                             });
                         }
@@ -211,7 +220,11 @@ public class PowderBot {
         Vec3 closest = null;
         ArrayList<BlockPos> stone = new ArrayList<>();
         for(BlockPos pos : BlockPos.getAllInBox(Minecraft.getMinecraft().thePlayer.getPosition().add(2,3,2),Minecraft.getMinecraft().thePlayer.getPosition().add(-2,0,-2))){
-            if(Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.stone){
+            if(Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.stone || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockOre || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.stained_hardened_clay || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.clay){
+                if(!nuker.isIgnored(pos)) {
+                    stone.add(pos);
+                }
+            } else if(Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockPrismarine){
                 if(!nuker.isIgnored(pos)) {
                     stone.add(pos);
                 }
@@ -226,6 +239,13 @@ public class PowderBot {
                     smallest = dist;
                     closest = vec3;
                 }
+            }
+        }
+        if(closest != null) {
+            if (Minecraft.getMinecraft().theWorld.getBlockState(new BlockPos(closest)).getBlock() == Blocks.prismarine) {
+                nuker.miningType = nukerCore2.MiningType.NORMAL;
+            } else {
+                nuker.miningType = nukerCore2.MiningType.ONE_TICK;
             }
         }
         return closest;
@@ -279,7 +299,7 @@ public class PowderBot {
     }
     private static boolean isPathIgnored(Vec3 vec){
         boolean isIgnored = false;
-        for(Vec3 ignored : ignoreList){
+        for(Vec3 ignored : pathIgnoreList){
             if(vecEquals(vec,ignored)){
                 isIgnored = true;
                 break;

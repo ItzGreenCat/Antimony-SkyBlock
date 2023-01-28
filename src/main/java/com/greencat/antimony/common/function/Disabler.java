@@ -118,7 +118,7 @@ public class Disabler {
                                     Utils.sendPacketNoEvent(packets.take());
                                 }
                             }
-                            if (mc.thePlayer.isUsingItem() || (FunctionManager.getStatus("Killaura") && Killaura.autoBlock && Minecraft.getMinecraft().thePlayer.isBlocking()) && mc.thePlayer.getHeldItem() != null && (mc.thePlayer.getHeldItem().getItem() instanceof ItemSword)) {
+                            if (mc.thePlayer.isUsingItem() || (FunctionManager.getStatus("Killaura") && Killaura.autoBlock && Killaura.blocking) && mc.thePlayer.getHeldItem() != null && (mc.thePlayer.getHeldItem().getItem() instanceof ItemSword)) {
                                 timerShouldCancel = false;
                                 while (!packets.isEmpty()) {
                                     Utils.sendPacketNoEvent(packets.take());
@@ -132,7 +132,7 @@ public class Disabler {
                     event.setCanceled(true);
                 }
 
-                if (strafeDisabler && (mc.thePlayer.ticksExisted < strafePackets) && packet instanceof C03PacketPlayer && (mc.thePlayer.ticksExisted % 15 != 0)) {
+                if (strafeDisabler && (mc.thePlayer.ticksExisted < strafePackets) && packet instanceof C03PacketPlayer && (mc.thePlayer.ticksExisted % 15 != 0) && Minecraft.getMinecraft().theWorld != null) {
                     event.setCanceled(true);
                 }
                 if (antiDogBan || (strafeDisabler && (mc.thePlayer.ticksExisted < strafePackets))) {

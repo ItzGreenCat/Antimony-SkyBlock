@@ -55,7 +55,7 @@ public class ConfigLoader {
     public static void setBoolean(String key,Boolean value,Boolean defaultValue) {
         config.get(Configuration.CATEGORY_GENERAL, key, defaultValue, "").set(value);
         config.save();
-        clearConfigCache();
+        removeConfigCache(key);
         config.load();
     }
     public static boolean getBoolean(String key,Boolean defaultValue) {
@@ -67,7 +67,7 @@ public class ConfigLoader {
     public static void setString(String key,String value,String defaultValue) {
         config.get(Configuration.CATEGORY_GENERAL, key, defaultValue, "").set(value);
         config.save();
-        clearConfigCache();
+        removeConfigCache(key);
         config.load();
     }
     public static String getString(String key,String defaultValue) {
@@ -79,7 +79,7 @@ public class ConfigLoader {
     public static void setInt(String key,int value,int defaultValue) {
         config.get(Configuration.CATEGORY_GENERAL, key, defaultValue, "").set(value);
         config.save();
-        clearConfigCache();
+        removeConfigCache(key);
         config.load();
     }
     public static int getInt(String key,int defaultValue) {
@@ -91,7 +91,7 @@ public class ConfigLoader {
     public static void setDouble(String key,double value,double defaultValue) {
         config.get(Configuration.CATEGORY_GENERAL, key, defaultValue, "").set(value);
         config.save();
-        clearConfigCache();
+        removeConfigCache(key);
         config.load();
     }
     public static double getDouble(String key,double defaultValue) {
@@ -101,7 +101,7 @@ public class ConfigLoader {
         return number;
     }
 
-    private static void clearConfigCache(){
-        getConfigByFunctionName.cache.clear();
+    private static void removeConfigCache(String key){
+        getConfigByFunctionName.cache.remove(key);
     }
 }

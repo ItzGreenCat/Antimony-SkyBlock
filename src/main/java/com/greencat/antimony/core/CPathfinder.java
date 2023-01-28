@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class CPathfinder {
+public class CPathfinder{
     private Vec3 startVec3;
     private Vec3 endVec3;
     private ArrayList<Vec3> path = new ArrayList();
@@ -127,6 +127,10 @@ public class CPathfinder {
         } catch(Exception e){
 
         }
+    }
+
+    public void compute(int loops) {
+        this.compute(loops, 4);
     }
 
     public static boolean checkPositionValidity(Vec3 loc, boolean checkGround) {

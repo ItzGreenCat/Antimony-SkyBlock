@@ -13,11 +13,15 @@ import com.greencat.antimony.common.function.title.TitleManager;
 import com.greencat.antimony.common.key.KeyLoader;
 import com.greencat.antimony.core.*;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.Pathfinding;
+import com.greencat.antimony.core.auctionTracker.AuctionTracker;
 import com.greencat.antimony.core.blacklist.BlackList;
 import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.core.config.EtherwarpWaypoints;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
+/*import com.greencat.antimony.core.mcef.client.ClientProxy;
+import com.greencat.antimony.core.mcef.utilities.Log;*/
 import com.greencat.antimony.core.notice.NoticeManager;
 import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.antimony.core.settings.*;
@@ -34,12 +38,16 @@ import io.netty.channel.EventLoop;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+
+//import static com.greencat.antimony.core.mcef.MCEF.*;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -59,8 +67,9 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "3.9.3";
+    public static final String VERSION = "4.0";
     private static final String Sb = "Sb";
+    public static String lastLoginAccessToken = Minecraft.getMinecraft().getSession().getToken();
 
     @Deprecated
     public static float strafe;
@@ -104,6 +113,9 @@ public class Antimony {
     @Deprecated
     @Instance(Antimony.MODID)
     public static Antimony instance;
+
+    //@SidedProxy(serverSide = "com.greencat.antimony.core.mcef.BaseProxy", clientSide = "com.greencat.antimony.core.mcef.client.ClientProxy")
+    /*public static ClientProxy PROXY = new ClientProxy();*/
 
     //use for viaversion
     public static void start() {
@@ -160,10 +172,37 @@ public class Antimony {
         EtherwarpTeleport ether = new EtherwarpTeleport();
         MinecraftForge.EVENT_BUS.register(ether);
         CustomEventHandler.EVENT_BUS.register(ether);
+
+        /*Log.info("Loading MCEF config...");
+        Configuration cfg = new Configuration(new File(Antimony.AntimonyDirectory,"mcef_config.cfg"));
+
+        //Config: main
+        SKIP_UPDATES        = cfg.getBoolean("skipUpdates"      , "main", false          , "Do not update binaries.");
+        WARN_UPDATES        = cfg.getBoolean("warnUpdates"      , "main", true           , "Tells in the chat if a new version of MCEF is available.");
+        USE_FORGE_SPLASH    = cfg.getBoolean("useForgeSplash"   , "main", true           , "Use Forge's splash screen to display resource download progress (may be unstable).");
+        CEF_ARGS            = cfg.getString ("cefArgs"          , "main", "--disable-gpu", "Command line arguments passed to CEF. For advanced users.").split("\\s+");
+        SHUTDOWN_JCEF       = cfg.getBoolean("shutdownJcef"     , "main", false          , "Set this to true if your Java process hangs after closing Minecraft. This is disabled by default because it makes the launcher think Minecraft crashed...");
+        SECURE_MIRRORS_ONLY = cfg.getBoolean("secureMirrorsOnly", "main", true           , "Only enable secure (HTTPS) mirror. This should be kept to true unless you know what you're doing.");
+
+        String mirror = cfg.getString("forcedMirror", "main", "", "A URL that contains every MCEF resources; for instance https://montoyo.net/jcef.").trim();
+        if(mirror.length() > 0)
+            FORCE_MIRROR = mirror;
+
+        //Config: exampleBrowser
+        ENABLE_EXAMPLE = cfg.getBoolean("enable", "exampleBrowser", true                  , "Set this to false if you don't want to enable the F10 browser.");
+        HOME_PAGE      = cfg.getString ("home"  , "exampleBrowser", "bing.com", "The home page of the F10 browser.");
+
+        //Config: debug
+        CHECK_VRAM_LEAK = cfg.getBoolean("checkForVRAMLeak", "debug", false, "Track allocated OpenGL textures to make sure there's no leak");
+        cfg.save();
+
+        importLetsEncryptCertificate();
+        PROXY.onPreInit();*/
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) throws AWTException {
+        //PROXY.onInit();
         // TODO
         //init general event loader
         new EventLoader();
@@ -266,7 +305,6 @@ public class Antimony {
         new CustomPetName();
         new CustomItemSound();
         new LanternESP();
-        new SkeletonAim();
         new TitleManager();
         new AntiAFK();
         new Sprint();
@@ -319,6 +357,16 @@ public class Antimony {
         new MacroerDetector();
         new RainbowEntity();
         new AutoArmadillo();
+        new BHop();
+        new AutoTool();
+        new AutoWeapon();
+        new BlockTarget();
+        new ChatDetector();
+        new FrozenScytheAura();
+        new JadeCrystalBot();
+        new WebBrowser();
+        new HarpBot();
+        new ExperimentsBot();
 
         //init blur
         Blur.register();
@@ -357,7 +405,6 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("DungeonKeyESP"));
         register.RegisterFunction(new AntimonyFunction("CustomPetNameTag"));
         register.RegisterFunction(new AntimonyFunction("CustomItemSound"));
-        register.RegisterFunction(new AntimonyFunction("SkeletonAim"));
         register.RegisterFunction(new AntimonyFunction("AntiAFK"));
         register.RegisterFunction(new AntimonyFunction("Sprint"));
         register.RegisterFunction(new AntimonyFunction("Eagle"));
@@ -412,12 +459,24 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("Camera"));
         register.RegisterFunction(new AntimonyFunction("RainbowEntity"));
         register.RegisterFunction(new AntimonyFunction("AutoArmadillo"));
+        register.RegisterFunction(new AntimonyFunction("BHop"));
+        register.RegisterFunction(new AntimonyFunction("AutoTool"));
+        register.RegisterFunction(new AntimonyFunction("AutoWeapon"));
+        register.RegisterFunction(new AntimonyFunction("BlockTarget"));
+        register.RegisterFunction(new AntimonyFunction("ChatDetector"));
+        register.RegisterFunction(new AntimonyFunction("FrozenScytheAura"));
+        register.RegisterFunction(new AntimonyFunction("JadeCrystalBot"));
+        register.RegisterFunction(new AntimonyFunction("WebBrowser"));
+        register.RegisterFunction(new AntimonyFunction("HarpBot"));
+        register.RegisterFunction(new AntimonyFunction("ExperimentsBot"));
+        register.RegisterFunction(new AntimonyFunction("InputFix"));
 
 
         //register tables
         register.RegisterTable(new SelectTable("root"));
         register.RegisterTable(new SelectTable("Combat"));
         register.RegisterTable(new SelectTable("Render"));
+        register.RegisterTable(new SelectTable("Player"));
         register.RegisterTable(new SelectTable("Dungeon"));
         register.RegisterTable(new SelectTable("Macro"));
         register.RegisterTable(new SelectTable("CrystalHollow"));
@@ -432,6 +491,7 @@ public class Antimony {
         //third argument is parent table's name,The outermost table is called root
         register.RegisterSelectObject(new SelectObject("table", "Combat", "root"));
         register.RegisterSelectObject(new SelectObject("table", "Render", "root"));
+        register.RegisterSelectObject(new SelectObject("table", "Player", "root"));
         register.RegisterSelectObject(new SelectObject("table", "Dungeon", "root"));
         register.RegisterSelectObject(new SelectObject("table", "Macro", "root"));
         register.RegisterSelectObject(new SelectObject("table", "CrystalHollow", "root"));
@@ -445,6 +505,7 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "NoSlow", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "Killaura", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "ShortBowAura", "Combat"));
+        register.RegisterSelectObject(new SelectObject("function", "FrozenScytheAura", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "Reach", "Combat"));
         register.RegisterSelectObject(new SelectObject("function", "WTap", "Combat"));
 
@@ -452,7 +513,6 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "GuardianESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "GolemESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "CaveSpiderESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "WormLavaESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "LanternESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "PlayerFinder", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FullBright", "Render"));
@@ -463,10 +523,16 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "JasperESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "DragonEggESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "SapphireGrottoESP", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "ChestFinder", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
         register.RegisterSelectObject(new SelectObject("function", "FPS Accelerator","Render"));
+
+        register.RegisterSelectObject(new SelectObject("function", "AutoTool","Player"));
+        register.RegisterSelectObject(new SelectObject("function", "AutoWeapon","Player"));
+        register.RegisterSelectObject(new SelectObject("function", "AutoUse", "Player"));
+        register.RegisterSelectObject(new SelectObject("function", "BlockTarget", "Player"));
+        register.RegisterSelectObject(new SelectObject("function", "ChatDetector", "Player"));
+        register.RegisterSelectObject(new SelectObject("function", "NickHider", "Player"));
 
         register.RegisterSelectObject(new SelectObject("function", "StarredMobESP", "Dungeon"));
         register.RegisterSelectObject(new SelectObject("function", "DungeonKeyESP", "Dungeon"));
@@ -485,33 +551,37 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "KillerBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "SynthesizerAura", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "Nuker", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoArmadillo", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "HarpBot", "Macro"));
+        register.RegisterSelectObject(new SelectObject("function", "ExperimentsBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "PowderBot", "Macro"));
         register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureBot", "Macro"));
 
         register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
         register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
+        register.RegisterSelectObject(new SelectObject("function", "JadeCrystalBot", "CrystalHollow"));
+        register.RegisterSelectObject(new SelectObject("function", "AutoArmadillo", "CrystalHollow"));
+        register.RegisterSelectObject(new SelectObject("function", "SapphireGrottoESP", "CrystalHollow"));
+        register.RegisterSelectObject(new SelectObject("function", "WormLavaESP", "CrystalHollow"));
 
         register.RegisterSelectObject(new SelectObject("function", "AntiAFK", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Sprint", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Eagle", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Velocity", "Movement"));
+        register.RegisterSelectObject(new SelectObject("function", "BHop", "Movement"));
         register.RegisterSelectObject(new SelectObject("function", "Timer", "Movement"));
 
-
-        register.RegisterSelectObject(new SelectObject("function", "SkeletonAim", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "AntimonyChannel", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "InstantSwitch", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "MouseISwitch", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoUse", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "BlackList", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "Interface", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "NickHider", "Misc"));
+        register.RegisterSelectObject(new SelectObject("function", "InputFix", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "Disabler", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "HUD", "Misc"));
 
         register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "CustomItemSound", "Fun"));
+        register.RegisterSelectObject(new SelectObject("function", "WebBrowser", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "Cartoon", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "MarketingGenerator", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "DanmakuChat", "Fun"));
@@ -538,15 +608,26 @@ public class Antimony {
         //FunctionManage.bindFunction is bind a function to function manage
         //addConfiguration is to apply the configuration to the currently bind function
         FunctionManager.bindFunction("Killaura");
+        FunctionManager.addConfiguration(new SettingLimitDouble("CPS", "cps", 5.0D,18.0D,1.0D));
+        HashMap<String, Integer> KillauraTypeMap = new HashMap<String, Integer>();
+        KillauraTypeMap.put("Single",0);
+        KillauraTypeMap.put("Multi",1);
+        FunctionManager.addConfiguration(new SettingTypeSelector("模式","mode",0,KillauraTypeMap));
+        FunctionManager.addConfiguration(new SettingLimitDouble("Multi模式切换时间", "switchDelay", 400.0D,1000.0D,50.0D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("穿墙攻击距离", "wallRange", 3.5D,7.0D,1.0D));
         FunctionManager.addConfiguration(new SettingBoolean("攻击玩家", "isAttackPlayer", true));
         FunctionManager.addConfiguration(new SettingBoolean("目标实体透视", "targetESP", true));
-        FunctionManager.addConfiguration(new SettingLimitDouble("最大纵向旋转角度", "maxPitch", 90.0D,90.0D,-90.0D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("最大横向旋转角度", "maxYaw", 120.0D,180.0D,-180.0D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("最大纵向旋转角度", "maxPitch", 180.0D,180.0D,1.0D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("最大横向旋转角度", "maxYaw", 180.0D,180.0D,1.0D));
         FunctionManager.addConfiguration(new SettingLimitDouble("最大旋转距离", "maxRotationRange", 6.0D,12.0D,2.0D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("在此项值内视场角生物为可攻击生物", "Fov", 270.0D,360.0D,90.0D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("视场角", "Fov", 270.0D,360.0D,90.0D));
+        FunctionManager.addConfiguration(new SettingLimitInt("平滑旋转度", "smooth", 60,100,1));
         FunctionManager.addConfiguration(new SettingBoolean("攻击NPC", "isAttackNPC", false));
         FunctionManager.addConfiguration(new SettingBoolean("攻击同队伍玩家", "isAttackTeamMember", false));
+        FunctionManager.addConfiguration(new SettingBoolean("仅持剑开启", "onlySword", false));
         FunctionManager.addConfiguration(new SettingBoolean("自动格挡", "autoBlock", false));
+        FunctionManager.addConfiguration(new SettingLimitDouble("格挡距离", "blockRange", 3.5D,10.0D,1.0D));
+        FunctionManager.addConfiguration(new SettingBoolean("使用LagCheck", "lagCheck", false));
 
         FunctionManager.bindFunction("InstantSwitch");
         FunctionManager.addConfiguration(new SettingString("物品名称", "itemName", "of the End"));
@@ -684,12 +765,14 @@ public class Antimony {
         HashMap<String, Integer> playerFinderMode = new HashMap<String, Integer>();
         playerFinderMode.put("3D Box",0);
         playerFinderMode.put("XRay",1);
+        playerFinderMode.put("OutlineTest",2);
         FunctionManager.addConfiguration(new SettingTypeSelector("渲染模式","mode",1,playerFinderMode));
 
         FunctionManager.bindFunction("Nuker");
         HashMap<String, Integer> rotation = new HashMap<String, Integer>();
         rotation.put("ServerRotation",0);
         rotation.put("Rotation",1);
+        rotation.put("SmoothRotation",2);
         FunctionManager.addConfiguration(new SettingTypeSelector("旋转模式","rotation",0,rotation));
         HashMap<String, Integer> nukerType = new HashMap<String, Integer>();
         nukerType.put("Gemstone(No Panel)",0);
@@ -704,14 +787,17 @@ public class Antimony {
         nukerType.put("Mithril With Titanium",9);
         nukerType.put("Foraging",10);
         nukerType.put("Stone With Cobblestone",11);
+        nukerType.put("Mithril With Titanium (Blue Wool First)",12);
+        nukerType.put("Obsidian",13);
         FunctionManager.addConfiguration(new SettingTypeSelector("模式","type",0,nukerType));
         FunctionManager.addConfiguration(new SettingBoolean("周围有人自动停止", "disable", false));
+        FunctionManager.addConfiguration(new SettingBoolean("不挖掘位置比玩家低的方块", "ignoreGround", false));
         FunctionManager.addConfiguration(new SettingInt("检测半径", "radius",30));
         HashMap<String, Integer> miningType = new HashMap<String, Integer>();
         miningType.put("Normal",0);
         miningType.put("Instantly",1);
         miningType.put("Core 1",2);
-        FunctionManager.addConfiguration(new SettingTypeSelector("挖掘","miningType",0,miningType));
+        FunctionManager.addConfiguration(new SettingTypeSelector("挖掘类型","miningType",0,miningType));
 
         FunctionManager.bindFunction("KillerBot");
         HashMap<String, Integer> BotSlayMode = new HashMap<String, Integer>();
@@ -756,6 +842,7 @@ public class Antimony {
         FunctionManager.bindFunction("FPS Accelerator");
         FunctionManager.addConfiguration(new SettingLimitInt("盔甲架渲染距离","armorStandDistance",16,128,1));
         FunctionManager.addConfiguration(new SettingLimitInt("TileEntity渲染距离","tileEntityDistance",32,128,1));
+        FunctionManager.addConfiguration(new SettingBoolean("实体渲染剔除", "entityCulling", true));
 
         FunctionManager.bindFunction("Disabler");
         FunctionManager.addConfiguration(new SettingBoolean("Ban警告", "banWarning", true));
@@ -784,6 +871,25 @@ public class Antimony {
         antiAFKType.put("Jump",0);
         antiAFKType.put("Move Left and Right",1);
         FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",1,antiAFKType));
+
+        FunctionManager.bindFunction("BHop");
+        FunctionManager.addConfiguration(new SettingBoolean("Strafe", "strafe", false));
+
+        FunctionManager.bindFunction("ChatDetector");
+        FunctionManager.addConfiguration(new SettingString("聊天触发器", "trigger", "a message"));
+        FunctionManager.addConfiguration(new SettingString("要发送的聊天信息", "message", "send this message when received a message include trigger message"));
+
+        FunctionManager.bindFunction("FrozenScytheAura");
+        FunctionManager.addConfiguration(new SettingLimitDouble("延迟", "delay", 3.0D,10.0D,1.0D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 15.0D,100.0D,5.0D));
+        FunctionManager.addConfiguration(new SettingBoolean("攻击同队成员", "attackTeam", false));
+
+        FunctionManager.bindFunction("HarpBot");
+        FunctionManager.addConfiguration(new SettingInt("延迟", "delay",200));
+
+        FunctionManager.bindFunction("ExperimentsBot");
+        FunctionManager.addConfiguration(new SettingBoolean("自动退出", "autoExit", true));
+        FunctionManager.addConfiguration(new SettingInt("点击延迟", "delay",200));
 
         //check if new user
         NewUserFunction();
@@ -815,6 +921,10 @@ public class Antimony {
             //set non new user
             ConfigLoader.setBoolean("isNewUser", false, true);
         }
+    }
+    public static void onMinecraftShutdown() {
+        /*Log.info("Minecraft shutdown hook called!");
+        PROXY.onShutdown();*/
     }
     public static void reloadKeyMapping(){
         //clear function key bind map

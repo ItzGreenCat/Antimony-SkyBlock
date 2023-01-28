@@ -6,21 +6,18 @@ import com.greencat.antimony.core.ServerRotation;
 import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
-import com.greencat.antimony.core.type.PlayerState;
-import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.item.EnumAction;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.util.MovementInput;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -44,6 +41,8 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
     @Shadow
     private int positionUpdateTicks;
     @Shadow
+    protected int sprintToggleTimer;
+    @Shadow
     private boolean serverSneakState;
     @Shadow
     public MovementInput movementInput;
@@ -57,6 +56,10 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
             CustomChatSend.send("0|" + Minecraft.getMinecraft().thePlayer.getName() + "|" + p_sendChatMessage_1_);
             cbi.cancel();
         }
+    }
+    @ModifyVariable(method = "sendChatMessage",at = @At("HEAD"),ordinal = 0,argsOnly = true)
+    public String sendChatMessage(@NotNull String value){
+        return value.replace("who asked","Hold on i gotta get more Magic Find So i can find who asked.");
     }
     //private static PlayerState stateCache;
     private static CustomEventHandler.MotionChangeEvent eventCache;

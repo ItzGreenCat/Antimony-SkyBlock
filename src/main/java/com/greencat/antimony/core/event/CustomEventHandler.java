@@ -4,13 +4,13 @@ package com.greencat.antimony.core.event;
 import com.greencat.antimony.core.type.AntimonyFunction;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -18,11 +18,7 @@ import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 
 public class CustomEventHandler {
     public static final EventBus EVENT_BUS = new EventBus();
@@ -193,6 +189,43 @@ public class CustomEventHandler {
 
         public RenderTileEntityPreEvent(TileEntity entity) {
             this.entity = entity;
+        }
+    }
+    public static class ClickBlockEvent extends Event{
+        public BlockPos pos;
+        public EnumFacing facing;
+        public ClickBlockEvent(BlockPos pos,EnumFacing facing){
+            this.pos = pos;
+            this.facing = facing;
+        }
+    }
+    @Cancelable
+    public static class GuiContainerEvent extends Event {
+        public Container container;
+        public GuiScreen gui;
+        public Slot slot;
+        @Cancelable
+        public static class DrawSlotEvent extends GuiContainerEvent{
+            public DrawSlotEvent(Container c, GuiScreen g, Slot s) {
+                container = c;
+                gui = g;
+                slot = s;
+            }
+        }
+        @Cancelable
+        public static class SlotClickEvent extends GuiContainerEvent{
+            public int slot_id;
+            public SlotClickEvent(Container c, GuiScreen g, Slot s,int sid) {
+                container = c;
+                gui = g;
+                slot = s;
+                slot_id = sid;
+            }
+        }
+    }
+    public static class AttackEvent extends Event{
+        public AttackEvent(){
+
         }
     }
 }

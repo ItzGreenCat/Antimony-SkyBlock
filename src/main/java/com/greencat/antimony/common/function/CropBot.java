@@ -1,6 +1,7 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.Pathfinding;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.Pathfinder;
@@ -60,6 +61,7 @@ public class CropBot {
     @SubscribeEvent
     public void onEnable(CustomEventHandler.FunctionEnableEvent event) {
         if (event.function.getName().equals("CropBot")) {
+            ignoreList.clear();
             if (getTarget(true) == null) {
                 event.setCanceled(true);
                 utils.print("无法找到对应作物");
@@ -91,6 +93,7 @@ public class CropBot {
             }
         } else {
             if (event.function.getName().equals("CropBot")) {
+                ignoreList.clear();
                 if (getTarget(true) == null) {
                     event.setCanceled(true);
                     utils.print("无法找到对应作物");
@@ -107,7 +110,7 @@ public class CropBot {
                 if(target == null) {
                     target = getTarget(false);
                     if (target != null) {
-                        Pathfinder.setup(new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector())), target, 0.0D);
+                        Pathfinder.setup(new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector().addVector(0.0D,0.2D,0.0D))), target, 0.0D);
                         if (Pathfinder.hasPath()) {
                             FunctionManager.setStatus("Pathfinding", true);
                         } else {
@@ -118,9 +121,9 @@ public class CropBot {
             }
             if(target == null){
                     target = getTarget(true);
-                    utils.print("无法找到对应作物,启用大范围搜索");
+                    Utils.print("无法找到对应作物,启用大范围搜索");
                     if (target != null) {
-                        Pathfinder.setup(new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector())), target, 0.0D);
+                        Pathfinder.setup(new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector().addVector(0.0D,0.2D,0.0D))), target, 0.0D);
                         if (Pathfinder.hasPath()) {
                             FunctionManager.setStatus("Pathfinding", true);
                         } else {
@@ -130,12 +133,7 @@ public class CropBot {
             }
             if(target == null){
                 FunctionManager.setStatus("CropBot", false);
-                utils.print("无法找到对应作物");
-            } else {
-                if(ignoreList.size() + 1 > 5120){
-                    ignoreList.clear();
-                }
-                ignoreList.add(target);
+                Utils.print("无法找到对应作物");
             }
             if (!FunctionManager.getStatus("Pathfinding")) {
                 if (finderCount > 10) {
@@ -155,6 +153,12 @@ public class CropBot {
             }
             try {
                 nuker.nuke(new Vec3(Objects.requireNonNull(nearlyTarget)));
+                if(nearlyTarget != null) {
+                    if (ignoreList.size() + 1 > 5120) {
+                        ignoreList.clear();
+                    }
+                    ignoreList.add(nearlyTarget);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -263,18 +267,12 @@ public class CropBot {
     private boolean isIgnored(BlockPos pos){
         boolean isIgnored = false;
         for(BlockPos ignored : ignoreList){
-            if(BlockPosEquals(pos,ignored)){
+            if(pos.equals(ignored)){
                 isIgnored = true;
                 break;
             }
         }
         return isIgnored;
-    }
-    public static boolean BlockPosEquals(BlockPos pos1,BlockPos pos2) {
-        if(pos1 != null && pos2 != null) {
-            return pos1.getX() == pos1.getX() && pos1.getY() == pos2.getY() && pos1.getZ() == pos2.getZ();
-        }
-        return false;
     }
     @SubscribeEvent
     public void Render(RenderWorldLastEvent event) {

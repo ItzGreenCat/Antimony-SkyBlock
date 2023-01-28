@@ -2,6 +2,7 @@ package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.Pathfinder;
+import com.greencat.antimony.core.PathfinderProxy;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore2;
 import com.greencat.antimony.core.nukerWrapper;
@@ -18,6 +19,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.greencat.antimony.utils.Utils.print;
 
 public class FrozenTreasureBot {
     public BlockPos pos = null;
@@ -73,8 +76,8 @@ public class FrozenTreasureBot {
                 pathfinderPos = closestTreasure();
                 if(pathfinderPos != null){
                     if(!FunctionManager.getStatus("Pathfinding")) {
-                        Pathfinder.setup(new BlockPos(Utils.floorVec(Minecraft.getMinecraft().thePlayer.getPositionVector())), pathfinderPos, 0.0D);
-                        if (Pathfinder.hasPath()) {
+                        PathfinderProxy.calcPathDistance(pathfinderPos,6);
+                        if (!PathfinderProxy.running && Pathfinder.hasPath()) {
                             FunctionManager.setStatus("Pathfinding", true);
                             if (ignoreList.size() + 1 > 3) {
                                 ignoreList.clear();
@@ -82,7 +85,7 @@ public class FrozenTreasureBot {
                             ignoreList.add(pathfinderPos);
                             last = pathfinderPos;
                         } else {
-                            utils.print("无法找到的路径");
+                            print("无法找到的路径");
                         }
                     }
                 }
@@ -187,9 +190,6 @@ public class FrozenTreasureBot {
         return isIgnored;
     }
     public static boolean BlockPosEquals(BlockPos pos1,BlockPos pos2) {
-        if(pos1 != null && pos2 != null) {
-            return pos1.getX() == pos1.getX() && pos1.getY() == pos2.getY() && pos1.getZ() == pos2.getZ();
-        }
-        return false;
+        return pos1.equals(pos2);
     }
 }

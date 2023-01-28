@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.greencat.antimony.core.PlayerNameFilter.isValid;
+
 public class Nuker {
     nukerCore2 nuker = nukerWrapper.nuker;
     nukerCore core1 = new nukerCore();
@@ -76,7 +78,10 @@ public class Nuker {
                 nuker.rotation = nukerCore2.RotationType.SERVER_ROTATION;
             } else if((Integer)getConfigByFunctionName.get("Nuker","rotation") == 1){
                 nuker.rotation = nukerCore2.RotationType.ROTATION;
+            }   else if((Integer)getConfigByFunctionName.get("Nuker","rotation") == 2){
+                nuker.rotation = nukerCore2.RotationType.SMOOTH;
             }
+            nuker.ignoreGround = (Boolean)getConfigByFunctionName.get("Nuker","ignoreGround");
             pos = getBlock();
             if (type != 2) {
                 if (nuker.requestBlock) {
@@ -118,7 +123,7 @@ public class Nuker {
         int bound = (Integer) getConfigByFunctionName.get("Nuker", "radius") * 2;
         List<EntityPlayer> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(xPos - (bound / 2d), yPos - (bound / 2d), zPos - (bound / 2d), xPos + (bound / 2d), yPos + (bound / 2d), zPos + (bound / 2d)), null);
         for(EntityPlayer entity : entities){
-            if (isValid(entity)) {
+            if (isValid(entity,true)) {
                 hasPlayer = true;
                 break;
             }
@@ -164,6 +169,7 @@ public class Nuker {
                 List<Block> oreList = new ArrayList<Block>();
                 oreList.add(Blocks.prismarine);
                 oreList.add(Blocks.wool);
+                oreList.add(Blocks.stained_hardened_clay);
                 pos = nuker.closestMineableBlock(oreList);
             }
             if (nukerType == 8) {
@@ -190,6 +196,7 @@ public class Nuker {
                 oreList.add(Blocks.prismarine);
                 oreList.add(Blocks.wool);
                 oreList.add(Blocks.stone);
+                oreList.add(Blocks.stained_hardened_clay);
                 pos = nuker.closestMineableBlock(oreList, true);
             }
             if (nukerType == 10) {
@@ -203,6 +210,17 @@ public class Nuker {
                 oreList.add(Blocks.stone);
                 oreList.add(Blocks.cobblestone);
                 pos = nuker.closestMineableBlock(oreList);
+            }
+            if (nukerType == 12) {
+                List<Block> oreList = new ArrayList<Block>();
+                oreList.add(Blocks.prismarine);
+                oreList.add(Blocks.wool);
+                oreList.add(Blocks.stone);
+                oreList.add(Blocks.stained_hardened_clay);
+                pos = nuker.closestMineableBlockBlueWool(oreList, true);
+            }
+            if (nukerType == 13) {
+                pos = nuker.closestMineableBlock(Blocks.obsidian);
             }
             return pos;
         } else {
@@ -220,18 +238,5 @@ public class Nuker {
             }
         }
         return isInCave;
-    }
-    public Boolean isValid(EntityPlayer player){
-        if(!Utils.isNPC(player) && player != Minecraft.getMinecraft().thePlayer){
-            if(!player.getName().contains("Goblin") && !player.getName().contains("Ice Walker") && !player.getName().contains("Weakling") && !player.getName().contains("Frozen Steve")){
-                if(!player.isInvisible()) {
-                    return true;
-                } else {
-                    return player.getEquipmentInSlot(0) != null || player.getEquipmentInSlot(1) != null || player.getEquipmentInSlot(2) != null || player.getEquipmentInSlot(3) != null || player.getEquipmentInSlot(4) != null;
-                }
-            }
-            return false;
-        }
-        return false;
     }
 }

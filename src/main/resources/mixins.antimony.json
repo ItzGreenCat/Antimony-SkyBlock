@@ -39,9 +39,14 @@
     "RenderGlobalAccessor",
     "S08PacketPlayerPosLookAccessor",
     "S12Accessor",
+    "S3DPacketDisplayScoreboardAccessor",
     "ShaderGroupAccessor",
     "SlotAccessor"
   ],
   "client": [
+    "MixinGuiContainer",
+    "MixinRenderLivingEntity",
+    "RenderLivingEntityAccessor",
+    "SessionAccessor"
   ]
 }

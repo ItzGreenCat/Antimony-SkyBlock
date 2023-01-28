@@ -28,14 +28,18 @@ public class MixinFontRenderer {
         return StringFactory(str);
     }
     private String StringFactory(String str){
-        String originalString = str;
-        String temp = originalString;
-        temp = temp.replace("Chum","Cum").replace("chum","cum").replace("CHUM","CUM");
-        temp = temp.replace("Beast","Breast");
-        temp = temp.replace("e z","ez").replace("e/z","ez");
-        if(FunctionManager.getStatus("NickHider") && Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().thePlayer.getName() != null){
-            temp = temp.replace(Minecraft.getMinecraft().thePlayer.getName(),(String) getConfigByFunctionName.get("NickHider","name"));
+        if(str != null) {
+            String originalString = str;
+            String temp = originalString;
+            temp = temp.replace("Chum", "Cum").replace("chum", "cum").replace("CHUM", "CUM");
+            temp = temp.replace("Beast", "Breast");
+            temp = temp.replace("e z", "ez").replace("e/z", "ez");
+            if (FunctionManager.getStatus("NickHider") && Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().thePlayer.getName() != null) {
+                temp = temp.replace(Minecraft.getMinecraft().thePlayer.getName(), (String) getConfigByFunctionName.get("NickHider", "name"));
+            }
+            return temp;
+        } else {
+            return str;
         }
-        return temp;
     }
 }

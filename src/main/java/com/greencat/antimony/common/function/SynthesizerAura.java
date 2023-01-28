@@ -11,6 +11,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
@@ -28,16 +29,6 @@ import static org.lwjgl.input.Keyboard.KEY_UP;
 public class SynthesizerAura {
     static Boolean hasCharm = false;
     static Boolean hasAtom = false;
-    static Robot robot;
-
-    static {
-        try {
-            robot = new Robot();
-        } catch (AWTException e) {
-            e.printStackTrace();
-        }
-    }
-
     Utils utils = new Utils();
     double range = 2.9;
     public static long latest;
@@ -97,16 +88,8 @@ public class SynthesizerAura {
                     //Minecraft.getMinecraft().playerController.interactWithEntitySendPacket(Minecraft.getMinecraft().thePlayer, entityTarget);
                     //Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
                     //KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(),true);
-                    robot.mousePress(KeyEvent.BUTTON3_DOWN_MASK);
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(5L);
-                            robot.mouseRelease(KeyEvent.BUTTON2_DOWN_MASK);
-                            ///KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(),false);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }).start();
+                    C02PacketUseEntity c02 = new C02PacketUseEntity(entityTarget, C02PacketUseEntity.Action.INTERACT);
+                    Minecraft.getMinecraft().getNetHandler().getNetworkManager().sendPacket(c02);
                     LastClickedEntity = entityTarget;
                 }
             }

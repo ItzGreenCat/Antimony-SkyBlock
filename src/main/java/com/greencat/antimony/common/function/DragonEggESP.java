@@ -23,16 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DragonEggESP {
-    Utils utils = new Utils();
-    //int StartY,StartX,StartZ;
-    //EntityPlayer player;
-    //int EndX,EndY,EndZ,NowX,NowY,NowZ;   //主播 是有逗号这一说的 - Pysio
-    int Tick = 0;
     static boolean checked;
     List<BlockPos> Position;
     BlockScanner scanner = new BlockScanner();
     public DragonEggESP() {
         MinecraftForge.EVENT_BUS.register(this);
+        CustomEventHandler.EVENT_BUS.register(this);
     }
     @SubscribeEvent
     public void onEnable(CustomEventHandler.FunctionEnableEvent event){

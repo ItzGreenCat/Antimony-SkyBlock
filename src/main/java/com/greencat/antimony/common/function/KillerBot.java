@@ -2,6 +2,7 @@ package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.Pathfinder;
+import com.greencat.antimony.core.Pathfinding;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Utils;
@@ -66,7 +67,6 @@ public class KillerBot {
                         BlockPos pos = new BlockPos(target.posX, target.posY, target.posZ);
                         Pathfinder.setup(new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector())), pos, 0.0D);
                         pointPos = pos;
-
                         if (Pathfinder.hasPath()) {
                             FunctionManager.setStatus("Pathfinding",true);
                         } else {

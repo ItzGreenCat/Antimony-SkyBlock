@@ -50,6 +50,51 @@ public class CachePool<K,V>  {
             clear();
         }
     }
+    //put the key and value to the cache,clear at correct quantity
+    public void put(K key,V value,int quantity){
+        boolean put = false;
+        int round = 0;
+        while(round < cache.size()){
+            HashMap<K, V> map = cache.get(round);
+            if(map.containsKey(key)){
+                map.put(key, value);
+                put = true;
+                break;
+            } else {
+                if (!(map.size() + 1 > (size + ((round * size * scaling))))) {
+                    map.put(key, value);
+                    put = true;
+                    break;
+                }
+            }
+            round = round + 1;
+        }
+        if(!put){
+            clear(quantity);
+        }
+    }
+    public void remove(K key){
+        boolean put = false;
+        int round = 0;
+        while(round < cache.size()){
+            HashMap<K, V> map = cache.get(round);
+            if(map.containsKey(key)){
+                map.remove(key);
+                put = true;
+                break;
+            } else {
+                if (!(map.size() + 1 > (size + ((round * size * scaling))))) {
+                    map.remove(key);
+                    put = true;
+                    break;
+                }
+            }
+            round = round + 1;
+        }
+        if(!put){
+            clear();
+        }
+    }
     //get value in cache by key
     public V get(K key){
         for(HashMap<K,V> map : cache){
@@ -62,6 +107,13 @@ public class CachePool<K,V>  {
     //clear cache
     public void clear(){
         for(HashMap<K,V> map : cache){
+            map.clear();
+        }
+    }
+    //clear cache at correct quantity
+    public void clear(int quantity){
+        if(quantity < cache.size()) {
+            HashMap<K, V> map = cache.get(quantity);
             map.clear();
         }
     }

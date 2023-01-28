@@ -12,8 +12,10 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import static com.greencat.antimony.core.PlayerNameFilter.isValid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,7 @@ public class AutoLeave {
                 List<EntityPlayer> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(x - (bound / 2d), y - (bound / 2d), z - (bound / 2d), x + (bound / 2d), y + (bound / 2d), z + (bound / 2d)), null);
                 validList.clear();
                 for (EntityPlayer entityplayer : entityList) {
-                    if (isValid(entityplayer)) {
+                    if (isValid(entityplayer,true)) {
                         validList.add(entityplayer);
                     }
                 }
@@ -80,17 +82,11 @@ public class AutoLeave {
             }
         }
     }
-    public Boolean isValid(EntityPlayer player){
-        if(!Utils.isNPC(player)  && player != Minecraft.getMinecraft().thePlayer){
-            if(!player.getName().contains("Goblin") && !player.getName().contains("Ice Walker") && !player.getName().contains("Weakling") && !player.getName().contains("Frozen Steve")){
-                if(!player.isInvisible()) {
-                    return true;
-                } else {
-                    return player.getEquipmentInSlot(0) != null || player.getEquipmentInSlot(1) != null || player.getEquipmentInSlot(2) != null || player.getEquipmentInSlot(3) != null || player.getEquipmentInSlot(4) != null;
-                }
-            }
-            return false;
+    @SubscribeEvent
+    public void WorldChangeTrigger(WorldEvent.Load event) {
+        if (FunctionManager.getStatus("AutoLeave")) {
+            Utils.print("检测到世界服务器改变,自动关闭AutoLeave");
+            FunctionManager.setStatus("AutoLeave", false);
         }
-        return false;
     }
 }

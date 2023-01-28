@@ -1,13 +1,16 @@
 package com.greencat.antimony.core;
 
 import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.utils.SmoothRotation;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockStone;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.BlockPos;
@@ -21,6 +24,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class nukerCore2 {
     public BlockPos pos;
@@ -28,6 +32,7 @@ public class nukerCore2 {
     public boolean active = false;
     public boolean enable = false;
     public byte hitDelay = 0;
+    public boolean ignoreGround = false;
     public RotationType rotation = RotationType.SERVER_ROTATION;
     public MiningType miningType = MiningType.NORMAL;
     public boolean requestBlock = false;
@@ -84,6 +89,7 @@ public class nukerCore2 {
     @SubscribeEvent
     public void onMotionChange(CustomEventHandler.MotionChangeEvent.Pre event) {
         if(enable) {
+            BlockPos tempPos = null;
             requestBlock = active && (pos == null || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.air);
             if (Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null && active && pos != null) {
                 if (Minecraft.getMinecraft().thePlayer.getDistance(pos.getX(), pos.getY(), pos.getZ()) > 5.0) {
@@ -114,6 +120,7 @@ public class nukerCore2 {
                                 if(ignoreList.size() + 1 > 10){
                                     ignoreList.clear();
                                 }
+                                tempPos = pos;
                                 ignoreList.add(pos);
                                 requestBlock = true;
                                 post();
@@ -126,16 +133,24 @@ public class nukerCore2 {
                     }
                 }
             }
-            if (active && pos != null) {
-                if (rotation == RotationType.SERVER_ROTATION) {
-                    float[] angles = Utils.getRotation(pos, Utils.getClosestEnum(pos));
-                    event.yaw = angles[0];
-                    event.pitch = angles[1];
-                }
-                if (rotation == RotationType.ROTATION) {
-                    float[] angles = Utils.getRotation(pos, Utils.getClosestEnum(pos));
-                    Minecraft.getMinecraft().thePlayer.rotationYaw = angles[0];
-                    Minecraft.getMinecraft().thePlayer.rotationPitch = angles[1];
+            if (active && (pos != null || miningType == MiningType.ONE_TICK)) {
+                try {
+                    if (rotation == RotationType.SERVER_ROTATION) {
+                        float[] angles = Utils.getRotation(miningType == MiningType.ONE_TICK ? Objects.requireNonNull(tempPos) : pos, Utils.getClosestEnum(miningType == MiningType.ONE_TICK ? Objects.requireNonNull(tempPos) : pos));
+                        event.yaw = angles[0];
+                        event.pitch = angles[1];
+                    }
+                    if (rotation == RotationType.ROTATION) {
+                        float[] angles = Utils.getRotation(miningType == MiningType.ONE_TICK ? Objects.requireNonNull(tempPos) : pos, Utils.getClosestEnum(miningType == MiningType.ONE_TICK ? Objects.requireNonNull(tempPos) : pos));
+                        Minecraft.getMinecraft().thePlayer.rotationYaw = angles[0];
+                        Minecraft.getMinecraft().thePlayer.rotationPitch = angles[1];
+                    }
+                    if (rotation == RotationType.SMOOTH) {
+                        SmoothRotation.smoothLook(Utils.getRotation(miningType == MiningType.ONE_TICK ? Objects.requireNonNull(tempPos) : pos), 5, () -> {
+                        });
+                    }
+                } catch(NullPointerException ignored){
+
                 }
             }
         }
@@ -152,12 +167,14 @@ public class nukerCore2 {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                 IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                 if (blockState.getBlock() == block) {
-                    if(miningType == MiningType.NORMAL) {
-                        chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
-                    } else {
-                        Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
-                        if(!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))){
-                            chests.add(vec3);
+                    if(blockPos.getY() >= Minecraft.getMinecraft().thePlayer.posY || !ignoreGround) {
+                        if (miningType == MiningType.NORMAL) {
+                            chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                        } else {
+                            Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
+                            if (!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))) {
+                                chests.add(vec3);
+                            }
                         }
                     }
                 }
@@ -189,13 +206,15 @@ public class nukerCore2 {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                 IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                 for(Block b : block) {
-                    if (blockState.getBlock() == b) {
-                        if(miningType == MiningType.NORMAL) {
-                            chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
-                        } else {
-                            Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
-                            if(!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))){
-                                chests.add(vec3);
+                    if(blockPos.getY() >= Minecraft.getMinecraft().thePlayer.posY || !ignoreGround) {
+                        if (blockState.getBlock() == b) {
+                            if (miningType == MiningType.NORMAL) {
+                                chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                            } else {
+                                Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
+                                if (!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))) {
+                                    chests.add(vec3);
+                                }
                             }
                         }
                     }
@@ -229,25 +248,27 @@ public class nukerCore2 {
                 IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                 for(Block b : block) {
                     if (blockState.getBlock() == b) {
-                        if(titanium && b == Blocks.stone) {
-                            int meta = blockState.getValue(BlockStone.VARIANT).getMetadata();
-                            if(meta == 4) {
-                                if(miningType == MiningType.NORMAL) {
+                        if(blockPos.getY() >= Minecraft.getMinecraft().thePlayer.posY || !ignoreGround) {
+                            if (titanium && b == Blocks.stone) {
+                                int meta = blockState.getValue(BlockStone.VARIANT).getMetadata();
+                                if (meta == 4) {
+                                    if (miningType == MiningType.NORMAL) {
+                                        chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                    } else {
+                                        Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
+                                        if (!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))) {
+                                            chests.add(vec3);
+                                        }
+                                    }
+                                }
+                            } else {
+                                if (miningType == MiningType.NORMAL) {
                                     chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 } else {
                                     Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
-                                    if(!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))){
+                                    if (!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))) {
                                         chests.add(vec3);
                                     }
-                                }
-                            }
-                        } else {
-                            if(miningType == MiningType.NORMAL) {
-                                chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
-                            } else {
-                                Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
-                                if(!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))){
-                                    chests.add(vec3);
                                 }
                             }
                         }
@@ -262,6 +283,81 @@ public class nukerCore2 {
             if (dist < smallest) {
                 smallest = dist;
                 closest = chest;
+            }
+        }
+        if (closest != null && smallest < 5) {
+            return new BlockPos(closest.xCoord, closest.yCoord, closest.zCoord);
+        }
+        return null;
+    }
+    public BlockPos closestMineableBlockBlueWool(List<Block> block,Boolean titanium) {
+        int r = 3;
+        if (Minecraft.getMinecraft().thePlayer == null) return null;
+        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        playerPos = playerPos.add(0, 1, 0);
+        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3i vec3i = new Vec3i(r, r, r);
+        ArrayList<Vec3> chests = new ArrayList<>();
+        ArrayList<Vec3> woolList = new ArrayList<>();
+        if (playerPos != null) {
+            for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
+                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
+                for(Block b : block) {
+                    if (blockState.getBlock() == b) {
+                        if(blockPos.getY() >= Minecraft.getMinecraft().thePlayer.posY || !ignoreGround) {
+                            if (titanium && b == Blocks.stone) {
+                                int meta = blockState.getValue(BlockStone.VARIANT).getMetadata();
+                                if (meta == 4) {
+                                    if (miningType == MiningType.NORMAL) {
+                                        chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                    } else {
+                                        Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
+                                        if (!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))) {
+                                            chests.add(vec3);
+                                        }
+                                    }
+                                }
+                            } else if(b == Blocks.wool && blockState.getValue(BlockColored.COLOR) == EnumDyeColor.LIGHT_BLUE){
+                                if (miningType == MiningType.NORMAL) {
+                                    woolList.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                } else {
+                                    Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
+                                    if (!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))) {
+                                        woolList.add(vec3);
+                                    }
+                                }
+                            } else {
+                                if (miningType == MiningType.NORMAL) {
+                                    chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                } else {
+                                    Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
+                                    if (!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))) {
+                                        chests.add(vec3);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        double smallest = 9999;
+        Vec3 closest = null;
+        if(woolList.isEmpty()) {
+            for (Vec3 chest : chests) {
+                double dist = chest.distanceTo(playerVec);
+                if (dist < smallest) {
+                    smallest = dist;
+                    closest = chest;
+                }
+            }
+        } else {
+            for (Vec3 chest : woolList) {
+                double dist = chest.distanceTo(playerVec);
+                if (dist < smallest) {
+                    smallest = dist;
+                    closest = chest;
+                }
             }
         }
         if (closest != null && smallest < 5) {
@@ -301,7 +397,7 @@ public class nukerCore2 {
         return isIgnored;
     }
     public enum RotationType{
-        SERVER_ROTATION,ROTATION
+        SERVER_ROTATION,ROTATION,SMOOTH
     }
     public enum MiningType{
         NORMAL,ONE_TICK
