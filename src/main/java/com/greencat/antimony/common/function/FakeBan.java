@@ -12,7 +12,7 @@ public class FakeBan {
         component.appendText("\n\u00a77Find out more: \u00a7b\u00a7nhttps://www.hypixel.net/appeal");
         component.appendText("\n");
         Random random = new Random();
-        component.appendText("\n\u00a77Ban ID: \u00a7r#" + (random.nextInt(89999999) + 10000000));
+        component.appendText("\n\u00a77Ban ID: \u00a7r#AA" + (random.nextInt(899999) + 100000));
         component.appendText("\n\u00a77Sharing your Ban ID may affect the processing of your appeal!");
         Minecraft.getMinecraft().getNetHandler().getNetworkManager().closeChannel(component);
     }

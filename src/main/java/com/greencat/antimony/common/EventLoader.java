@@ -1,42 +1,38 @@
 package com.greencat.antimony.common;
 
 import com.greencat.Antimony;
+import com.greencat.antimony.common.key.KeyLoader;
+import com.greencat.antimony.common.test.Screenshot;
 import com.greencat.antimony.core.EtherwarpTeleport;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.FunctionManager.SelectGuiFunctionExecutant;
 import com.greencat.antimony.core.config.EtherwarpWaypoints;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.gui.ClickGUI;
 import com.greencat.antimony.core.gui.KeyBindsGUI;
 import com.greencat.antimony.core.gui.SettingsGUI;
-import com.greencat.antimony.common.key.KeyLoader;
 import com.greencat.antimony.core.storage.SelectGUIStorage;
 import com.greencat.antimony.core.type.AntimonyFunction;
-import com.greencat.antimony.core.ui.*;
+import com.greencat.antimony.core.type.SelectTable;
 import com.greencat.antimony.core.ui.QSF.QSFFunctionList;
 import com.greencat.antimony.core.ui.QSF.QSFSelectGUI;
 import com.greencat.antimony.core.ui.classic.ClassicFunctionList;
 import com.greencat.antimony.core.ui.classic.ClassicSelectGUI;
 import com.greencat.antimony.core.ui.transparent.FunctionList;
 import com.greencat.antimony.core.ui.transparent.SelectGUI;
-import com.greencat.antimony.common.test.Screenshot;
-import com.greencat.antimony.core.type.SelectTable;
 import com.greencat.antimony.core.ui.white.NewFunctionList;
 import com.greencat.antimony.core.ui.white.NewSelectGUI;
 import com.greencat.antimony.develop.Console;
-import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
 import java.util.Map;
 
 public class EventLoader {
@@ -58,6 +54,7 @@ public class EventLoader {
 
     public EventLoader() {
         MinecraftForge.EVENT_BUS.register(this);
+        CustomEventHandler.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)

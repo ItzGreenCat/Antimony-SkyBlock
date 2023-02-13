@@ -45,7 +45,11 @@
   ],
   "client": [
     "MixinGuiContainer",
+    "MixinLayerDeadmau5Head",
+    "MixinModelBiped",
+    "MixinModelPlayer",
     "MixinRenderLivingEntity",
+    "MixinRenderPlayer",
     "RenderLivingEntityAccessor",
     "SessionAccessor"
   ]

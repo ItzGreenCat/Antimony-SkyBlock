@@ -12,6 +12,7 @@ import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 
+import java.util.Optional;
 import java.util.Random;
 
 public class FunctionManager {
@@ -19,11 +20,20 @@ public class FunctionManager {
     private static String currentFunction = "";
     //get a function's status
     public static Boolean getStatus(String Name){
-        for(AntimonyFunction function : AntimonyRegister.FunctionList){
-            if(function.getName().equals(Name)){
-                return function.getStatus();
+        /*Optional<AntimonyFunction> optional = AntimonyRegister.FunctionList.stream().filter(it -> it.getName().equals(Name)).findFirst();
+        if(optional.isPresent()){
+            return optional.get().getStatus();
+        } else {
+            return false;
+        }*/
+        for(int i = 0;i < AntimonyRegister.FunctionList.size();++i){
+            if(AntimonyRegister.FunctionList.get(i).getName().equals(Name)){
+                return AntimonyRegister.FunctionList.get(i).getStatus();
             }
         }
+        /*for(AntimonyFunction function : AntimonyRegister.FunctionList){
+
+        }*/
         return false;
     }
     //set a funtion's status

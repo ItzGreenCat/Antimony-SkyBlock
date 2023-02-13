@@ -1,7 +1,6 @@
 package com.greencat.antimony.core.config;
 
 import com.greencat.antimony.core.cache.CachePool;
-import com.greencat.antimony.core.exceptions.NoSuchConfigurationException;
 import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.antimony.core.type.AntimonyFunction;
 
@@ -19,13 +18,11 @@ public class getConfigByFunctionName {
         if(value == null){
             for (AntimonyFunction function : AntimonyRegister.FunctionList) {
                 if (function.getName().equals(FunctionName)) {
-                    try {
-                        value = function.getConfigurationValue(ConfigID);
-                        if(value != null) {
-                            cache.put(FunctionName + "_" + ConfigID, value);
-                        }
-                    } catch (NoSuchConfigurationException e) {
-                        e.printStackTrace();
+                    value = function.getConfigurationValue(ConfigID);
+                    if(value != null) {
+                        cache.put(FunctionName + "_" + ConfigID, value);
+                    } else {
+                        break;
                     }
                     break;
                 }

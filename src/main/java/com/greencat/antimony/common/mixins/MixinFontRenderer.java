@@ -7,7 +7,6 @@ import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FontRenderer.class)
 public class MixinFontRenderer {
@@ -17,6 +16,9 @@ public class MixinFontRenderer {
             argsOnly = true,
             ordinal = 0)
     public String renderStringAtPos(String str){
+        if(str == null){
+            return "";
+        }
         return StringFactory(str);
     }
     @ModifyVariable(
@@ -25,6 +27,9 @@ public class MixinFontRenderer {
             argsOnly = true,
             ordinal = 0)
     public String getStringWidth(String str){
+        if(str == null){
+            return "";
+        }
         return StringFactory(str);
     }
     private String StringFactory(String str){

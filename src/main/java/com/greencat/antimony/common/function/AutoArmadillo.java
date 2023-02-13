@@ -2,6 +2,7 @@ package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.EtherwarpTeleport;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.type.Rotation;
 import com.greencat.antimony.utils.Utils;
@@ -79,7 +80,7 @@ public class AutoArmadillo {
         try {
             if (isEnable && Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null) {
                 if (stage == -1) {
-                    if (System.currentTimeMillis() - latestFinish >= 250) {
+                    if (System.currentTimeMillis() - latestFinish >= (Integer) getConfigByFunctionName.get("AutoArmadillo","delay")) {
                         pos = EtherwarpTeleport.position.get(0);
                         if (Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() != Blocks.air) {
                             EtherwarpTeleport.next();
@@ -158,13 +159,13 @@ public class AutoArmadillo {
                     }
                     BlockPos ArmadilloPos = new BlockPos(Minecraft.getMinecraft().thePlayer.getPositionVector()).down();
                     if (Minecraft.getMinecraft().theWorld.getBlockState(ArmadilloPos.down()).getBlock() == Blocks.stained_glass || Minecraft.getMinecraft().theWorld.getBlockState(ArmadilloPos.down()).getBlock() == Blocks.stained_glass_pane ||
-                            Minecraft.getMinecraft().theWorld.getBlockState(ArmadilloPos.down(2)).getBlock() == Blocks.stained_glass || Minecraft.getMinecraft().theWorld.getBlockState(ArmadilloPos.down(2)).getBlock() == Blocks.stained_glass_pane
+                            (Minecraft.getMinecraft().theWorld.getBlockState(ArmadilloPos.down(2)).getBlock() == Blocks.stained_glass && Minecraft.getMinecraft().theWorld.getBlockState(ArmadilloPos.down()).getBlock() != Blocks.cobblestone) || (Minecraft.getMinecraft().theWorld.getBlockState(ArmadilloPos.down(2)).getBlock() == Blocks.stained_glass_pane && Minecraft.getMinecraft().theWorld.getBlockState(ArmadilloPos.down()).getBlock() != Blocks.cobblestone)
                     ) {
                         Minecraft.getMinecraft().thePlayer.rotationPitch = 90;
                         stage = 3;
                         latestSwitch = System.currentTimeMillis();
                     } else {
-                        List<BlockPos> posList = new ArrayList<BlockPos>();
+                        List<BlockPos> posList = new ArrayList<>();
                         for (BlockPos pos : BlockPos.getAllInBox(ArmadilloPos.add(-1, 0, -1), ArmadilloPos.add(1, 0, 1))) {
                             if (Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.stained_glass || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.stained_glass_pane) {
                                 posList.add(pos);

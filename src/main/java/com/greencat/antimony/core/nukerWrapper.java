@@ -69,8 +69,8 @@ public class nukerWrapper {
             nuker.active = false;
         }
         if(nuker.pos != null) {
-            if (tick > 200) {
-                utils.print("Nuker超时,重置状态");
+            if (tick > 400) {
+                Utils.print("Nuker超时,重置状态");
                 disable();
                 enable();
                 tick = 0;

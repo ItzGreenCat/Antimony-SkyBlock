@@ -1,11 +1,10 @@
 package com.greencat.antimony.core;
 
+import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.SmoothRotation;
 import com.greencat.antimony.utils.Utils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockColored;
-import net.minecraft.block.BlockStone;
+import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
@@ -92,11 +91,6 @@ public class nukerCore2 {
             BlockPos tempPos = null;
             requestBlock = active && (pos == null || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.air);
             if (Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null && active && pos != null) {
-                if (Minecraft.getMinecraft().thePlayer.getDistance(pos.getX(), pos.getY(), pos.getZ()) > 5.0) {
-                    pos = null;
-                    requestBlock = true;
-                    post();
-                } else {
                     if (damageProgress > 100.0F) {
                         damageProgress = 0.0F;
                     }
@@ -131,7 +125,7 @@ public class nukerCore2 {
                         Minecraft.getMinecraft().thePlayer.swingItem();
                         ++damageProgress;
                     }
-                }
+                
             }
             if (active && (pos != null || miningType == MiningType.ONE_TICK)) {
                 try {
@@ -156,7 +150,7 @@ public class nukerCore2 {
         }
     }
     public BlockPos closestMineableBlock(Block block) {
-        int r = 6;
+        int r = 5;
         if (Minecraft.getMinecraft().thePlayer == null) return null;
         BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
         playerPos = playerPos.add(0, 1, 0);
@@ -194,8 +188,65 @@ public class nukerCore2 {
         }
         return null;
     }
+    public BlockPos closestCropBlock() {
+        int r = 5;
+        if (Minecraft.getMinecraft().thePlayer == null) return null;
+        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        playerPos = playerPos.add(0, 1, 0);
+        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3i vec3i = new Vec3i(r, r, r);
+        ArrayList<Vec3> chests = new ArrayList<>();
+        if (playerPos != null) {
+            for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
+                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
+                if (isValidCrop(blockState)) {
+                    if(blockPos.getY() >= Minecraft.getMinecraft().thePlayer.posY || !ignoreGround) {
+                        if (miningType == MiningType.NORMAL) {
+                            chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                        } else {
+                            Vec3 vec3 = new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
+                            if (!isIgnored(new BlockPos(vec3.xCoord, vec3.yCoord, vec3.zCoord))) {
+                                chests.add(vec3);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        double smallest = 9999;
+        Vec3 closest = null;
+        for (Vec3 chest : chests) {
+            double dist = chest.distanceTo(playerVec);
+            if (dist < smallest) {
+                smallest = dist;
+                closest = chest;
+            }
+        }
+        if (closest != null && smallest < 5) {
+            return new BlockPos(closest.xCoord, closest.yCoord, closest.zCoord);
+        }
+        return null;
+    }
+    private Boolean isValidCrop(IBlockState block) {
+            if (block.getBlock() == Blocks.potatoes) {
+                return block.getValue(BlockCrops.AGE) == 7;
+            }
+            if (block.getBlock() == Blocks.carrots) {
+                return block.getValue(BlockCrops.AGE) == 7;
+            }
+            if ((block.getBlock() == Blocks.brown_mushroom || block.getBlock() == Blocks.red_mushroom)) {
+                return true;
+            }
+            if (block.getBlock() == Blocks.nether_wart) {
+                return block.getValue(BlockNetherWart.AGE) == 3;
+            }
+            if (block.getBlock() == Blocks.wheat){
+                return block.getValue(BlockCrops.AGE) == 7;
+            }
+        return false;
+    }
     public BlockPos closestMineableBlock(List<Block> block) {
-        int r = 6;
+        int r = 5;
         if (Minecraft.getMinecraft().thePlayer == null) return null;
         BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
         playerPos = playerPos.add(0, 1, 0);
@@ -236,7 +287,7 @@ public class nukerCore2 {
         return null;
     }
     public BlockPos closestMineableBlock(List<Block> block,Boolean titanium) {
-        int r = 6;
+        int r = 5;
         if (Minecraft.getMinecraft().thePlayer == null) return null;
         BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
         playerPos = playerPos.add(0, 1, 0);

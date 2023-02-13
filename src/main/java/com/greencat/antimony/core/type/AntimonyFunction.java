@@ -38,7 +38,7 @@ public class AntimonyFunction {
         configurationOptions.add(option);
         return this;
     }
-    public Object getConfigurationValue(String ID) throws NoSuchConfigurationException {
+    public Object getConfigurationValue(String ID){
         for(ISettingOption option : configurationOptions){
             if(option instanceof AbstractSettingOptionButton) {
                 if(((AbstractSettingOptionButton) option).ID.equals(ID)) {
@@ -51,7 +51,7 @@ public class AntimonyFunction {
                 }
             }
         }
-        throw new NoSuchConfigurationException(ID);
+        return null;
     }
     public List<ISettingOption> getConfigurationList(){
         return configurationOptions;

@@ -222,6 +222,9 @@ public class Nuker {
             if (nukerType == 13) {
                 pos = nuker.closestMineableBlock(Blocks.obsidian);
             }
+            if (nukerType == 14) {
+                pos = nuker.closestCropBlock();
+            }
             return pos;
         } else {
             return null;

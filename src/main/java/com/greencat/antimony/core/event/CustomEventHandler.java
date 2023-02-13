@@ -163,6 +163,11 @@ public class CustomEventHandler {
     //trigger on player LivingUpdated
     public static class PlayerUpdateEvent extends Event{
         public PlayerUpdateEvent(){}
+        public static class Post extends Event {
+            public Post() {
+
+            }
+        }
     }
     //trigger on a block changed
     public static class BlockChangeEvent extends Event {

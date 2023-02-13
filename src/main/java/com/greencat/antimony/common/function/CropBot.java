@@ -154,7 +154,7 @@ public class CropBot {
             try {
                 nuker.nuke(new Vec3(Objects.requireNonNull(nearlyTarget)));
                 if(nearlyTarget != null) {
-                    if (ignoreList.size() + 1 > 5120) {
+                    if (ignoreList.size() + 1 > (Integer)getConfigByFunctionName.get("CropBot","listSize")) {
                         ignoreList.clear();
                     }
                     ignoreList.add(nearlyTarget);
@@ -260,6 +260,9 @@ public class CropBot {
             }
             if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.nether_wart && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 3) {
                 return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockNetherWart.AGE) == 3;
+            }
+            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.wheat && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 4) {
+                return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockCrops.AGE) == 7;
             }
         }
         return false;
