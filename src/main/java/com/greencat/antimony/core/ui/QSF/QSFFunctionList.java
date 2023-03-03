@@ -24,7 +24,7 @@ public class QSFFunctionList {
     public void draw() {
         ScaledResolution scaledResolution = new ScaledResolution(mc);
         int height = (Integer) getConfigByFunctionName.get("HUD","FunctionListHeight");
-        for (AntimonyFunction function : AntimonyRegister.FunctionList) {
+        for (AntimonyFunction function : AntimonyRegister.enabledList) {
             if(function.getStatus()) {
                 GlStateManager.pushMatrix();
                 Blur.renderBlur(scaledResolution.getScaledWidth() - FontManager.QuicksandBoldFont.getStringWidth(function.getName()) - 6,height,FontManager.QuicksandBoldFont.getStringWidth(function.getName()) + 6,13,10);

@@ -1,7 +1,6 @@
 package com.greencat.antimony.common.mixins;
 
-import com.greencat.Antimony;
-import com.greencat.antimony.core.via.protocol.ProtocolCollection;
+import com.greencat.antimony.utils.render.AnimationEngine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,10 +11,21 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
+import java.util.Random;
 
 @Mixin(GuiMainMenu.class)
 public abstract class MixinGuiMainMenu extends GuiScreen implements GuiYesNoCallback {
-    float colorAngle = 0;
+    int background = 1;
+    Random random = new Random();
+    @Inject(
+            method = "initGui",
+            at = @At(
+                    value = "RETURN"
+            )
+    )
+    public void modifyInit(CallbackInfo ci){
+        background = random.nextInt(3) + 1;
+    }
     @Inject(
             method = "drawScreen",
             at = @At(
@@ -25,25 +35,17 @@ public abstract class MixinGuiMainMenu extends GuiScreen implements GuiYesNoCall
             cancellable = true)
     public void drawScreen(int p_drawScreen_1_, int p_drawScreen_2_, float p_drawScreen_3_, CallbackInfo ci){
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/CustomUI/background.png"));
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/CustomUI/MainMenuBackground/bg" + background + ".png"));
         Gui.drawModalRectWithCustomSizedTexture(0,0,0,0,scaledResolution.getScaledWidth(),scaledResolution.getScaledHeight(),scaledResolution.getScaledWidth(),scaledResolution.getScaledHeight());
-        int Scaling;
-        if(Minecraft.getMinecraft().gameSettings.guiScale != 0) {
-            Scaling = (5 - Minecraft.getMinecraft().gameSettings.guiScale) * 2;
-        } else {
-            Scaling = 4 * 2;
-        }
-        if(colorAngle + 0.001 > 1F){
-            colorAngle = 0;
-        } else {
-            colorAngle = colorAngle + 0.001F;
-        }
-        Color color = Color.getHSBColor(colorAngle,1F,1F);
-        GlStateManager.scale(Scaling,Scaling,1.0F);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        Minecraft.getMinecraft().fontRendererObj.drawString("Antimony",((scaledResolution.getScaledWidth() / 2) - ((Minecraft.getMinecraft().fontRendererObj.getStringWidth("Antimony") * Scaling) / 2)) / Scaling,(scaledResolution.getScaledHeight() / 4) / Scaling,color.getRGB());
-        GlStateManager.scale(1.0 / Scaling,1.0 / Scaling,1.0F);
+        int ScreenWidth = scaledResolution.getScaledWidth();
+        int ScreenHeight = scaledResolution.getScaledHeight();
+        int yCoord = (int) (ScreenHeight / 20 * 4.5D);
+        int xCoord = ScreenWidth / 12;
+        int height = (int) (ScreenHeight / 9.0D);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/CustomUI/title.png"));
+        Gui.drawModalRectWithCustomSizedTexture(xCoord,yCoord,0,0,height * 5,height,height * 5,height);
+
         super.drawScreen(p_drawScreen_1_, p_drawScreen_2_, p_drawScreen_3_);
         ci.cancel();
     }

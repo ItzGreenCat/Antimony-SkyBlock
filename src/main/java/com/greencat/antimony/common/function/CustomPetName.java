@@ -3,6 +3,8 @@ package com.greencat.antimony.common.function;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.core.notice.Notice;
+import com.greencat.antimony.core.notice.NoticeManager;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -38,7 +40,9 @@ public class CustomPetName {
             if (!FunctionManager.getStatus("CustomPetNameTag")) {
                 FunctionManager.setStatus("CustomPetNameTag", true);
             }
-            utils.print("检测到加入SkyBlock,已经自动开启CustomPetNameTag");
+            Utils.print("检测到加入SkyBlock,已经自动开启CustomPetNameTag");
+            Notice notice = new Notice("Join SkyBlock Detected","CustomPetName has been","automatically opened");
+            NoticeManager.add(notice);
         }
         if (EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).contains("You summoned your")) {
             Runnable runnable = new Runnable() {
@@ -53,7 +57,9 @@ public class CustomPetName {
                             e.printStackTrace();
                         }
                         FunctionManager.setStatus("CustomPetNameTag", true);
-                        utils.print("检测到更换宠物,已经自动重载CustomPetNameTag");
+                        Utils.print("检测到更换宠物,已经自动重载CustomPetNameTag");
+                        Notice notice = new Notice("Pet Replacement Detected","CustomPetName has been","automatically overloaded");
+                        NoticeManager.add(notice);
                     }
                 }
             };
@@ -73,7 +79,9 @@ public class CustomPetName {
                             e.printStackTrace();
                         }
                         FunctionManager.setStatus("CustomPetNameTag", true);
-                        utils.print("检测到更换宠物,已经自动重载CustomPetNameTag");
+                        Utils.print("检测到更换宠物,已经自动重载CustomPetNameTag");
+                        Notice notice = new Notice("Pet Replacement Detected","CustomPetName has been","automatically overloaded");
+                        NoticeManager.add(notice);
                     }
                 }
             };
@@ -87,9 +95,9 @@ public class CustomPetName {
         if (event.function.getName().equals("CustomPetNameTag")) {
             boolean notFoundPet = true;
             if (event.status) {
-                Double x = Minecraft.getMinecraft().thePlayer.posX;
-                Double y = Minecraft.getMinecraft().thePlayer.posY;
-                Double z = Minecraft.getMinecraft().thePlayer.posZ;
+                double x = Minecraft.getMinecraft().thePlayer.posX;
+                double y = Minecraft.getMinecraft().thePlayer.posY;
+                double z = Minecraft.getMinecraft().thePlayer.posZ;
                 List<EntityArmorStand> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityArmorStand.class, new AxisAlignedBB(x - 200, y - 200, z - 200, x + 200, y + 200, z + 200), null);
                 for (EntityArmorStand entity : entities) {
                     if (EnumChatFormatting.getTextWithoutFormattingCodes(entity.getCustomNameTag()).contains(EnumChatFormatting.getTextWithoutFormattingCodes(Minecraft.getMinecraft().thePlayer.getName() + "'s")) && (!entity.getCustomNameTag().contains("❤"))) {
@@ -104,9 +112,9 @@ public class CustomPetName {
                 }
 
             } else {
-                Double x = Minecraft.getMinecraft().thePlayer.posX;
-                Double y = Minecraft.getMinecraft().thePlayer.posY;
-                Double z = Minecraft.getMinecraft().thePlayer.posZ;
+                double x = Minecraft.getMinecraft().thePlayer.posX;
+                double y = Minecraft.getMinecraft().thePlayer.posY;
+                double z = Minecraft.getMinecraft().thePlayer.posZ;
                 List<EntityArmorStand> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityArmorStand.class, new AxisAlignedBB(x - 200, y - 200, z - 200, x + 200, y + 200, z + 200), null);
                 for (EntityArmorStand entity : entities) {
                     if (EnumChatFormatting.getTextWithoutFormattingCodes(entity.getCustomNameTag()).contains(EnumChatFormatting.getTextWithoutFormattingCodes(Minecraft.getMinecraft().thePlayer.getName() + "'s")) && (!entity.getCustomNameTag().contains("❤"))) {
@@ -123,9 +131,9 @@ public class CustomPetName {
         if (Minecraft.getMinecraft().theWorld != null) {
             if (event.function.getName().equals("CustomPetNameTag")) {
                 boolean notFoundPet = true;
-                Double x = Minecraft.getMinecraft().thePlayer.posX;
-                Double y = Minecraft.getMinecraft().thePlayer.posY;
-                Double z = Minecraft.getMinecraft().thePlayer.posZ;
+                double x = Minecraft.getMinecraft().thePlayer.posX;
+                double y = Minecraft.getMinecraft().thePlayer.posY;
+                double z = Minecraft.getMinecraft().thePlayer.posZ;
                 List<EntityArmorStand> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityArmorStand.class, new AxisAlignedBB(x - 200, y - 200, z - 200, x + 200, y + 200, z + 200), null);
                 for (EntityArmorStand entity : entities) {
                     if (EnumChatFormatting.getTextWithoutFormattingCodes(entity.getCustomNameTag()).contains(EnumChatFormatting.getTextWithoutFormattingCodes(Minecraft.getMinecraft().thePlayer.getName() + "'s")) && (!entity.getCustomNameTag().contains("❤"))) {
@@ -146,9 +154,9 @@ public class CustomPetName {
     public void DisableFunction(CustomEventHandler.FunctionDisabledEvent event) {
         if (Minecraft.getMinecraft().theWorld != null) {
             if (event.function.getName().equals("CustomPetNameTag")) {
-                Double x = Minecraft.getMinecraft().thePlayer.posX;
-                Double y = Minecraft.getMinecraft().thePlayer.posY;
-                Double z = Minecraft.getMinecraft().thePlayer.posZ;
+                double x = Minecraft.getMinecraft().thePlayer.posX;
+                double y = Minecraft.getMinecraft().thePlayer.posY;
+                double z = Minecraft.getMinecraft().thePlayer.posZ;
                 List<EntityArmorStand> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityArmorStand.class, new AxisAlignedBB(x - 200, y - 200, z - 200, x + 200, y + 200, z + 200), null);
                 for (EntityArmorStand entity : entities) {
                     if (EnumChatFormatting.getTextWithoutFormattingCodes(entity.getCustomNameTag()).contains(EnumChatFormatting.getTextWithoutFormattingCodes(Minecraft.getMinecraft().thePlayer.getName() + "'s"))) {

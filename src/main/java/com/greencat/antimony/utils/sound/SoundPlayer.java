@@ -10,7 +10,7 @@ public class SoundPlayer {
     public static void play(ResourceLocation location){
         ISound sound = new PositionedSound(location) {{
             volume = 1;
-            pitch = 0.943f;
+            pitch = 1;
             repeat = false;
             repeatDelay = 0;
             attenuationType = ISound.AttenuationType.NONE;

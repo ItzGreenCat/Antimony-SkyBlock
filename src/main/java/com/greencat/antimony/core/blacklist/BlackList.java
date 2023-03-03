@@ -47,7 +47,7 @@ public class BlackList {
 
 		float appendY = Loader.isModLoaded("xiaojiaaddons") ? 0.25F : 0.0F;
 
-		if (e.entity == mc.thePlayer && !Loader.isModLoaded("xiaojiaaddons")) {
+		/*if (e.entity == mc.thePlayer && !Loader.isModLoaded("xiaojiaaddons")) {
 			double x = e.x;
 			double y = e.y;
 			double z = e.z;
@@ -74,7 +74,7 @@ public class BlackList {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-		}
+		}*/
 
 		if (e.entity instanceof EntityOtherPlayerMP) {
 

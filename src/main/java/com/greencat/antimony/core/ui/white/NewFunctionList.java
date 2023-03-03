@@ -10,12 +10,14 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Map;
+
 public class NewFunctionList {
     Minecraft mc = Minecraft.getMinecraft();
 
     public void draw() {
         int height = (Integer) getConfigByFunctionName.get("HUD","FunctionListHeight");
-        for (AntimonyFunction function : AntimonyRegister.FunctionList) {
+        for (AntimonyFunction function : AntimonyRegister.enabledList) {
             if(function.getStatus()) {
                 GlStateManager.color(1.0F,1.0F,1.0F);
                 ResourceLocation resourceLocation1 = new ResourceLocation(Antimony.MODID, "GuiFunctionBackground.png");

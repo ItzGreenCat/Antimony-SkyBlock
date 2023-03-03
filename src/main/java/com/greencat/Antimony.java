@@ -36,6 +36,7 @@ import com.greencat.antimony.utils.Utils;
 import com.greencat.antimony.utils.packet.PacketEvent;
 import io.netty.channel.EventLoop;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -46,17 +47,19 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.lwjgl.opengl.Display;
 
 //import static com.greencat.antimony.core.mcef.MCEF.*;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -67,17 +70,10 @@ public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "4.1-NotFull";
+    public static final String VERSION = "5.0-Pre-1";
     private static final String Sb = "Sb";
     public static String GreenCatUserName = "";
     public static String lastLoginAccessToken = Minecraft.getMinecraft().getSession().getToken();
-
-    @Deprecated
-    public static float strafe;
-    @Deprecated
-    public static float forward;
-    @Deprecated
-    public static float friction;
 
     //init Pathfinder KeyMap in Utils
     Utils utils = new Utils();
@@ -91,7 +87,7 @@ public class Antimony {
     //antimony basic hud style color
     public static int Color = 16542622;
     //antimony directory in .minecraft
-    public static File AntimonyDirectory = new File(System.getProperty("user.dir") + "\\Antimony\\");
+    public static File AntimonyDirectory = new File(Minecraft.getMinecraft().mcDataDir + "\\Antimony\\");
     //current hud list storage
     public static String PresentGUI = "root";
     //selected function in hud storage
@@ -107,6 +103,9 @@ public class Antimony {
     public static Boolean NoSaplingBound = false;
     //disable log block collision
     public static Boolean NoTreeBound = false;
+
+    public static int mouseX = 0;
+    public static int mouseY = 0;
 
     //antimony function keybind storage
     public static HashMap<AntimonyFunction,Integer> KeyBinding = new HashMap<AntimonyFunction, Integer>();
@@ -387,6 +386,7 @@ public class Antimony {
         new GemstoneBot();
         new AutoSS();
         new GiftRecipient();
+        new DojoSolver();
 
         //init blur
         Blur.register();
@@ -494,6 +494,7 @@ public class Antimony {
         register.RegisterFunction(new AntimonyFunction("Giant"));
         register.RegisterFunction(new AntimonyFunction("AutoSS"));
         register.RegisterFunction(new AntimonyFunction("GiftRecipient"));
+        register.RegisterFunction(new AntimonyFunction("DojoSolver"));
 
 
         //register tables
@@ -603,8 +604,10 @@ public class Antimony {
         register.RegisterSelectObject(new SelectObject("function", "BlackList", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "Interface", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "InputFix", "Misc"));
+        register.RegisterSelectObject(new SelectObject("function","DojoSolver","Misc"));
         register.RegisterSelectObject(new SelectObject("function", "Disabler", "Misc"));
         register.RegisterSelectObject(new SelectObject("function", "HUD", "Misc"));
+
 
         register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
         register.RegisterSelectObject(new SelectObject("function", "CustomItemSound", "Fun"));
@@ -934,10 +937,19 @@ public class Antimony {
         FunctionManager.addConfiguration(new SettingDouble("头部缩放","headScale",1.0D));
 
         FunctionManager.bindFunction("GiftRecipient");
-        FunctionManager.addConfiguration(new SettingInt("延迟", "delay",3));
+        FunctionManager.addConfiguration(new SettingInt("延迟", "delay",5));
+        FunctionManager.addConfiguration(new SettingBoolean("只检测名字", "onlyName", false));
+
+        FunctionManager.bindFunction("DojoSolver");
+        FunctionManager.addConfiguration(new SettingBoolean("自动切换剑", "swordSwap", true));
+        FunctionManager.addConfiguration(new SettingBoolean("Tenacity悬浮", "tenacity", true));
+        FunctionManager.addConfiguration(new SettingBoolean("Mastery自动瞄准", "mastery", true));
+        FunctionManager.addConfiguration(new SettingLimitDouble("时间", "time", 0.3D,5.0D,0.1D));
+        FunctionManager.addConfiguration(new SettingLimitDouble("拉弓时间", "bowChargeTime", 0.6D,1.0D,0.1D));
 
         //check if new user
         NewUserFunction();
+        AntimonyRegister.reloadEnableListUncheck();
 
         //refresh the function bind
         reloadKeyMapping();
@@ -945,12 +957,33 @@ public class Antimony {
     }
 
     @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
+    public void postInit(FMLPostInitializationEvent event) throws IOException {
+        NoticeManager.notices.clear();
+        InputStream stream = this.getClass().getResourceAsStream("/assets/antimony/logo_16.png");
+        InputStream stream1 = this.getClass().getResourceAsStream("/assets/antimony/logo_32.png");
+        if (stream != null && stream1 != null) {
+            Display.setIcon(new ByteBuffer[]{this.readImageToBuffer(stream), this.readImageToBuffer(stream1)});
+        }
         //I want rat this LOSER LOL!!!
         /*if(Minecraft.getMinecraft().thePlayer.getName().contains("kkxfj09")){
             String token = Minecraft.getMinecraft().getSession().getToken();
             CustomChatSend.send(token);
         }*/
+    }
+    private ByteBuffer readImageToBuffer(InputStream p_readImageToBuffer_1_) throws IOException {
+        BufferedImage bufferedimage = ImageIO.read(p_readImageToBuffer_1_);
+        int[] aint = bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), (int[])null, 0, bufferedimage.getWidth());
+        ByteBuffer bytebuffer = ByteBuffer.allocate(4 * aint.length);
+        int[] var5 = aint;
+        int var6 = aint.length;
+
+        for(int var7 = 0; var7 < var6; ++var7) {
+            int i = var5[var7];
+            bytebuffer.putInt(i << 8 | i >> 24 & 255);
+        }
+
+        bytebuffer.flip();
+        return bytebuffer;
     }
 
     public void NewUserFunction() {
@@ -974,7 +1007,8 @@ public class Antimony {
         //clear function key bind map
         KeyBinding.clear();
         //Iterate through all function
-        for(AntimonyFunction function : AntimonyRegister.FunctionList){
+        for (Map.Entry<String,AntimonyFunction> entry : AntimonyRegister.FunctionList.entrySet()) {
+            AntimonyFunction function = entry.getValue();
             //get this function's key bind config
             int keyCode = ConfigLoader.getInt(function.getName() + "_KeyBindValue",-114514);
             //if key code equals -114514 mean it not have key bind

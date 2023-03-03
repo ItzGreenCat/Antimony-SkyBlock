@@ -18,6 +18,7 @@ import org.lwjgl.input.Mouse;
 import javax.print.DocFlavor;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Map;
 
 import static org.yaml.snakeyaml.tokens.Token.ID.Key;
 
@@ -52,7 +53,8 @@ public class KeyBindsGUI extends GuiScreen{
         pos = widthBound;
         index = 1;
         ButtonListHeight = 53;
-        for(AntimonyFunction function : AntimonyRegister.FunctionList){
+        for (Map.Entry<String,AntimonyFunction> entry : AntimonyRegister.FunctionList.entrySet()) {
+            AntimonyFunction function = entry.getValue();
             if(rule == null) {
                 this.buttonList.add(new KeyBindButton(index, 10, ButtonListHeight, widthBound - 10, 18, function));
                 ButtonListHeight = ButtonListHeight + 20;

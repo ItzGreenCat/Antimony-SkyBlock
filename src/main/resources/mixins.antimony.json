@@ -36,6 +36,7 @@
     "MixinNetworkManager",
     "MixinNetworkManagerChInit",
     "MixinRenderer",
+    "MixinResourceLocation",
     "RenderGlobalAccessor",
     "S08PacketPlayerPosLookAccessor",
     "S12Accessor",
@@ -44,10 +45,14 @@
     "SlotAccessor"
   ],
   "client": [
+    "GuiScreenAccessor",
+    "MixinGuiButton",
     "MixinGuiContainer",
+    "MixinGuiSlot",
     "MixinLayerDeadmau5Head",
     "MixinModelBiped",
     "MixinModelPlayer",
+    "MixinPlayerController",
     "MixinRenderLivingEntity",
     "MixinRenderPlayer",
     "RenderLivingEntityAccessor",

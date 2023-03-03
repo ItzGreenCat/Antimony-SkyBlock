@@ -17,7 +17,6 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StringUtils;
@@ -35,6 +34,7 @@ public class ForagingBot {
     static EnumStage stage;
     static nukerCore nuker = new nukerCore();
     static int tick = 0;
+    static Utils utils = new Utils();
 
     List<BlockPos> dirtList = new ArrayList<BlockPos>();
     public static long latest;
@@ -49,7 +49,7 @@ public class ForagingBot {
         if (event.function.getName().equals("ForagingBot")) {
             if (!init()) {
                 event.setCanceled(true);
-                Utils.print("无法找到附近泥土");
+                utils.print("无法找到附近泥土");
             }
         }
     }
@@ -60,7 +60,7 @@ public class ForagingBot {
             if (event.status) {
                 if (!init()) {
                     event.setCanceled(true);
-                    Utils.print("无法找到附近泥土");
+                    utils.print("无法找到附近泥土");
                 }
             } else {
                 post();
@@ -78,218 +78,209 @@ public class ForagingBot {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (FunctionManager.getStatus("ForagingBot")) {
-                if (event.phase == TickEvent.Phase.START) {
-                    if(stage != null){
-                        if (stage == EnumStage.EMPTY) {
-                            if(!Antimony.NoSaplingBound){
-                                Antimony.NoSaplingBound = true;
-                                Antimony.NoTreeBound = true;
+            if (event.phase == TickEvent.Phase.START) {
+                if(stage != null){
+                    if (stage == EnumStage.EMPTY) {
+                        if(!Antimony.NoSaplingBound){
+                            Antimony.NoSaplingBound = true;
+                            Antimony.NoTreeBound = true;
+                        }
+                        if(!Antimony.NoTreeBound){
+                            Antimony.NoTreeBound = true;
+                        }
+                        checkSwitch("sapling");
+                        List<BlockPos> posList = reList(dirtList);
+                        BlockPos pos = null;
+                        for(BlockPos currentPos : posList){
+                            if(Minecraft.getMinecraft().theWorld.getBlockState(currentPos.up()).getBlock() == Blocks.air){
+                                pos = currentPos;
+                                break;
                             }
+                        }
+                        if(pos != null) {
+                            Rotation rotation = Utils.getRotation(pos);
+                            Minecraft.getMinecraft().thePlayer.rotationYaw = rotation.getYaw();
+                            Minecraft.getMinecraft().thePlayer.rotationPitch = rotation.getPitch();
+                            //KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(), true);
+                            //EnumFacing facing = Utils.calculateEnumfacingLook(new Vec3(pos));
+                            //Minecraft.getMinecraft().playerController.onPlayerRightClick(Minecraft.getMinecraft().thePlayer,Minecraft.getMinecraft().theWorld,Minecraft.getMinecraft().thePlayer.getHeldItem(),pos.up(),EnumFacing.fromAngle(Minecraft.getMinecraft().thePlayer.rotationYaw), new Vec3(0.0D, 0.0D, 0.0D));
+                            ((MinecraftAccessor) Minecraft.getMinecraft()).rightClickMouse();
+                        }
+                    } else {
+                        if(Antimony.NoSaplingBound){
+                            Antimony.NoSaplingBound = false;
+                            Antimony.NoTreeBound = false;
+                        }
+                        if(Antimony.NoTreeBound){
+                            Antimony.NoTreeBound = false;
+                        }
+                    }
+                }
+                if (tick > 2) {
+                    if (stage != null) {
+                        if (stage == EnumStage.SAPLING) {
                             if(!Antimony.NoTreeBound){
                                 Antimony.NoTreeBound = true;
                             }
-                            checkSwitch("sapling");
-                            List<BlockPos> posList = reList(dirtList);
-                                BlockPos pos = null;
-                                for(BlockPos currentPos : posList){
-                                    if(Minecraft.getMinecraft().theWorld.getBlockState(currentPos.up()).getBlock() == Blocks.air){
-                                        pos = currentPos;
-                                        break;
-                                    }
-                                }
-                                if(pos != null) {
-                                    Rotation rotation = Utils.getRotation(pos);
-                                    Minecraft.getMinecraft().thePlayer.rotationYaw = rotation.getYaw();
-                                    Minecraft.getMinecraft().thePlayer.rotationPitch = rotation.getPitch();
-                                    //KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(), true);
-                                    //EnumFacing facing = Utils.calculateEnumfacingLook(new Vec3(pos));
-                                    if(Minecraft.getMinecraft().thePlayer.getHeldItem() != null) {
-                                        if(Minecraft.getMinecraft().theWorld.getBlockState(pos.up()).getBlock() == Blocks.air) {
-                                            C08PacketPlayerBlockPlacement c08 = new C08PacketPlayerBlockPlacement(pos, EnumFacing.UP.getIndex(), Minecraft.getMinecraft().thePlayer.getHeldItem(), 0.0F, 0.0F, 0.0F);
-                                            Minecraft.getMinecraft().getNetHandler().getNetworkManager().sendPacket(c08);
+                            checkSwitch("bone meal");
+                            List<BlockPos> posList = new ArrayList<BlockPos>();
+                            if (Minecraft.getMinecraft().theWorld != null) {
+                                int StartY;
+                                int StartX;
+                                int StartZ;
+                                EntityPlayer player;
+                                int EndX;
+                                int EndY;
+                                int EndZ;
+                                int NowX;
+                                int NowY;
+                                int NowZ;
+                                player = Minecraft.getMinecraft().thePlayer;
+                                int bound;
+                                bound = 4;
+                                StartY = (int) (player.posY - 4);
+                                StartX = (int) (player.posX - bound);
+                                StartZ = (int) (player.posZ - bound);
+                                EndX = (int) (player.posX + bound);
+                                EndY = (int) (player.posY + 4);
+                                EndZ = (int) (player.posZ + bound);
+
+                                NowX = StartX;
+                                NowY = StartY;
+                                NowZ = StartZ;
+                                while (NowY != EndY) {
+                                    if (NowX == EndX) {
+                                        if (NowZ == EndZ) {
+
+                                            NowZ = StartZ;
+                                            NowX = StartX;
+                                            NowY = NowY + 1;
+                                        } else {
+                                            NowX = StartX;
+                                            NowZ = NowZ + 1;
                                         }
+                                    } else {
+                                        NowX = NowX + 1;
                                     }
-                                    //Minecraft.getMinecraft().playerController.onPlayerRightClick(Minecraft.getMinecraft().thePlayer,Minecraft.getMinecraft().theWorld,Minecraft.getMinecraft().thePlayer.getHeldItem(),pos.up(),EnumFacing.fromAngle(Minecraft.getMinecraft().thePlayer.rotationYaw), new Vec3(0.0D, 0.0D, 0.0D));
+                                    BlockPos pos = new BlockPos(NowX, NowY, NowZ);
+                                    if (Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockSapling) {
+                                        posList.add(pos);
+                                    }
                                 }
-                        } else {
-                            if(Antimony.NoSaplingBound){
-                                Antimony.NoSaplingBound = false;
-                                Antimony.NoTreeBound = false;
+                                NowX = StartX;
+                                NowY = StartY;
+                                NowZ = StartZ;
                             }
+                            if (!posList.isEmpty()) {
+                                Rotation rotation = Utils.getRotation(reListNoBack(posList).get(0));
+                                Minecraft.getMinecraft().thePlayer.rotationYaw = rotation.getYaw();
+                                Minecraft.getMinecraft().thePlayer.rotationPitch = rotation.getPitch();
+                                KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(), true);
+                            }
+                        } else {
                             if(Antimony.NoTreeBound){
                                 Antimony.NoTreeBound = false;
                             }
                         }
-                    }
-                    if (tick > 2) {
-                        if (stage != null) {
-                            if (stage == EnumStage.SAPLING) {
-                                if(!Antimony.NoTreeBound){
-                                    Antimony.NoTreeBound = true;
-                                }
-                                checkSwitch("bone meal");
-                                List<BlockPos> posList = new ArrayList<BlockPos>();
-                                if (Minecraft.getMinecraft().theWorld != null) {
-                                    int StartY;
-                                    int StartX;
-                                    int StartZ;
-                                    EntityPlayer player;
-                                    int EndX;
-                                    int EndY;
-                                    int EndZ;
-                                    int NowX;
-                                    int NowY;
-                                    int NowZ;
-                                    player = Minecraft.getMinecraft().thePlayer;
-                                    int bound;
-                                    bound = 4;
-                                    StartY = (int) (player.posY - 4);
-                                    StartX = (int) (player.posX - bound);
-                                    StartZ = (int) (player.posZ - bound);
-                                    EndX = (int) (player.posX + bound);
-                                    EndY = (int) (player.posY + 4);
-                                    EndZ = (int) (player.posZ + bound);
+                        if (stage == EnumStage.LOG) {
+                            checkSwitch("treecap");
+                            BlockPos target = null;
+                            if (Minecraft.getMinecraft().theWorld != null) {
+                                int StartY;
+                                int StartX;
+                                int StartZ;
+                                EntityPlayer player;
+                                int EndX;
+                                int EndY;
+                                int EndZ;
+                                int NowX;
+                                int NowY;
+                                int NowZ;
+                                player = Minecraft.getMinecraft().thePlayer;
+                                int bound;
+                                bound = 4;
+                                StartY = (int) (player.posY - 4);
+                                StartX = (int) (player.posX - bound);
+                                StartZ = (int) (player.posZ - bound);
+                                EndX = (int) (player.posX + bound);
+                                EndY = (int) (player.posY + 4);
+                                EndZ = (int) (player.posZ + bound);
+                                NowX = StartX;
+                                NowY = StartY;
+                                NowZ = StartZ;
+                                while (NowY != EndY) {
+                                    if (NowX == EndX) {
+                                        if (NowZ == EndZ) {
 
-                                    NowX = StartX;
-                                    NowY = StartY;
-                                    NowZ = StartZ;
-                                    while (NowY != EndY) {
-                                        if (NowX == EndX) {
-                                            if (NowZ == EndZ) {
-
-                                                NowZ = StartZ;
-                                                NowX = StartX;
-                                                NowY = NowY + 1;
-                                            } else {
-                                                NowX = StartX;
-                                                NowZ = NowZ + 1;
-                                            }
+                                            NowZ = StartZ;
+                                            NowX = StartX;
+                                            NowY = NowY + 1;
                                         } else {
-                                            NowX = NowX + 1;
+                                            NowX = StartX;
+                                            NowZ = NowZ + 1;
                                         }
-                                        BlockPos pos = new BlockPos(NowX, NowY, NowZ);
-                                        if (Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockSapling) {
-                                            posList.add(pos);
-                                        }
+                                    } else {
+                                        NowX = NowX + 1;
                                     }
-                                    NowX = StartX;
-                                    NowY = StartY;
-                                    NowZ = StartZ;
-                                }
-                                if (!posList.isEmpty()) {
-                                    BlockPos pos = reListNoBack(posList).get(0);
-                                    Rotation rotation = Utils.getRotation(pos);
-                                    Minecraft.getMinecraft().thePlayer.rotationYaw = rotation.getYaw();
-                                    Minecraft.getMinecraft().thePlayer.rotationPitch = rotation.getPitch();
-                                    if(Minecraft.getMinecraft().thePlayer.getHeldItem() != null) {
-                                        ((MinecraftAccessor)Minecraft.getMinecraft()).rightClickMouse();
+                                    BlockPos pos = new BlockPos(NowX, NowY, NowZ);
+                                    if (Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockLog) {
+                                        target = pos;
+                                        break;
                                     }
                                 }
-                            } else {
-                                if(Antimony.NoTreeBound){
-                                    Antimony.NoTreeBound = false;
-                                }
+                                NowX = StartX;
+                                NowY = StartY;
+                                NowZ = StartZ;
                             }
-                            if (stage == EnumStage.LOG) {
-                                checkSwitch("jungle axe");
-                                checkSwitch("treecap");
-                                BlockPos target = null;
-                                if (Minecraft.getMinecraft().theWorld != null) {
-                                    int StartY;
-                                    int StartX;
-                                    int StartZ;
-                                    EntityPlayer player;
-                                    int EndX;
-                                    int EndY;
-                                    int EndZ;
-                                    int NowX;
-                                    int NowY;
-                                    int NowZ;
-                                    player = Minecraft.getMinecraft().thePlayer;
-                                    int bound;
-                                    bound = 4;
-                                    StartY = (int) (player.posY - 4);
-                                    StartX = (int) (player.posX - bound);
-                                    StartZ = (int) (player.posZ - bound);
-                                    EndX = (int) (player.posX + bound);
-                                    EndY = (int) (player.posY + 4);
-                                    EndZ = (int) (player.posZ + bound);
-                                    NowX = StartX;
-                                    NowY = StartY;
-                                    NowZ = StartZ;
-                                    while (NowY != EndY) {
-                                        if (NowX == EndX) {
-                                            if (NowZ == EndZ) {
-
-                                                NowZ = StartZ;
-                                                NowX = StartX;
-                                                NowY = NowY + 1;
-                                            } else {
-                                                NowX = StartX;
-                                                NowZ = NowZ + 1;
-                                            }
-                                        } else {
-                                            NowX = NowX + 1;
-                                        }
-                                        BlockPos pos = new BlockPos(NowX, NowY, NowZ);
-                                        if (Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockLog) {
-                                            target = pos;
-                                            break;
-                                        }
-                                    }
-                                    NowX = StartX;
-                                    NowY = StartY;
-                                    NowZ = StartZ;
-                                }
-                                if (target != null) {
-                                    nuker.nuke(new Vec3(target));
-                                }
+                            if (target != null) {
+                                nuker.nuke(new Vec3(target));
                             }
                         }
-                        tick = 0;
-                    } else {
-                        tick = tick + 1;
                     }
+                    tick = 0;
+                } else {
+                    tick = tick + 1;
                 }
-                if (event.phase == TickEvent.Phase.END) {
-                        if (stage != null) {
-                            if (stage == EnumStage.EMPTY) {
-                                KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(), false);
-                                boolean switchStage = true;
-                                for (BlockPos pos : dirtList) {
-                                    if (!(Minecraft.getMinecraft().theWorld.getBlockState(pos.up()).getBlock() instanceof BlockSapling)) {
-                                        switchStage = false;
-                                    }
-                                }
-                                if (switchStage) {
-                                    stage = EnumStage.SAPLING;
-                                }
-                            }
-                            if (stage == EnumStage.SAPLING) {
-                                KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(), false);
-                                boolean switchStage = true;
-                                for (BlockPos pos : dirtList) {
-                                    if (!(Minecraft.getMinecraft().theWorld.getBlockState(pos.up()).getBlock() instanceof BlockLog)) {
-                                        switchStage = false;
-                                    }
-                                }
-                                if (switchStage) {
-                                    stage = EnumStage.LOG;
-                                }
-                            }
-                            if (stage == EnumStage.LOG) {
-                                boolean switchStage = true;
-                                for (BlockPos pos : dirtList) {
-                                    if (!(Minecraft.getMinecraft().theWorld.getBlockState(pos.up()).getBlock() == Blocks.air)) {
-                                        switchStage = false;
-                                    }
-                                }
-                                if (switchStage) {
-                                    stage = EnumStage.EMPTY;
-                                }
+            }
+            if (event.phase == TickEvent.Phase.END) {
+                if (stage != null) {
+                    if (stage == EnumStage.EMPTY) {
+                        KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(), false);
+                        boolean switchStage = true;
+                        for (BlockPos pos : dirtList) {
+                            if (!(Minecraft.getMinecraft().theWorld.getBlockState(pos.up()).getBlock() instanceof BlockSapling)) {
+                                switchStage = false;
                             }
                         }
+                        if (switchStage) {
+                            stage = EnumStage.SAPLING;
+                        }
+                    }
+                    if (stage == EnumStage.SAPLING) {
+                        KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode(), false);
+                        boolean switchStage = true;
+                        for (BlockPos pos : dirtList) {
+                            if (!(Minecraft.getMinecraft().theWorld.getBlockState(pos.up()).getBlock() instanceof BlockLog)) {
+                                switchStage = false;
+                            }
+                        }
+                        if (switchStage) {
+                            stage = EnumStage.LOG;
+                        }
+                    }
+                    if (stage == EnumStage.LOG) {
+                        boolean switchStage = true;
+                        for (BlockPos pos : dirtList) {
+                            if (!(Minecraft.getMinecraft().theWorld.getBlockState(pos.up()).getBlock() == Blocks.air)) {
+                                switchStage = false;
+                            }
+                        }
+                        if (switchStage) {
+                            stage = EnumStage.EMPTY;
+                        }
+                    }
                 }
+            }
         }
     }
     @SubscribeEvent

@@ -3,20 +3,20 @@ package com.greencat.antimony.common.mixins;
 import akka.pattern.Patterns;
 import com.greencat.Antimony;
 import com.greencat.antimony.common.function.FPSAccelerator;
+import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockSapling;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -40,6 +40,23 @@ public abstract class MixinBlock {
         }
         if(Antimony.NoTreeBound && ((Block.getIdFromBlock((Block) (Object) this) == Block.getIdFromBlock(Blocks.leaves)) || (Block.getIdFromBlock((Block) (Object) this) == Block.getIdFromBlock(Blocks.leaves2)) || (Block.getIdFromBlock((Block) (Object) this) == Block.getIdFromBlock(Blocks.log)) || (Block.getIdFromBlock((Block) (Object) this) == Block.getIdFromBlock(Blocks.log2)))){
             callbackInfoReturnable.setReturnValue(false);
+        }
+    }
+    @Shadow
+    public abstract AxisAlignedBB getCollisionBoundingBox(final World p0, final BlockPos p1, final IBlockState p2);
+
+    /**
+     * @author a
+     * @reason b
+     */
+    @Overwrite
+    public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask,List<AxisAlignedBB> list,Entity collidingEntity) {
+        CustomEventHandler.BlockBoundsEvent event = new CustomEventHandler.BlockBoundsEvent((Block)(Object)this, this.getCollisionBoundingBox(worldIn, pos, state), pos, collidingEntity);
+        if (CustomEventHandler.EVENT_BUS.post(event)) {
+            return;
+        }
+        if (event.aabb != null && mask.intersectsWith(event.aabb)) {
+            list.add(event.aabb);
         }
     }
 }

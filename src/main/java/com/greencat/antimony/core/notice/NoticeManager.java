@@ -11,7 +11,7 @@ public class NoticeManager {
     public NoticeManager() {
         MinecraftForge.EVENT_BUS.register(this);
     }
-    private static  List<Notice> notices = new ArrayList<>();
+    public static final List<Notice> notices = new ArrayList<>();
     public static void add(Notice notice){
         for(Notice currentNotice : notices){
             currentNotice.next(notice);

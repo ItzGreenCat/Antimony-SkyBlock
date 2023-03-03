@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ConfigLoader {
     private static Configuration config;
@@ -20,7 +21,8 @@ public class ConfigLoader {
     //save current enabled functions
     public static void setFunctionStateStorage(){
         List<String> list = new ArrayList<String>();
-        for(AntimonyFunction function : AntimonyRegister.FunctionList){
+        for (Map.Entry<String,AntimonyFunction> entry : AntimonyRegister.FunctionList.entrySet()) {
+            AntimonyFunction function = entry.getValue();
             if(function.getStatus()){
                 list.add(function.getName());
             }

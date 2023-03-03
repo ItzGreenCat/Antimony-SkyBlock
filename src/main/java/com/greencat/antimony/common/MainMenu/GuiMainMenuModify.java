@@ -32,19 +32,28 @@ public class GuiMainMenuModify {
             ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
             int ScreenWidth = scaledResolution.getScaledWidth();
             int ScreenHeight = scaledResolution.getScaledHeight();
-            int Scaling;
+            /*int Scaling;
             if(Minecraft.getMinecraft().gameSettings.guiScale != 0) {
                 Scaling = 5 - Minecraft.getMinecraft().gameSettings.guiScale;
             } else {
                 Scaling = 1;
-            }
-            
-            GuiCustomButton SinglePlayerButton = new GuiCustomButton(1, (int) ((ScreenWidth / 2 - 12.5F * Scaling) - (45 * Scaling)), ScreenHeight / 2, 25 * Scaling, 25 * Scaling, "SinglePlayer", "single");
-            GuiCustomButton MultiPlayerButton = new GuiCustomButton(2, (int) ((ScreenWidth / 2 - 12.5F * Scaling) - (15 * Scaling)), ScreenHeight / 2, 25 * Scaling, 25 * Scaling, "MultiPlayer", "multi");
-            GuiCustomButton ModsButton = new GuiCustomButton(6, (int) ((ScreenWidth / 2 - 12.5F * Scaling) + (15 * Scaling)), ScreenHeight / 2, 25 * Scaling, 25 * Scaling, "Mods", "mods");
-            GuiCustomButton LanguageButton = new GuiCustomButton(5, (int) ((ScreenWidth / 2 - 12.5F * Scaling) + (45 * Scaling)), ScreenHeight / 2, 25 * Scaling, 25 * Scaling, "Language", "language");
-            GuiCustomButton SettingsButton = new GuiCustomButton(0, (int) ((ScreenWidth / 2 - 12.5F * Scaling) + (30 * Scaling)), (ScreenHeight / 2) + (40 * Scaling), 25 * Scaling, 25 * Scaling, "Settings", "settings");
-            GuiCustomButton QuitButton = new GuiCustomButton(4, (int) ((ScreenWidth / 2 - 12.5F * Scaling) - (30 * Scaling)), (ScreenHeight / 2) + (40 * Scaling), 25 * Scaling, 25 * Scaling, "Quit", "quit");
+            }*/
+            int MaxButtonY = (int) (ScreenHeight / 10 * 4.5D);
+            int ButtonSpace = 10 / scaledResolution.getScaleFactor();
+            int ButtonX = ScreenWidth / 12;
+            int ButtonHeight = (int) (ScreenHeight / 19.0D);
+            int counter = 0;
+            GuiCustomButton SinglePlayerButton = new GuiCustomButton(1,ButtonX, MaxButtonY + counter * (ButtonHeight + ButtonSpace), ButtonHeight * 10, ButtonHeight, "SinglePlayer", "single");
+            counter++;
+            GuiCustomButton MultiPlayerButton = new GuiCustomButton(2, ButtonX, MaxButtonY + counter * (ButtonHeight + ButtonSpace), ButtonHeight * 10, ButtonHeight, "MultiPlayer", "multi");
+            counter++;
+            GuiCustomButton ModsButton = new GuiCustomButton(6,ButtonX, MaxButtonY + counter * (ButtonHeight + ButtonSpace), ButtonHeight * 10, ButtonHeight, "Mods", "mods");
+            counter++;
+            GuiCustomButton LanguageButton = new GuiCustomButton(5,ButtonX, MaxButtonY + counter * (ButtonHeight + ButtonSpace), ButtonHeight * 10, ButtonHeight, "Language", "language");
+            counter++;
+            GuiCustomButton SettingsButton = new GuiCustomButton(0,ButtonX, MaxButtonY + counter * (ButtonHeight + ButtonSpace), ButtonHeight * 10, ButtonHeight, "Settings", "settings");
+            counter++;
+            GuiCustomButton QuitButton = new GuiCustomButton(4,ButtonX, MaxButtonY + counter * (ButtonHeight + ButtonSpace), ButtonHeight * 10, ButtonHeight, "Quit", "quit");
 
             event.buttonList.add(SinglePlayerButton);
             event.buttonList.add(MultiPlayerButton);

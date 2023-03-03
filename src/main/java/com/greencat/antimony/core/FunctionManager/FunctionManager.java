@@ -12,6 +12,7 @@ import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -26,20 +27,20 @@ public class FunctionManager {
         } else {
             return false;
         }*/
-        for(int i = 0;i < AntimonyRegister.FunctionList.size();++i){
+        return AntimonyRegister.FunctionList.get(Name).getStatus();
+        /*for(int i = 0;i < AntimonyRegister.FunctionList.size();++i){
             if(AntimonyRegister.FunctionList.get(i).getName().equals(Name)){
-                return AntimonyRegister.FunctionList.get(i).getStatus();
+
             }
-        }
+        }*/
         /*for(AntimonyFunction function : AntimonyRegister.FunctionList){
 
         }*/
-        return false;
     }
     //set a funtion's status
     public static void setStatus(String Name,Boolean status){
-        for(AntimonyFunction function : AntimonyRegister.FunctionList){
-            if(function.getName().equals(Name)){
+        modifyCount++;
+        AntimonyFunction function = AntimonyRegister.FunctionList.get(Name);
                 if(status){
                     CustomEventHandler.FunctionEnableEvent event;
                     event = new CustomEventHandler.FunctionEnableEvent(function);
@@ -64,17 +65,12 @@ public class FunctionManager {
                         Utils.print(Name + EnumChatFormatting.WHITE + " 禁用");
                     }
                 }
-                break;
-            }
-        }
+                AntimonyRegister.reloadEnableList();
     }
     //switch a function's status without any notice
     public static void switchStatusNoNotice(String Name) {
-        
-        for (AntimonyFunction function : AntimonyRegister.FunctionList) {
-            if (function.getName().equals(Name)) {
-
-
+        modifyCount++;
+        AntimonyFunction function = AntimonyRegister.FunctionList.get(Name);
                 CustomEventHandler.FunctionSwitchEvent event;
                 event = new CustomEventHandler.FunctionSwitchEvent(function, !function.getStatus());
                 CustomEventHandler.EVENT_BUS.post(event);
@@ -83,16 +79,12 @@ public class FunctionManager {
                     function.SwtichStatus();
                     ConfigLoader.setFunctionStateStorage();
                 }
-                break;
-
-            }
-        }
+        AntimonyRegister.reloadEnableList();
     }
     //set a function's status without any notice
     public static void setStatusNoNotice(String Name,Boolean status){
-        
-        for(AntimonyFunction function : AntimonyRegister.FunctionList){
-            if(function.getName().equals(Name)){
+        modifyCount++;
+        AntimonyFunction function = AntimonyRegister.FunctionList.get(Name);
                 if(status){
                     CustomEventHandler.FunctionEnableEvent event;
                     event = new CustomEventHandler.FunctionEnableEvent(function);
@@ -113,14 +105,12 @@ public class FunctionManager {
                         ConfigLoader.setFunctionStateStorage();
                     }
                 }
-                break;
-            }
-        }
+        AntimonyRegister.reloadEnableList();
     }
     //switch a function's status
     public static void switchStatus(String Name){
-        for(AntimonyFunction function : AntimonyRegister.FunctionList){
-            if(function.getName().equals(Name)){
+        modifyCount++;
+        AntimonyFunction function = AntimonyRegister.FunctionList.get(Name);
                     CustomEventHandler.FunctionSwitchEvent event;
                     event = new CustomEventHandler.FunctionSwitchEvent(function,!function.getStatus());
                     CustomEventHandler.EVENT_BUS.post(event);
@@ -139,34 +129,38 @@ public class FunctionManager {
                             Utils.print(Name + EnumChatFormatting.WHITE + " 禁用");
                         }
                     }
-                break;
-            }
+        AntimonyRegister.reloadEnableList();
+    }
+    static int width = 0;
+    static int prevModifyCount = 0;
+    static int modifyCount = 0;
+    public static int getLongestTextWidth(){
+        int width = 0;
+        for (Map.Entry<String,AntimonyFunction> entry : AntimonyRegister.FunctionList.entrySet()) {
+            AntimonyFunction function = entry.getValue();
+            width = Math.max(Minecraft.getMinecraft().fontRendererObj.getStringWidth(function.getName()),width);
         }
+        return width;
     }
     //get the longest function name and add 20 more
     public static int getLongestTextWidthAdd20(){
-        int width = 0;
-        for(AntimonyFunction function : AntimonyRegister.FunctionList){
-           width = Math.max(Minecraft.getMinecraft().fontRendererObj.getStringWidth(function.getName()),width);
+        if(modifyCount != prevModifyCount){
+            width = getLongestTextWidth();
+            prevModifyCount = modifyCount;
         }
         return width + 20;
     }
     //get the longest function name and add 5 more
     public static int getLongestTextWidthAdd5(){
-        int width = 0;
-        for(AntimonyFunction function : AntimonyRegister.FunctionList){
-            width = Math.max(Minecraft.getMinecraft().fontRendererObj.getStringWidth(function.getName()),width);
+        if(modifyCount != prevModifyCount){
+            width = getLongestTextWidth();
+            prevModifyCount = modifyCount;
         }
         return width + 5;
     }
     //use function name to get a AntimonyFunction
     public static AntimonyFunction getFunctionByName(String name){
-        for(AntimonyFunction function : AntimonyRegister.FunctionList) {
-            if(function.getName().equals(name)){
-                return function;
-            }
-        }
-        return null;
+        return AntimonyRegister.FunctionList.get(name);
     }
     //bind a function
     public static void bindFunction(String Name){

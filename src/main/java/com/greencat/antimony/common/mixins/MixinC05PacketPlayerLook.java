@@ -1,7 +1,6 @@
 package com.greencat.antimony.common.mixins;
 
 import com.greencat.antimony.core.ServerRotation;
-import com.greencat.antimony.utils.Utils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

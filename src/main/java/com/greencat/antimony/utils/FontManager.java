@@ -78,6 +78,7 @@ public class FontManager {
     public static MinecraftFontRenderer GothamRoundedFont = new MinecraftFontRenderer(getGothamRoundedFont(20),true);
     public static MinecraftFontRenderer STXINWEIFont = new MinecraftFontRenderer(getSTXINWEIFont(20),true);
     public static MinecraftFontRenderer QuicksandBoldFont = new MinecraftFontRenderer(getQuicksandBoldFont(17),true);
+    public static MinecraftFontRenderer QuicksandFont17 = new MinecraftFontRenderer(getQuicksandFont(17),true);
     public static MinecraftFontRenderer QuicksandFont = new MinecraftFontRenderer(getQuicksandFont(20),true);
     public static MinecraftFontRenderer QuicksandFont24 = new MinecraftFontRenderer(getQuicksandFont(24),true);
     public static MinecraftFontRenderer QuicksandFont35 = new MinecraftFontRenderer(getQuicksandFont(35),true);

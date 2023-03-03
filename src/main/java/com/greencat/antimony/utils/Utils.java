@@ -1,12 +1,12 @@
 package com.greencat.antimony.utils;
 
-import com.google.common.base.Predicate;
+
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.greencat.antimony.common.mixins.PlayerControllerAccessor;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.Pathfinding;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.common.mixins.EntityPlayerSPAccessor;
 import com.greencat.antimony.core.type.Rotation;
@@ -44,6 +44,7 @@ import org.lwjgl.util.vector.Vector3f;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -949,7 +950,7 @@ public class Utils {
         }
 
         Collection<Score> scores = scoreboard.getSortedScores(objective);
-        List<Score> list = Lists.newArrayList(Iterables.filter(scores, new Predicate<Score>() {
+        List<Score> list = Lists.newArrayList(Iterables.filter(scores, new com.google.common.base.Predicate<Score>() {
             public boolean apply(Score s) {
                 return s.getPlayerName() != null;
             }
@@ -1398,7 +1399,7 @@ public class Utils {
     public static String MarketingAccountGenerator(String name,String event,String explain){
         return MarketingAccountTemplate.replace("&name&",name).replace("&event&",event).replace("&explain&",explain);
     }
-    private boolean checkArea(String areaName) {
+    public static boolean hasLine(String areaName) {
         boolean isInArea = false;
         Utils utils = new Utils();
         List<String> scoreBoardLines = utils.getSidebarLines();
@@ -1455,6 +1456,43 @@ public class Utils {
         float f2 = -MathHelper.cos((float) Math.toRadians(-pitch));
         float f3 = MathHelper.sin((float) Math.toRadians(-pitch));
         return new Vec3(f1 * f2, f3, f * f2);
+    }
+    public static boolean isLiquid(final float distance) {
+        return isLiquid(distance, 0.0, 0.0);
+    }
+
+    public static boolean isLiquid(final float distance, final double xOffset, final double zOffset) {
+        final BlockPos block = new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
+        if (!Minecraft.getMinecraft().theWorld.isBlockLoaded(block)) {
+            return false;
+        }
+        final AxisAlignedBB player = Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().offset(xOffset, 0.0, zOffset);
+        return Minecraft.getMinecraft().theWorld.isAnyLiquid(new AxisAlignedBB(player.minX, player.minY - distance, player.minZ, player.maxX, player.maxY, player.maxZ));
+    }
+    public static MovingObjectPosition rayTrace(final float yaw, final float pitch, final float distance) {
+        final Vec3 vec3 = Minecraft.getMinecraft().thePlayer.getPositionEyes(1.0f);
+        final Vec3 vec4 = getVectorForRotation(yaw, pitch);
+        final Vec3 vec5 = vec3.addVector(vec4.xCoord * distance, vec4.yCoord * distance, vec4.zCoord * distance);
+        return Minecraft.getMinecraft().theWorld.rayTraceBlocks(vec3, vec5, false, true, true);
+    }
+    public static void swapToSlot(final int slot) {
+        Minecraft.getMinecraft().thePlayer.inventory.currentItem = slot;
+        syncHeldItem();
+    }
+    public static void syncHeldItem() {
+        final int slot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+        if (slot != ((PlayerControllerAccessor)Minecraft.getMinecraft().playerController).getSlot()) {
+            ((PlayerControllerAccessor)Minecraft.getMinecraft().playerController).setSlot(slot);
+            Utils.sendPacketNoEvent(new C09PacketHeldItemChange(slot));
+        }
+    }
+    public static int getHotbar(final Predicate<ItemStack> predicate) {
+        for (int i = 0; i < 9; ++i) {
+            if (Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(i) != null && predicate.test(Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(i))) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 }

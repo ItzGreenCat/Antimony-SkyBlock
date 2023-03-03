@@ -10,6 +10,8 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Map;
+
 public class FunctionList {
     Minecraft mc = Minecraft.getMinecraft();
 
@@ -19,7 +21,7 @@ public class FunctionList {
         int height = (Integer) getConfigByFunctionName.get("HUD","FunctionListHeight");
 
         ResourceLocation resourceLocation = new ResourceLocation(Antimony.MODID, "hud2.png");
-        for (AntimonyFunction function : AntimonyRegister.FunctionList) {
+        for (AntimonyFunction function : AntimonyRegister.enabledList) {
             if(function.getStatus()) {
                 Minecraft.getMinecraft().renderEngine.bindTexture(resourceLocation);
                 Gui.drawModalRectWithCustomSizedTexture((int) (scaledResolution.getScaledWidth() - FontManager.GothamRoundedFont.getStringWidth(function.getName()) - 6),height,0,0, (int) FontManager.GothamRoundedFont.getStringWidth(function.getName()) + 6,14, (float) FontManager.GothamRoundedFont.getStringWidth(function.getName()) + 6,28);

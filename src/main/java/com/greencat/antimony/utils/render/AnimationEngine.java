@@ -14,12 +14,21 @@ public class AnimationEngine {
     public double yStep;
     private boolean modifyX;
     private boolean modifyY;
+    public double sec = 0;
+    public int prevFPS = 1;
+    public long lastMoveTo = 0;
     public AnimationEngine(int x,int y) {
         xCoord = x;
         yCoord = y;
+        targetX = x;
+        targetY = y;
         MinecraftForge.EVENT_BUS.register(this);
     }
     public AnimationEngine() {
+        xCoord = 0;
+        yCoord = 0;
+        targetX = 0;
+        targetY = 0;
         MinecraftForge.EVENT_BUS.register(this);
     }
     public void moveTo(int x,int y,double second){
@@ -37,6 +46,9 @@ public class AnimationEngine {
         double yInterpolation;
         xInterpolation = Math.abs(targetX - xCoord);
         yInterpolation = Math.abs(targetY - yCoord);
+        prevFPS = Minecraft.getDebugFPS();
+        sec = second;
+        lastMoveTo = System.currentTimeMillis();
         if(Minecraft.getDebugFPS() != 0) {
             if(xInterpolation > 0) {
                 xStep = xInterpolation / (Minecraft.getDebugFPS() * second);
@@ -84,6 +96,11 @@ public class AnimationEngine {
                     }
                 } else {
                     yCoord = targetY;
+                }
+            }
+            if(targetX != xCoord || targetY != yCoord){
+                if(Math.abs(Minecraft.getDebugFPS() - prevFPS) > 5){
+                    moveTo((int)this.targetX,(int)this.targetY,(sec * 1000 - (System.currentTimeMillis() - lastMoveTo)) / 1000);
                 }
             }
         }

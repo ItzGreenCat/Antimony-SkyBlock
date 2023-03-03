@@ -1,6 +1,8 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
+import com.greencat.antimony.core.notice.Notice;
+import com.greencat.antimony.core.notice.NoticeManager;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -72,7 +74,9 @@ public class WormLavaESP {
                     this.NowY = this.StartY;
                     this.NowZ = this.StartZ;
                     Tick = 0;
-                    utils.print("WormLavaESP刷新完成，找到" + LavaPosition.size() + "个岩浆点");
+                    Utils.print("WormLavaESP刷新完成，找到" + LavaPosition.size() + "个岩浆点");
+                    Notice notice = new Notice("WormLavaESP found " + LavaPosition.size() + " possible","lava");
+                    NoticeManager.add(notice);
                 } else {
                     Tick = Tick + 1;
                 }

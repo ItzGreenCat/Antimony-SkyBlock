@@ -16,16 +16,10 @@ public class getConfigByFunctionName {
         Object value;
         value = cache.get(FunctionName + "_" + ConfigID);
         if(value == null){
-            for (AntimonyFunction function : AntimonyRegister.FunctionList) {
-                if (function.getName().equals(FunctionName)) {
-                    value = function.getConfigurationValue(ConfigID);
-                    if(value != null) {
-                        cache.put(FunctionName + "_" + ConfigID, value);
-                    } else {
-                        break;
-                    }
-                    break;
-                }
+            AntimonyFunction function = AntimonyRegister.FunctionList.get(FunctionName);
+            value = function.getConfigurationValue(ConfigID);
+            if(value != null) {
+                cache.put(FunctionName + "_" + ConfigID, value);
             }
         }
         return value;

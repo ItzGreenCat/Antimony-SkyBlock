@@ -2,6 +2,8 @@ package com.greencat.antimony.core;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
+import com.greencat.antimony.core.notice.Notice;
+import com.greencat.antimony.core.notice.NoticeManager;
 import com.greencat.antimony.utils.Utils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -71,6 +73,8 @@ public class nukerWrapper {
         if(nuker.pos != null) {
             if (tick > 400) {
                 Utils.print("Nuker超时,重置状态");
+                Notice notice = new Notice("Nuker Overrun the time","Reset State");
+                NoticeManager.add(notice);
                 disable();
                 enable();
                 tick = 0;

@@ -2,7 +2,9 @@ package com.greencat.antimony.common;
 
 import com.greencat.Antimony;
 import com.greencat.antimony.common.key.KeyLoader;
+import com.greencat.antimony.common.mixins.GuiScreenAccessor;
 import com.greencat.antimony.common.test.Screenshot;
+import com.greencat.antimony.core.CustomSizeBackground;
 import com.greencat.antimony.core.EtherwarpTeleport;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.FunctionManager.SelectGuiFunctionExecutant;
@@ -24,16 +26,25 @@ import com.greencat.antimony.core.ui.transparent.SelectGUI;
 import com.greencat.antimony.core.ui.white.NewFunctionList;
 import com.greencat.antimony.core.ui.white.NewSelectGUI;
 import com.greencat.antimony.develop.Console;
+import com.greencat.antimony.utils.sound.SoundPlayer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 
+import java.util.List;
 import java.util.Map;
+
+import static com.greencat.Antimony.mouseX;
+import static com.greencat.Antimony.mouseY;
 
 public class EventLoader {
     ClassicSelectGUI classicSelectGui = new ClassicSelectGUI();
@@ -229,6 +240,45 @@ public class EventLoader {
                 if (Keyboard.getEventKeyState()) {
                     FunctionManager.switchStatus(entry.getKey().getName());
                 }
+            }
+        }
+    }
+    GuiButton prevButton;
+    @SubscribeEvent
+    public void handleGuiSound(TickEvent.RenderTickEvent event) {
+        if(event.phase == TickEvent.Phase.END && Minecraft.getMinecraft().currentScreen != null){
+            GuiScreen screen = Minecraft.getMinecraft().currentScreen;
+            List<? extends GuiButton> buttons = ((GuiScreenAccessor)screen).getButton();
+            if(buttons.isEmpty()){
+                return;
+            }
+            for(GuiButton button : buttons){
+                if(mouseX >= button.xPosition && mouseY >= button.yPosition && mouseX < button.xPosition + button.width && mouseY < button.yPosition + button.height) {
+                    if (prevButton == null) {
+                        prevButton = button;
+                        SoundPlayer.play(new ResourceLocation("antimony:button_select"));
+                    } else if (prevButton != button) {
+                        prevButton = button;
+                        SoundPlayer.play(new ResourceLocation("antimony:button_select"));
+                    }
+                    return;
+                }
+            }
+            prevButton = null;
+        }
+    }
+    static double prevLocation = 1.0D;
+    static long lastCheck = 0L;
+    @SubscribeEvent
+    public void handleBackgroundAnimation(TickEvent.RenderTickEvent event) {
+        if(event.phase == TickEvent.Phase.END){
+            if(System.currentTimeMillis() - lastCheck > 1000){
+                lastCheck = System.currentTimeMillis();
+                if(CustomSizeBackground.animation.xCoord == prevLocation) {
+                    CustomSizeBackground.animation.xCoord = 1;
+                    CustomSizeBackground.next = 1;
+                }
+                prevLocation = CustomSizeBackground.animation.xCoord;
             }
         }
     }

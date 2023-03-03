@@ -425,7 +425,7 @@ public class Killaura {
 
                 if (toDispatch.size() > 114514) {
                     dispatchPackets();
-                    NoticeManager.add(new Notice("Killaura :","PacketBuffer","Packet Stack Overflowed"));
+                    NoticeManager.add(new Notice("Killaura",true,"PacketBuffer","Packet Stack Overflowed"));
                     blinking = false;
                 }
             }
@@ -474,8 +474,6 @@ public class Killaura {
 
     private void attackEntity(Entity target) {
         if (timerAttack.delay(1000L / cps)) {
-            CustomEventHandler.AttackEvent event = new CustomEventHandler.AttackEvent();
-            CustomEventHandler.EVENT_BUS.post(event);
 
 
             if (shouldBlock()) {

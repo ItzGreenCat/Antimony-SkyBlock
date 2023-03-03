@@ -68,7 +68,7 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
             at=@At("HEAD"),
             cancellable = true)
     public void onUpdateHead(CallbackInfo ci){
-        CustomEventHandler.MotionChangeEvent event = new CustomEventHandler.MotionChangeEvent.Pre(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround, this.isSprinting(), this.isSneaking());
+        CustomEventHandler.MotionChangeEvent event = new CustomEventHandler.MotionChangeEvent.Pre(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround, this.isSprinting(), this.isSneaking(),true);
         CustomEventHandler.EVENT_BUS.post(event);
         if (event.isCanceled()) {
             ci.cancel();

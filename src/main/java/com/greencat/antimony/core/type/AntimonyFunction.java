@@ -4,11 +4,13 @@ import com.greencat.antimony.core.exceptions.NoSuchConfigurationException;
 import com.greencat.antimony.core.settings.AbstractSettingOptionButton;
 import com.greencat.antimony.core.settings.AbstractSettingOptionTextField;
 import com.greencat.antimony.core.settings.ISettingOption;
+import com.greencat.antimony.utils.FontManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AntimonyFunction {
+public class AntimonyFunction implements Comparable<AntimonyFunction>{
     String Name;
     Boolean Status = false;
     Boolean Configurable = false;
@@ -58,5 +60,10 @@ public class AntimonyFunction {
     }
     public Boolean isConfigurable(){
         return Configurable;
+    }
+
+    @Override
+    public int compareTo(@NotNull AntimonyFunction o) {
+        return FontManager.QuicksandBoldFont.getStringWidth(o.getName()) - FontManager.QuicksandBoldFont.getStringWidth(this.getName());
     }
 }

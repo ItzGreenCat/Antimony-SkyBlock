@@ -3,12 +3,15 @@ package com.greencat.antimony.core.event;
 
 import com.greencat.antimony.core.type.AntimonyFunction;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,29 +51,6 @@ public class CustomEventHandler {
             this.status = status;
         }
     }
-    @Deprecated
-    public static class ClientTickEndEvent extends Event {
-
-        private static int staticCount = 0;
-        public int count;
-
-        public ClientTickEndEvent() {
-            count = staticCount;
-        }
-
-        public boolean every(int ticks) {
-            return count % ticks == 0;
-        }
-
-        @SubscribeEvent
-        public void onTick(TickEvent.ClientTickEvent event) {
-            if(event.phase == TickEvent.Phase.END) {
-                MinecraftForge.EVENT_BUS.post(new ClientTickEndEvent());
-                staticCount++;
-            }
-        }
-
-    }
     //trigger on received a packet from server
     @Cancelable
     public static class PacketReceivedEvent extends Event {
@@ -93,6 +73,7 @@ public class CustomEventHandler {
         public boolean onGround;
         public boolean sprinting;
         public boolean sneaking;
+        public boolean pre = false;
 
         protected MotionChangeEvent(double x, double y, double z, float yaw, float pitch, boolean onGround, boolean sprinting, boolean sneaking) {
             this.x = x;
@@ -103,8 +84,22 @@ public class CustomEventHandler {
             this.onGround = onGround;
             this.sneaking = sneaking;
             this.sprinting = sprinting;
+            this.pre = false;
         }
-
+        protected MotionChangeEvent(double x, double y, double z, float yaw, float pitch, boolean onGround, boolean sprinting, boolean sneaking,boolean pre) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.onGround = onGround;
+            this.sneaking = sneaking;
+            this.sprinting = sprinting;
+            this.pre = pre;
+        }
+        public boolean isPre(){
+            return pre;
+        }
         @Cancelable
         public static class Post extends MotionChangeEvent {
             public Post(double x, double y, double z, float yaw, float pitch, boolean onGround, boolean sprinting, boolean sneaking) {
@@ -120,6 +115,9 @@ public class CustomEventHandler {
         public static class Pre extends MotionChangeEvent {
             public Pre(double x, double y, double z, float yaw, float pitch, boolean onGround, boolean sprinting, boolean sneaking) {
                 super(x, y, z, yaw, pitch, onGround, sprinting, sneaking);
+            }
+            public Pre(double x, double y, double z, float yaw, float pitch, boolean onGround, boolean sprinting, boolean sneaking,boolean pre) {
+                super(x, y, z, yaw, pitch, onGround, sprinting, sneaking,pre);
             }
         }
     }
@@ -145,19 +143,6 @@ public class CustomEventHandler {
         public Packet<?> packet;
         public PacketEvent(Packet<?> packet) {
             this.packet = packet;
-        }
-    }
-    @Deprecated
-    @Cancelable
-    public static class MoveStrafeEvent extends Event {
-        public float strafe;
-        public float forward;
-        public float friction;
-
-        public MoveStrafeEvent(float strafe,float forward,float friction) {
-            this.strafe = strafe;
-            this.forward = forward;
-            this.friction = friction;
         }
     }
     //trigger on player LivingUpdated
@@ -228,9 +213,81 @@ public class CustomEventHandler {
             }
         }
     }
-    public static class AttackEvent extends Event{
+    /*public static class AttackEvent extends Event{
         public AttackEvent(){
 
+        }
+    }*/
+    @Cancelable
+    public static class CurrentPlayerMoveEvent extends Event {
+        private double x;
+        private double y;
+        private double z;
+
+        public CurrentPlayerMoveEvent setY(final double y) {
+            this.y = y;
+            return this;
+        }
+
+        public CurrentPlayerMoveEvent setX(final double x) {
+            this.x = x;
+            return this;
+        }
+
+        public CurrentPlayerMoveEvent setZ(final double z) {
+            this.z = z;
+            return this;
+        }
+
+        public double getX() {
+            return this.x;
+        }
+
+        public double getY() {
+            return this.y;
+        }
+
+        public double getZ() {
+            return this.z;
+        }
+
+        public CurrentPlayerMoveEvent stop() {
+            return this.setMotion(0.0, 0.0, 0.0);
+        }
+
+        public CurrentPlayerMoveEvent setMotion(final double x, final double y, final double z) {
+            this.x = x;
+            this.z = z;
+            this.y = y;
+            return this;
+        }
+
+        public CurrentPlayerMoveEvent(final double x, final double y, final double z) {
+            this.x = x;
+            this.z = z;
+            this.y = y;
+        }
+    }
+    public static class PreAttackEvent extends Event
+    {
+        public Entity entity;
+
+        public PreAttackEvent(Entity entity) {
+            this.entity = entity;
+        }
+    }
+    @Cancelable
+    public static class BlockBoundsEvent extends Event {
+        public AxisAlignedBB aabb;
+        public Block block;
+        public BlockPos pos;
+        public Entity collidingEntity;
+
+        public BlockBoundsEvent( Block block,  AxisAlignedBB aabb, BlockPos pos, Entity collidingEntity) {
+            this.aabb = aabb;
+            this.block = block;
+            this.pos = pos;
+            this.collidingEntity = collidingEntity;
         }
     }
 }
