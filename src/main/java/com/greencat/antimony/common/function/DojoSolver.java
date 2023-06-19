@@ -4,6 +4,8 @@ import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.type.Rotation;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import java.util.function.Predicate;
@@ -35,9 +37,9 @@ import net.minecraft.init.Items;
 import net.minecraft.entity.Entity;
 import java.util.HashMap;
 
-import static com.greencat.antimony.core.config.getConfigByFunctionName.get;
+import static com.greencat.antimony.core.config.ConfigInterface.get;
 
-public class DojoSolver {
+public class DojoSolver implements ReflectionlessEventHandler {
     private int jumpStage;
     private int ticks;
     private static boolean inTenacity;
@@ -47,8 +49,6 @@ public class DojoSolver {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-
-    @SubscribeEvent
     public void onPlayerUpdate(CustomEventHandler.MotionChangeEvent event) {
         if (FunctionManager.getStatus("DojoSolver")) {
             if ((Boolean) get("DojoSolver","mastery") && DojoSolver.inMastery && Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == Items.bow) {
@@ -145,8 +145,6 @@ public class DojoSolver {
         timeLeft = Double.parseDouble(name);
         return timeLeft;
     }
-
-    @SubscribeEvent
     public void onMove(CustomEventHandler.CurrentPlayerMoveEvent event) {
         if (FunctionManager.getStatus("DojoSolver") && (Boolean) get("DojoSolver","tenacity") && DojoSolver.inTenacity && this.jumpStage == 2) {
             event.stop();
@@ -159,8 +157,6 @@ public class DojoSolver {
         /*return name.startsWith("§a§l");*/
         return name.startsWith("§e§l");
     }
-
-    @SubscribeEvent
     public void onBlockBounds(CustomEventHandler.BlockBoundsEvent event) {
         if (event.block == Blocks.lava && DojoSolver.inTenacity && FunctionManager.getStatus("DojoSolver") && (Boolean) get("DojoSolver","tenacity")) {
             event.aabb = new AxisAlignedBB((double)event.pos.getX(), (double)event.pos.getY(), (double)event.pos.getZ(), (double)(event.pos.getX() + 1), (double)(event.pos.getY() + 1), (double)(event.pos.getZ() + 1));
@@ -174,8 +170,6 @@ public class DojoSolver {
             DojoSolver.inMastery = Utils.hasLine("Challenge: Mastery");
         }
     }
-
-    @SubscribeEvent
     public void onLeftClick(CustomEventHandler.PreAttackEvent event) {
         if (FunctionManager.getStatus("DojoSolver") && (Boolean) get("DojoSolver","swordSwap")) {
             this.left(event.entity);
@@ -209,5 +203,24 @@ public class DojoSolver {
 
     static {
         shot = new HashMap<Entity, Long>();
+    }
+
+    @Override
+    public void invoke(Event event) {
+        if(event instanceof CustomEventHandler.PreAttackEvent){
+            onLeftClick((CustomEventHandler.PreAttackEvent) event);
+            return;
+        }
+        if(event instanceof CustomEventHandler.CurrentPlayerMoveEvent){
+            onMove((CustomEventHandler.CurrentPlayerMoveEvent) event);
+            return;
+        }
+        if(event instanceof CustomEventHandler.BlockBoundsEvent){
+            onBlockBounds((CustomEventHandler.BlockBoundsEvent) event);
+            return;
+        }
+        if(event instanceof CustomEventHandler.MotionChangeEvent){
+            onPlayerUpdate((CustomEventHandler.MotionChangeEvent) event);
+        }
     }
 }

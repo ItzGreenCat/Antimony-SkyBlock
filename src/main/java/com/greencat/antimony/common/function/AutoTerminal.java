@@ -2,7 +2,7 @@ package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.InventoryClicker;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.develop.Console;
 import net.minecraft.client.Minecraft;
@@ -86,7 +86,7 @@ public class AutoTerminal {
                     threadTimer = -1;
                     cooldown = 0;
                 } else if (terminal != TerminalType.NONE && !AutoTerminal.clickQueue.isEmpty()) {
-                    if (cooldown + 1 > (Integer) getConfigByFunctionName.get("AutoTerminal","cooldown")) {
+                    if (cooldown + 1 > (Integer) ConfigInterface.get("AutoTerminal","cooldown")) {
                         //if(rightClickQueue.isEmpty()) {
                             InventoryClicker.ClickSlot(AutoTerminal.clickQueue.get(0), InventoryClicker.Type.LEFT/*type*/);
                             AutoTerminal.clickQueue.remove(0);

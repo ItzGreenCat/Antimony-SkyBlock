@@ -5,6 +5,7 @@ import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.type.Rotation;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.annotation.EventModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
@@ -83,7 +84,7 @@ public class EtherwarpTeleport {
             e.printStackTrace();
         }
     }
-    @SubscribeEvent
+    @EventModule
     public void onMotion(CustomEventHandler.MotionChangeEvent event){
         try {
             if (!position.isEmpty()) {

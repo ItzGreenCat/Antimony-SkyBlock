@@ -1,7 +1,7 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.common.key.KeyLoader;
 import com.greencat.antimony.utils.EasyReflection;
 import net.minecraft.client.Minecraft;
@@ -41,10 +41,10 @@ public class InstantSwitch {
                 latest = System.currentTimeMillis();
                 for (int i = 0; i < 8; ++i) {
                     ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.mainInventory[i];
-                    if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains(((String)getConfigByFunctionName.get("InstantSwitch","itemName")).toLowerCase())) {
+                    if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains(((String) ConfigInterface.get("InstantSwitch","itemName")).toLowerCase())) {
                         int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
                         Minecraft.getMinecraft().thePlayer.inventory.currentItem = i;
-                        if (!(Boolean)getConfigByFunctionName.get("InstantSwitch","leftClick")) {
+                        if (!(Boolean) ConfigInterface.get("InstantSwitch","leftClick")) {
                             Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, stack);
                         } else {
                             EasyReflection UpdateControllerReflect = new EasyReflection(PlayerControllerMP.class, "func_78750_j", new Class[0]);

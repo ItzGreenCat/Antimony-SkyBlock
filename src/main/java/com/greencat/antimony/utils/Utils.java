@@ -5,12 +5,15 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.greencat.antimony.common.mixins.MinecraftAccessor;
 import com.greencat.antimony.common.mixins.PlayerControllerAccessor;
+import com.greencat.antimony.common.mixins.RenderManagerAccessor;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.common.mixins.EntityPlayerSPAccessor;
 import com.greencat.antimony.core.type.Rotation;
 import com.mojang.realmsclient.gui.ChatFormatting;
+import me.greencat.lwebus.core.annotation.EventModule;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -26,6 +29,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,10 +40,12 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.*;
+import net.minecraft.util.Timer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
+import scala.Char;
 
 import java.awt.*;
 import java.util.*;
@@ -49,18 +55,73 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.lang.Math.*;
+import static org.lwjgl.opengl.GL11.*;
 
 public class Utils {
     public static float lastReportedPitch;
     public static int lastReportedSlot;
     public static ArrayList<Packet<?>> noEvent = new ArrayList();
     public static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Map<Integer, Boolean> glCapMap = new HashMap<>();
 
     public Utils() {
         keyBindMap.put(0, Minecraft.getMinecraft().gameSettings.keyBindForward);
         keyBindMap.put(90, Minecraft.getMinecraft().gameSettings.keyBindLeft);
         keyBindMap.put(180, Minecraft.getMinecraft().gameSettings.keyBindBack);
         keyBindMap.put(270, Minecraft.getMinecraft().gameSettings.keyBindRight);
+        for (int i = 0; i < DISPLAY_LISTS_2D.length; i++) {
+            DISPLAY_LISTS_2D[i] = glGenLists(1);
+        }
+
+        glNewList(DISPLAY_LISTS_2D[0], GL_COMPILE);
+
+        quickDrawRect(-7F, 2F, -4F, 3F);
+        quickDrawRect(4F, 2F, 7F, 3F);
+        quickDrawRect(-7F, 0.5F, -6F, 3F);
+        quickDrawRect(6F, 0.5F, 7F, 3F);
+
+        glEndList();
+
+        glNewList(DISPLAY_LISTS_2D[1], GL_COMPILE);
+
+        quickDrawRect(-7F, 3F, -4F, 3.3F);
+        quickDrawRect(4F, 3F, 7F, 3.3F);
+        quickDrawRect(-7.3F, 0.5F, -7F, 3.3F);
+        quickDrawRect(7F, 0.5F, 7.3F, 3.3F);
+
+        glEndList();
+
+        glNewList(DISPLAY_LISTS_2D[2], GL_COMPILE);
+
+        quickDrawRect(4F, -20F, 7F, -19F);
+        quickDrawRect(-7F, -20F, -4F, -19F);
+        quickDrawRect(6F, -20F, 7F, -17.5F);
+        quickDrawRect(-7F, -20F, -6F, -17.5F);
+
+        glEndList();
+
+        glNewList(DISPLAY_LISTS_2D[3], GL_COMPILE);
+
+        quickDrawRect(7F, -20F, 7.3F, -17.5F);
+        quickDrawRect(-7.3F, -20F, -7F, -17.5F);
+        quickDrawRect(4F, -20.3F, 7.3F, -20F);
+        quickDrawRect(-7.3F, -20.3F, -4F, -20F);
+
+        glEndList();
+    }
+    private static final int[] DISPLAY_LISTS_2D = new int[4];
+    /*static {
+
+    }*/
+    public static void quickDrawRect(final float x, final float y, final float x2, final float y2) {
+        glBegin(GL_QUADS);
+
+        glVertex2d(x2, y);
+        glVertex2d(x, y);
+        glVertex2d(x, y2);
+        glVertex2d(x2, y2);
+
+        glEnd();
     }
     public static void swingItem() {
         MovingObjectPosition movingObjectPosition = Minecraft.getMinecraft().objectMouseOver;
@@ -421,6 +482,78 @@ public class Utils {
 
         GlStateManager.disableLighting();
     }
+    public static void renderNameTag(EntityPlayer player, Vec3 pos, float partialTicks,float scale) {
+        Vector3f loc = new Vector3f((float)pos.xCoord,(float)pos.yCoord,(float)pos.zCoord);
+        GlStateManager.alphaFunc(516, 0.1F);
+
+        GlStateManager.pushMatrix();
+
+        Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
+        double viewerX = viewer.lastTickPosX + (viewer.posX - viewer.lastTickPosX) * partialTicks;
+        double viewerY = viewer.lastTickPosY + (viewer.posY - viewer.lastTickPosY) * partialTicks;
+        double viewerZ = viewer.lastTickPosZ + (viewer.posZ - viewer.lastTickPosZ) * partialTicks;
+
+        double x = loc.x - viewerX + 0.5f;
+        double y = loc.y - viewerY - viewer.getEyeHeight();
+        double z = loc.z - viewerZ + 0.5f;
+
+        double distSq = x * x + y * y + z * z;
+        double dist = Math.sqrt(distSq);
+        if (distSq > 144) {
+            x *= 12 / dist;
+            y *= 12 / dist;
+            z *= 12 / dist;
+        }
+        GlStateManager.translate(x, y, z);
+        GlStateManager.translate(0, viewer.getEyeHeight(), 0);
+
+        FontRenderer fontrenderer = Minecraft.getMinecraft().fontRendererObj;
+        float f = 1.6F;
+        float f1 = 0.016666668F * f;
+        GlStateManager.pushMatrix();
+        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.scale(-f1, -f1, f1);
+        GlStateManager.scale(scale,scale,scale);
+        GlStateManager.disableLighting();
+        GlStateManager.depthMask(false);
+        GlStateManager.disableDepth();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        int i = 0;
+        int j = fontrenderer.getStringWidth(player.getName()) / 2;
+        GlStateManager.disableTexture2D();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        worldrenderer.pos(-j - (3 * scale), -3 + i, 0.0D).color(0.0F, 0.0F, 0.0F, 0.75F).endVertex();
+        worldrenderer.pos(-j - (3 * scale), 8 + i, 0.0D).color(0.0F, 0.0F, 0.0F, 0.75F).endVertex();
+        worldrenderer.pos(j + (3 * scale), 8 + i, 0.0D).color(0.0F, 0.0F, 0.0F, 0.75F).endVertex();
+        worldrenderer.pos(j + (3 * scale), -3 + i, 0.0D).color(0.0F, 0.0F, 0.0F, 0.75F).endVertex();
+        tessellator.draw();
+        WorldRenderer worldrenderer2 = tessellator.getWorldRenderer();
+        worldrenderer2.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        worldrenderer2.pos(-j - (3 * scale), 8 + i, 0.0D).color(0.68F, 0.85F, 0.98F, 0.83F).endVertex();
+        worldrenderer2.pos(-j - (3 * scale), 10 + i, 0.0D).color(0.68F, 0.85F, 0.98F, 0.83F).endVertex();
+        worldrenderer2.pos(j + (3 * scale), 10 + i, 0.0D).color(0.68F, 0.85F, 0.98F, 0.83F).endVertex();
+        worldrenderer2.pos(j + (3 * scale), 8 + i, 0.0D).color(0.68F, 0.85F, 0.98F, 0.83F).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        fontrenderer.drawString(player.getName(), -fontrenderer.getStringWidth(player.getName()) / 2, i, 553648127);
+        GlStateManager.depthMask(true);
+
+        fontrenderer.drawString(player.getName(), -fontrenderer.getStringWidth(player.getName()) / 2, i, -1);
+
+        GlStateManager.enableDepth();
+        GlStateManager.enableBlend();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.popMatrix();
+
+        GlStateManager.popMatrix();
+
+        GlStateManager.disableLighting();
+    }
 
     public static void renderNametag(String str) {
         FontRenderer fontrenderer = Minecraft.getMinecraft().fontRendererObj;
@@ -564,114 +697,77 @@ public class Utils {
     public static boolean isMoving() {
         return Minecraft.getMinecraft().thePlayer != null && (Minecraft.getMinecraft().thePlayer.moveForward != 0.0F || Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0F);
     }
-
-    public static void RenderTargetESP(EntityLivingBase entity, Color c, float width, float size, Double[] currentHeight, Boolean[] currentStatus) {
-        try {
-            RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
-            GlStateManager.disableDepth();
-            GlStateManager.disableTexture2D();
-            GlStateManager.disableLighting();
-            GL11.glLineWidth(width);
-            GlStateManager.color((float) c.getRed() / 255.0F, (float) c.getGreen() / 255.0F, (float) c.getBlue() / 255.0F, (float) c.getAlpha() / 255.0F);
-            double x = entity.posX - renderManager.viewerPosX;
-            double y = entity.getEntityBoundingBox().minY - renderManager.viewerPosY;
-            double z = entity.posZ - renderManager.viewerPosZ;
-            double entityHeight = entity.getEntityBoundingBox().maxY - entity.getEntityBoundingBox().minY;
-
-            Tessellator tessellator = Tessellator.getInstance();
-            WorldRenderer wr = tessellator.getWorldRenderer();
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x + (size / 2), y, z + size).endVertex();
-            wr.pos(x + size, y, z + (size / 2)).endVertex();
-            wr.pos(x + size, y, z - (size / 2)).endVertex();
-            wr.pos(x + (size / 2), y, z - size).endVertex();
-            wr.pos(x - (size / 2), y, z - size).endVertex();
-            wr.pos(x - size, y, z - (size / 2)).endVertex();
-            wr.pos(x - size, y, z + (size / 2)).endVertex();
-            wr.pos(x - (size / 2), y, z + size).endVertex();
-            wr.pos(x + (size / 2), y, z + size).endVertex();
-            tessellator.draw();
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x + (size / 2), y + entityHeight, z + size).endVertex();
-            wr.pos(x + size, y + entityHeight, z + (size / 2)).endVertex();
-            wr.pos(x + size, y + entityHeight, z - (size / 2)).endVertex();
-            wr.pos(x + (size / 2), y + entityHeight, z - size).endVertex();
-            wr.pos(x - (size / 2), y + entityHeight, z - size).endVertex();
-            wr.pos(x - size, y + entityHeight, z - (size / 2)).endVertex();
-            wr.pos(x - size, y + entityHeight, z + (size / 2)).endVertex();
-            wr.pos(x - (size / 2), y + entityHeight, z + size).endVertex();
-            wr.pos(x + (size / 2), y + entityHeight, z + size).endVertex();
-            tessellator.draw();
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x + (size / 2), y, z + size).endVertex();
-            wr.pos(x + (size / 2), y + entityHeight, z + size).endVertex();
-            tessellator.draw();
-
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x + size, y, z + (size / 2)).endVertex();
-            wr.pos(x + size, y + entityHeight, z + (size / 2)).endVertex();
-            tessellator.draw();
-
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x + size, y, z - (size / 2)).endVertex();
-            wr.pos(x + size, y + entityHeight, z - (size / 2)).endVertex();
-            tessellator.draw();
-
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x + (size / 2), y, z - size).endVertex();
-            wr.pos(x + (size / 2), y + entityHeight, z - size).endVertex();
-            tessellator.draw();
-
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x - (size / 2), y, z - size).endVertex();
-            wr.pos(x - (size / 2), y + entityHeight, z - size).endVertex();
-            tessellator.draw();
-
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x - size, y, z - (size / 2)).endVertex();
-            wr.pos(x - size, y + entityHeight, z - (size / 2)).endVertex();
-            tessellator.draw();
-
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x - size, y, z + (size / 2)).endVertex();
-            wr.pos(x - size, y + entityHeight, z + (size / 2)).endVertex();
-            tessellator.draw();
-
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x - (size / 2), y, z + size).endVertex();
-            wr.pos(x - (size / 2), y + entityHeight, z + size).endVertex();
-            tessellator.draw();
-            if (currentStatus[0] && currentHeight[0] + 0.02 > entityHeight) {
-                currentStatus[0] = false;
-            }
-            if (!currentStatus[0] && currentHeight[0] - 0.02 < 0) {
-                currentStatus[0] = true;
-            }
-            if (currentStatus[0]) {
-                currentHeight[0] = currentHeight[0] + 0.02;
-            } else {
-                currentHeight[0] = currentHeight[0] - 0.02;
-            }
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x + (size / 2), y + currentHeight[0], z + size).endVertex();
-            wr.pos(x + size, y + currentHeight[0], z + (size / 2)).endVertex();
-            wr.pos(x + size, y + currentHeight[0], z - (size / 2)).endVertex();
-            wr.pos(x + (size / 2), y + currentHeight[0], z - size).endVertex();
-            wr.pos(x - (size / 2), y + currentHeight[0], z - size).endVertex();
-            wr.pos(x - size, y + currentHeight[0], z - (size / 2)).endVertex();
-            wr.pos(x - size, y + currentHeight[0], z + (size / 2)).endVertex();
-            wr.pos(x - (size / 2), y + currentHeight[0], z + size).endVertex();
-            wr.pos(x + (size / 2), y + currentHeight[0], z + size).endVertex();
-            tessellator.draw();
-
-
-            GL11.glLineWidth(1.0F);
-            GlStateManager.disableBlend();
-            GlStateManager.enableTexture2D();
-            GlStateManager.enableDepth();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static double easeInOutQuad(double x) {
+        if (x < 0.5) {
+           return 2 * x * x;
+        } else {
+            return 1 - (Math.pow((-2 * x + 2),2) / 2);
         }
+    }
+    public static void RenderTargetESP(EntityLivingBase entity) {
+        RenderTargetESP(entity,Color.WHITE);
+    }
+    public static void RenderTargetESP(EntityLivingBase entity,Color color) {
+        int drawTime = (int) (System.currentTimeMillis() % 2000);
+        boolean drawMode = drawTime>1000;
+        double drawPercent = drawTime / 1000.0;
+        if(!drawMode) {
+            drawPercent = 1 - drawPercent;
+        } else {
+            drawPercent -= 1;
+        }
+        drawPercent = easeInOutQuad(drawPercent);
+        List<Vec3> points = new ArrayList<>();
+        AxisAlignedBB bb = entity.getEntityBoundingBox();
+        double radius = bb.maxX - bb.minX;
+        double height = bb.maxY - bb.minY;
+        double posX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ((MinecraftAccessor)mc).getTimer().renderPartialTicks;
+        double posY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ((MinecraftAccessor)mc).getTimer().renderPartialTicks;
+        if(drawMode){
+            posY-=0.5;
+        }else{
+            posY+=0.5;
+        }
+        double posZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ((MinecraftAccessor)mc).getTimer().renderPartialTicks;
+        for(int i = 0;i <= 360;++i){
+            points.add(new Vec3(posX - sin(i * Math.PI / 180F) * radius,posY + height * drawPercent,posZ + cos(i * Math.PI / 180F) * radius));
+        }
+        points.add(points.get(0));
+        mc.entityRenderer.disableLightmap();
+        GL11.glPushMatrix();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glBegin(GL11.GL_LINE_STRIP);
+        double baseMove=(drawPercent>0.5 ? 1 - drawPercent : drawPercent) * 2;
+        double min=(height / 60) * 20 * (1 - baseMove) * (drawMode ? -1 : 1);
+        for(int i = 0;i <= 20;++i) {
+            double moveFace=(height/60F)*i*baseMove;
+            if(drawMode){
+                moveFace=-moveFace;
+            }
+            Vec3 firstPoint = points.get(0);
+            GL11.glVertex3d(
+                    firstPoint.xCoord - mc.getRenderManager().viewerPosX, firstPoint.yCoord - moveFace - min - mc.getRenderManager().viewerPosY,
+                    firstPoint.zCoord - mc.getRenderManager().viewerPosZ
+            );
+            GL11.glColor4f(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, 0.7F*(i/20F));
+            for (Vec3 vec3 : points) {
+                GL11.glVertex3d(
+                        vec3.xCoord - mc.getRenderManager().viewerPosX, vec3.yCoord - moveFace - min - mc.getRenderManager().viewerPosY,
+                        vec3.zCoord - mc.getRenderManager().viewerPosZ
+                );
+            }
+            GL11.glColor4f(0F,0F,0F,0F);
+        }
+        GL11.glEnd();
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glPopMatrix();
     }
 
     public static void drawBorderedRoundedRect(float x, float y, float width, float height, float radius, float linewidth, int insideC, int borderC) {
@@ -970,7 +1066,7 @@ public class Utils {
         return lines;
     }
 
-    @SubscribeEvent
+    @EventModule
     public void onPacketSent(CustomEventHandler.PacketSentEvent event) {
         if (event.packet instanceof C09PacketHeldItemChange) {
             lastReportedSlot = ((C09PacketHeldItemChange) event.packet).getSlotId();
@@ -1428,7 +1524,7 @@ public class Utils {
         return framebuffer;
     }
     public static void bindTexture(int texture) {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+        GL11.glBindTexture(GL_TEXTURE_2D, texture);
     }
     public static Float getSpeed(){
         Minecraft mc = Minecraft.getMinecraft();
@@ -1494,5 +1590,107 @@ public class Utils {
         }
         return -1;
     }
+    public static void render2DESP(EntityLivingBase entityLiving,Color color){
+        final RenderManager renderManager = mc.getRenderManager();
+        final Timer timer = ((MinecraftAccessor)mc).getTimer();
 
+        final double posX = entityLiving.lastTickPosX + (entityLiving.posX - entityLiving.lastTickPosX) * timer.renderPartialTicks - ((RenderManagerAccessor)renderManager).getRenderPosX();
+        final double posY = entityLiving.lastTickPosY + (entityLiving.posY - entityLiving.lastTickPosY) * timer.renderPartialTicks - ((RenderManagerAccessor)renderManager).getRenderPosY();
+        final double posZ = entityLiving.lastTickPosZ + (entityLiving.posZ - entityLiving.lastTickPosZ) * timer.renderPartialTicks - ((RenderManagerAccessor)renderManager).getRenderPosZ();
+
+        draw2D(entityLiving, posX, posY, posZ, color.getRGB(), Color.BLACK.getRGB());
+    }
+    public static void glColor(final int red, final int green, final int blue, final int alpha) {
+        GlStateManager.color(red / 255F, green / 255F, blue / 255F, alpha / 255F);
+    }
+    public static void glColor(final Color color) {
+        final float red = color.getRed() / 255F;
+        final float green = color.getGreen() / 255F;
+        final float blue = color.getBlue() / 255F;
+        final float alpha = color.getAlpha() / 255F;
+
+        GlStateManager.color(red, green, blue, alpha);
+    }
+    public static void glColor(final int hex) {
+        final float alpha = (hex >> 24 & 0xFF) / 255F;
+        final float red = (hex >> 16 & 0xFF) / 255F;
+        final float green = (hex >> 8 & 0xFF) / 255F;
+        final float blue = (hex & 0xFF) / 255F;
+
+        GlStateManager.color(red, green, blue, alpha);
+    }
+    public static void draw2D(final EntityLivingBase entity, final double posX, final double posY, final double posZ, final int color, final int backgroundColor) {
+        GlStateManager.pushMatrix();
+        GlStateManager.disableLighting();
+        GlStateManager.translate(posX, posY, posZ);
+        GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0F, 1F, 0F);
+        GlStateManager.scale(-0.1D, -0.1D, 0.1D);
+
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        GlStateManager.depthMask(true);
+
+        glColor(color);
+
+        glCallList(DISPLAY_LISTS_2D[0]);
+
+        glColor(backgroundColor);
+
+        glCallList(DISPLAY_LISTS_2D[1]);
+
+        GlStateManager.translate(0, 21 + -(entity.getEntityBoundingBox().maxY - entity.getEntityBoundingBox().minY) * 12, 0);
+
+        glColor(color);
+        glCallList(DISPLAY_LISTS_2D[2]);
+
+        glColor(backgroundColor);
+        glCallList(DISPLAY_LISTS_2D[3]);
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+
+        GlStateManager.popMatrix();
+    }
+    public static void resetCaps() {
+        glCapMap.forEach(Utils::setGlState);
+    }
+
+    public static void enableGlCap(final int cap) {
+        setGlCap(cap, true);
+    }
+
+    public static void enableGlCap(final int... caps) {
+        for (final int cap : caps)
+            setGlCap(cap, true);
+    }
+
+    public static void disableGlCap(final int cap) {
+        setGlCap(cap, true);
+    }
+
+    public static void disableGlCap(final int... caps) {
+        for (final int cap : caps)
+            setGlCap(cap, false);
+    }
+    public static void setGlCap(final int cap, final boolean state) {
+        glCapMap.put(cap, glGetBoolean(cap));
+        setGlState(cap, state);
+    }
+    public static void setGlState(final int cap, final boolean state) {
+        if (state)
+            glEnable(cap);
+        else
+            glDisable(cap);
+    }
+    public static Color getEntityColor(EntityLivingBase entity,Color color){
+            if (entity.hurtTime > 0) return new Color(255, 0, 0);
+                return color;
+    }
+    public static Color getEntityColor(EntityLivingBase entity){
+        return getEntityColor(entity, new Color(30, 255, 243));
+    }
 }

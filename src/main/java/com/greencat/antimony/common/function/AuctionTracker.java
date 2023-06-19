@@ -2,7 +2,7 @@ package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.auctionTracker.AuctionItem;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.event.ClickEvent;
@@ -11,17 +11,15 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.util.UUID;
-
 public class AuctionTracker {
     public AuctionTracker() {
-        MinecraftForge.EVENT_BUS.register(this);
-        CustomEventHandler.EVENT_BUS.register(this);
+        /*MinecraftForge.EVENT_BUS.register(this);
+        CustomEventHandler.EVENT_BUS.register(this);*/
     }
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event){
         if(FunctionManager.getStatus("AuctionTracker")){
-            if(com.greencat.antimony.core.auctionTracker.AuctionTracker.finish && System.currentTimeMillis() - com.greencat.antimony.core.auctionTracker.AuctionTracker.lastGet > ((Integer) getConfigByFunctionName.get("AuctionTracker","cooldown") * 1000)){
+            if(com.greencat.antimony.core.auctionTracker.AuctionTracker.finish && System.currentTimeMillis() - com.greencat.antimony.core.auctionTracker.AuctionTracker.lastGet > ((Integer) ConfigInterface.get("AuctionTracker","cooldown") * 1000)){
                 com.greencat.antimony.core.auctionTracker.AuctionTracker.getAuctions();
             }
             if (com.greencat.antimony.core.auctionTracker.AuctionTracker.finish && !com.greencat.antimony.core.auctionTracker.AuctionTracker.auctions.isEmpty()) {

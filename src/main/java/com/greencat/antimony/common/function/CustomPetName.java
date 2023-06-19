@@ -1,11 +1,12 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.notice.Notice;
 import com.greencat.antimony.core.notice.NoticeManager;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.annotation.EventModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,7 +22,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.List;
 
 public class CustomPetName {
-    Utils utils = new Utils();
     String OriginalName = null;
     String PetName;
 
@@ -90,7 +90,7 @@ public class CustomPetName {
         }
     }
 
-    @SubscribeEvent
+    @EventModule
     public void SwitchFunction(CustomEventHandler.FunctionSwitchEvent event) {
         if (event.function.getName().equals("CustomPetNameTag")) {
             boolean notFoundPet = true;
@@ -108,7 +108,7 @@ public class CustomPetName {
                 }
                 if (notFoundPet) {
                     event.setCanceled(true);
-                    utils.print("无法找到宠物,功能已停用");
+                    Utils.print("无法找到宠物,功能已停用");
                 }
 
             } else {
@@ -126,7 +126,7 @@ public class CustomPetName {
         }
     }
 
-    @SubscribeEvent
+    @EventModule
     public void EnableFunction(CustomEventHandler.FunctionEnableEvent event) {
         if (Minecraft.getMinecraft().theWorld != null) {
             if (event.function.getName().equals("CustomPetNameTag")) {
@@ -144,13 +144,13 @@ public class CustomPetName {
                 }
                 if (notFoundPet) {
                     event.setCanceled(true);
-                    utils.print("无法找到宠物,功能已停用");
+                    Utils.print("无法找到宠物,功能已停用");
                 }
             }
         }
     }
 
-    @SubscribeEvent
+    @EventModule
     public void DisableFunction(CustomEventHandler.FunctionDisabledEvent event) {
         if (Minecraft.getMinecraft().theWorld != null) {
             if (event.function.getName().equals("CustomPetNameTag")) {
@@ -179,12 +179,12 @@ public class CustomPetName {
                             if (entity.getCustomNameTag().contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString())) {
                                 if (OriginalName != null) {
                                     PetName = OriginalName;
-                                    if ((Integer) getConfigByFunctionName.get("CustomPetNameTag", "petLevel") != 0) {
+                                    if ((Integer) ConfigInterface.get("CustomPetNameTag", "petLevel") != 0) {
                                         String[] Temp1 = PetName.split("]");
                                         String[] Temp2 = Temp1[0].split("\\[");
-                                        PetName = Temp2[0] + "[" + EnumChatFormatting.GRAY + "Lv" + (Integer) getConfigByFunctionName.get("CustomPetNameTag", "petLevel") + EnumChatFormatting.DARK_GRAY + "]" + Temp1[1];
+                                        PetName = Temp2[0] + "[" + EnumChatFormatting.GRAY + "Lv" + (Integer) ConfigInterface.get("CustomPetNameTag", "petLevel") + EnumChatFormatting.DARK_GRAY + "]" + Temp1[1];
                                     }
-                                    String ruleStr = (String) getConfigByFunctionName.get("CustomPetNameTag", "petName");
+                                    String ruleStr = (String) ConfigInterface.get("CustomPetNameTag", "petName");
                                     if(!ruleStr.equalsIgnoreCase("null")){
                                         String[] rules = ruleStr.split(",");
                                         for (String rule : rules) {

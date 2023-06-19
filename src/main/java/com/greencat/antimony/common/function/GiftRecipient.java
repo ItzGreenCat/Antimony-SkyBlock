@@ -11,7 +11,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import static com.greencat.antimony.core.config.getConfigByFunctionName.get;
+import static com.greencat.antimony.core.config.ConfigInterface.get;
 
 import java.util.*;
 

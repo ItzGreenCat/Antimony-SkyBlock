@@ -13,15 +13,11 @@ import com.greencat.antimony.common.function.title.TitleManager;
 import com.greencat.antimony.common.key.KeyLoader;
 import com.greencat.antimony.core.*;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.Pathfinding;
-import com.greencat.antimony.core.auctionTracker.AuctionTracker;
 import com.greencat.antimony.core.blacklist.BlackList;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.core.config.EtherwarpWaypoints;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
-/*import com.greencat.antimony.core.mcef.client.ClientProxy;
-import com.greencat.antimony.core.mcef.utilities.Log;*/
 import com.greencat.antimony.core.notice.NoticeManager;
 import com.greencat.antimony.core.register.AntimonyRegister;
 import com.greencat.antimony.core.settings.*;
@@ -29,27 +25,22 @@ import com.greencat.antimony.core.type.AntimonyFunction;
 import com.greencat.antimony.core.type.SelectObject;
 import com.greencat.antimony.core.type.SelectTable;
 import com.greencat.antimony.develop.Console;
-import com.greencat.antimony.utils.Blur;
-import com.greencat.antimony.utils.Chroma;
-import com.greencat.antimony.utils.SmoothRotation;
-import com.greencat.antimony.utils.Utils;
+import com.greencat.antimony.utils.*;
 import com.greencat.antimony.utils.packet.PacketEvent;
+import com.greencat.antimony.utils.render.AnimationManager;
 import io.netty.channel.EventLoop;
+import me.greencat.lwebus.LWEBus;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.LogManager;
 import org.lwjgl.opengl.Display;
-
-//import static com.greencat.antimony.core.mcef.MCEF.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -58,7 +49,9 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -66,26 +59,60 @@ import java.util.logging.Logger;
 
 
 @Mod(modid = Antimony.MODID, name = Antimony.NAME, version = Antimony.VERSION, acceptedMinecraftVersions = "1.8.9", clientSideOnly = true)
+/***
+ *          .,:,,,                                        .::,,,::.
+ *        .::::,,;;,                                  .,;;:,,....:i:
+ *        :i,.::::,;i:.      ....,,:::::::::,....   .;i:,.  ......;i.
+ *        :;..:::;::::i;,,:::;:,,,,,,,,,,..,.,,:::iri:. .,:irsr:,.;i.
+ *        ;;..,::::;;;;ri,,,.                    ..,,:;s1s1ssrr;,.;r,
+ *        :;. ,::;ii;:,     . ...................     .;iirri;;;,,;i,
+ *        ,i. .;ri:.   ... ............................  .,,:;:,,,;i:
+ *        :s,.;r:... ....................................... .::;::s;
+ *        ,1r::. .............,,,.,,:,,........................,;iir;
+ *        ,s;...........     ..::.,;:,,.          ...............,;1s
+ *       :i,..,.              .,:,,::,.          .......... .......;1,
+ *      ir,....:rrssr;:,       ,,.,::.     .r5S9989398G95hr;. ....,.:s,
+ *     ;r,..,s9855513XHAG3i   .,,,,,,,.  ,S931,.,,.;s;s&BHHA8s.,..,..:r:
+ *    :r;..rGGh,  :SAG;;G@BS:.,,,,,,,,,.r83:      hHH1sXMBHHHM3..,,,,.ir.
+ *   ,si,.1GS,   sBMAAX&MBMB5,,,,,,:,,.:&8       3@HXHBMBHBBH#X,.,,,,,,rr
+ *   ;1:,,SH:   .A@&&B#&8H#BS,,,,,,,,,.,5XS,     3@MHABM&59M#As..,,,,:,is,
+ *  .rr,,,;9&1   hBHHBB&8AMGr,,,,,,,,,,,:h&&9s;   r9&BMHBHMB9:  . .,,,,;ri.
+ *  :1:....:5&XSi;r8BMBHHA9r:,......,,,,:ii19GG88899XHHH&GSr.      ...,:rs.
+ *  ;s.     .:sS8G8GG889hi.        ....,,:;:,.:irssrriii:,.        ...,,i1,
+ *  ;1,         ..,....,,isssi;,        .,,.                      ....,.i1,
+ *  ;h:               i9HHBMBBHAX9:         .                     ...,,,rs,
+ *  ,1i..            :A#MBBBBMHB##s                             ....,,,;si.
+ *  .r1,..        ,..;3BMBBBHBB#Bh.     ..                    ....,,,,,i1;
+ *   :h;..       .,..;,1XBMMMMBXs,.,, .. :: ,.               ....,,,,,,ss.
+ *    ih: ..    .;;;, ;;:s58A3i,..    ,. ,.:,,.             ...,,,,,:,s1,
+ *    .s1,....   .,;sh,  ,iSAXs;.    ,.  ,,.i85            ...,,,,,,:i1;
+ *     .rh: ...     rXG9XBBM#M#MHAX3hss13&&HHXr         .....,,,,,,,ih;
+ *      .s5: .....    i598X&&A&AAAAAA&XG851r:       ........,,,,:,,sh;
+ *      . ihr, ...  .         ..                    ........,,,,,;11:.
+ *         ,s1i. ...  ..,,,..,,,.,,.,,.,..       ........,,.,,.;s5i.
+ *          .:s1r,......................       ..............;shs,
+ *          . .:shr:.  ....                 ..............,ishs.
+ *              .,issr;,... ...........................,is1s;.
+ *                 .,is1si;:,....................,:;ir1sr;,
+ *                    ..:isssssrrii;::::::;;iirsssssr;:..
+ *                         .,::iiirsssssssssrri;;:.
+ */
 public class Antimony {
     //set up basic mod information
     public static final String MODID = "antimony";
     public static final String NAME = "Antimony-Client";
-    public static final String VERSION = "5.0-Pre-1";
+    public static final String VERSION = "5.0-Pre-20";
     private static final String Sb = "Sb";
     public static String GreenCatUserName = "";
     public static String lastLoginAccessToken = Minecraft.getMinecraft().getSession().getToken();
 
-    //init Pathfinder KeyMap in Utils
-    Utils utils = new Utils();
-
+    public static org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger("Antimony");
     //storage autofish yaw state
     public static boolean AutoFishYawState = false;
     //huge screenshot scaling
     public static int ImageScaling = 1;
     //remove bossbar when function enable/disable notice is visible
     public static boolean shouldRenderBossBar = true;
-    //antimony basic hud style color
-    public static int Color = 16542622;
     //antimony directory in .minecraft
     public static File AntimonyDirectory = new File(Minecraft.getMinecraft().mcDataDir + "\\Antimony\\");
     //current hud list storage
@@ -103,16 +130,15 @@ public class Antimony {
     public static Boolean NoSaplingBound = false;
     //disable log block collision
     public static Boolean NoTreeBound = false;
-
     public static int mouseX = 0;
     public static int mouseY = 0;
-
     //antimony function keybind storage
-    public static HashMap<AntimonyFunction,Integer> KeyBinding = new HashMap<AntimonyFunction, Integer>();
-
+    public static HashMap<AntimonyFunction, Integer> KeyBinding = new HashMap<AntimonyFunction, Integer>();
     @Deprecated
     @Instance(Antimony.MODID)
     public static Antimony instance;
+    //init Pathfinder KeyMap in Utils
+    public Utils utils = new Utils();
 
     //@SidedProxy(serverSide = "com.greencat.antimony.core.mcef.BaseProxy", clientSide = "com.greencat.antimony.core.mcef.client.ClientProxy")
     /*public static ClientProxy PROXY = new ClientProxy();*/
@@ -121,6 +147,7 @@ public class Antimony {
     public static void start() {
         Via.getInstance().start();
     }
+
     public static Logger getjLogger() {
         return Via.getInstance().getjLogger();
     }
@@ -141,8 +168,16 @@ public class Antimony {
         return Via.getInstance().getFile();
     }
 
+    public static void setFile(File file) {
+        Via.getInstance().setFile(file);
+    }
+
     public static String getLastServer() {
         return Via.getInstance().getLastServer();
+    }
+
+    public static void setLastServer(String lastServer) {
+        Via.getInstance().setLastServer(lastServer);
     }
 
     public static int getVersion() {
@@ -153,22 +188,50 @@ public class Antimony {
         Via.getInstance().setVersion(version);
     }
 
-    public static void setFile(File file) {
-        Via.getInstance().setFile(file);
+    public static void onMinecraftShutdown() {
+        /*Log.info("Minecraft shutdown hook called!");
+        PROXY.onShutdown();*/
     }
 
-    public static void setLastServer(String lastServer) {
-        Via.getInstance().setLastServer(lastServer);
+    public static void reloadKeyMapping() {
+        //clear function key bind map
+        KeyBinding.clear();
+        //Iterate through all function
+        for (Map.Entry<String, AntimonyFunction> entry : AntimonyRegister.FunctionList.entrySet()) {
+            AntimonyFunction function = entry.getValue();
+            //get this function's key bind config
+            int keyCode = ConfigLoader.getInt(function.getName() + "_KeyBindValue", -114514);
+            //if key code equals -114514 mean it not have key bind
+            if (keyCode != -114514) {
+                //add function and key bind to map
+                KeyBinding.put(function, keyCode);
+            }
+        }
     }
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) throws IOException {
-        // TODO
+        /***
+         *
+         *   █████▒█    ██  ▄████▄   ██ ▄█▀       ██████╗ ██╗   ██╗ ██████╗
+         * ▓██   ▒ ██  ▓██▒▒██▀ ▀█   ██▄█▒        ██╔══██╗██║   ██║██╔════╝
+         * ▒████ ░▓██  ▒██░▒▓█    ▄ ▓███▄░        ██████╔╝██║   ██║██║  ███╗
+         * ░▓█▒  ░▓▓█  ░██░▒▓▓▄ ▄██▒▓██ █▄        ██╔══██╗██║   ██║██║   ██║
+         * ░▒█░   ▒▒█████▓ ▒ ▓███▀ ░▒██▒ █▄       ██████╔╝╚██████╔╝╚██████╔╝
+         *  ▒ ░   ░▒▓▒ ▒ ▒ ░ ░▒ ▒  ░▒ ▒▒ ▓▒       ╚═════╝  ╚═════╝  ╚═════╝
+         *  ░     ░░▒░ ░ ░   ░  ▒   ░ ░▒ ▒░
+         *  ░ ░    ░░░ ░ ░ ░        ░ ░░ ░
+         *           ░     ░ ░      ░  ░
+         */
+
+        LWEBus.Bootstrap();
+
         //register config
         new com.greencat.antimony.core.config.ConfigLoader(event);
         new EtherwarpWaypoints(event);
         //init function config manager
-        new getConfigByFunctionName();
+        new ConfigInterface();
+        new RotationUtils();
         EtherwarpTeleport ether = new EtherwarpTeleport();
         MinecraftForge.EVENT_BUS.register(ether);
         CustomEventHandler.EVENT_BUS.register(ether);
@@ -202,9 +265,23 @@ public class Antimony {
 
     @EventHandler
     public void init(FMLInitializationEvent event) throws AWTException {
+        /***
+         * You may think you know what the following code does.
+         * But you dont. Trust me.
+         * Fiddle with it, and youll spend many a sleepless
+         * night cursing the moment you thought youd be clever
+         * enough to "optimize" the code below.
+         * Now close this file and go play with something else.
+         */
+        /***
+         * 你可能会认为你读得懂以下的代码。但是你不会懂的，相信我吧。
+         * 要是你尝试玩弄这段代码的话，你将会在无尽的通宵中不断地咒骂自己为什么会认为自己聪明到可以优化这段代码。
+         * 现在请关闭这个文件去玩点别的吧。
+         */
         //PROXY.onInit();
         // TODO
         //init general event loader
+        MinecraftFontRenderer just_for_load_static_field = FontManager.QuicksandFont;
         new EventLoader();
         //register keys
         new KeyLoader();
@@ -226,69 +303,68 @@ public class Antimony {
         if (Minecraft.getMinecraft().gameSettings.gammaSetting > 1) {
             Minecraft.getMinecraft().gameSettings.gammaSetting = 0;
         }
-
-        //init GroundDecorate
-        try {
-            String content = "";
-            URL url = new URL("https://itzgreencat.github.io/AntimonyDecorate/");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-            String input;
-            while ((input = reader.readLine()) != null) {
-                content += input;
+        new Thread(() -> {
+            //init GroundDecorate
+            try {
+                String content = "";
+                URL url = new URL("https://itzgreencat.github.io/AntimonyDecorate/");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+                String input;
+                while ((input = reader.readLine()) != null) {
+                    content += input;
+                }
+                reader.close();
+                GroundDecorateList.clear();
+                for (String str : content.split(";")) {
+                    GroundDecorateList.put(str.split(",")[0], str.split(",")[1]);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            reader.close();
-            GroundDecorateList.clear();
-            for (String str : content.split(";")) {
-                GroundDecorateList.put(str.split(",")[0], str.split(",")[1]);
+            //init CustomItemName
+            try {
+                String content = "";
+                URL url = new URL("https://itzgreencat.github.io/AntimonyCustomItemName/");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+                String input;
+                while ((input = reader.readLine()) != null) {
+                    content += input;
+                }
+                reader.close();
+                CustomItemName.CustomName.clear();
+                for (String str : content.split(";")) {
+                    CustomItemName.CustomName.put(str.split(",")[0], str.split(",")[1]);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //init CustomItemName
-        try {
-            String content = "";
-            URL url = new URL("https://itzgreencat.github.io/AntimonyCustomItemName/");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-            String input;
-            while ((input = reader.readLine()) != null) {
-                content += input;
+            //init UserName
+            try {
+                String content = "";
+                URL url = new URL("https://gitee.com/origingreencat/antimony-decorate/raw/master/greencatplayername");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("User-Agent", "Mozilla");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+                String input;
+                while ((input = reader.readLine()) != null) {
+                    content += input;
+                }
+                reader.close();
+                GreenCatUserName = content;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            reader.close();
-            CustomItemName.CustomName.clear();
-            for (String str : content.split(";")) {
-                CustomItemName.CustomName.put(str.split(",")[0], str.split(",")[1]);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //init UserName
-        try {
-            String content = "";
-            URL url = new URL("https://gitee.com/origingreencat/antimony-decorate/raw/master/greencatplayername");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("User-Agent", "Mozilla");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-            String input;
-            while ((input = reader.readLine()) != null) {
-                content += input;
-            }
-            reader.close();
-            GreenCatUserName = content;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }, "Antimony Loading Thread 1").start();
 
         //register events in Utils
         CustomEventHandler.EVENT_BUS.register(new Utils());
 
         //init console gui
         Console.init();
-
-
         //init miscellaneous class and register miscellaneous event
         new Chroma();
         new GuiMainMenuModify();
@@ -303,90 +379,103 @@ public class Antimony {
         new SmoothRotation();
         new PacketEvent();
         new NoticeManager();
+        new AnimationManager();
 
+            //init functions and register function event
+            new AutoFish();
+            new AutoKillWorm();
+            new WormLavaESP();
+            new SilverfishESP();
+            new GolemESP();
+            new GuardianESP();
+            new GemstoneHidePane();
+            new FullBright();
+            new StarredMobESP();
+            new DungeonKeyESP();
+            new CustomPetName();
+            new CustomItemSound();
+            new LanternESP();
+            new TitleManager();
+            new AntiAFK();
+            new Sprint();
+            new Eagle();
+            new Velocity();
+            new ItemTranslate();
+            new GhostBlock();
+            new InstantSwitch();
+            new AutoClicker();
+            new TerminalESP();
+            new PlayerESP();
+            new SecretBot();
+            new AutoCannon();
+            new DroppedItemESP();
+            new MouseISwitch();
+            new Rat();
+            new Killaura();
+            new AutoUse();
+            new HollowAutoPurchase();
+            new WTap();
+            new FreeCamera();
+            new TargetESP();
+            new Cartoon();
+            new Interface();
+            new ShortBowAura();
+            new HideFallingBlock();
+            new AutoWolfSlayer();
+            new ChestFinder();
+            new AutoLeave();
+            new CropBot();
+            new MarketingGenerator();
+            new PeltESP();
+            new ForagingBot();
+            new JasperESP();
+            new SynthesizerAura();
+            new Nuker();
+            new FrozenTreasureESP();
+            new CaveSpiderESP();
+            new KillerBot();
+            new AutoTerminal();
+            new DragonEggESP();
+            new DanmakuChat();
+            new PowderBot();
+            new FrozenTreasureBot();
+            new SapphireGrottoESP();
+            new FPSAccelerator();
+            new Disabler();
+            new Timer();
+            new MacroerDetector();
+            new RainbowEntity();
+            new AutoArmadillo();
+            new BHop();
+            new AutoTool();
+            new AutoWeapon();
+            new BlockTarget();
+            new ChatDetector();
+            new FrozenScytheAura();
+            new JadeCrystalBot();
+            //new WebBrowser();
+            new HarpBot();
+            new ExperimentsBot();
+            new GemstoneBot();
+            new AutoSS();
+            new GiftRecipient();
+            new DojoSolver();
+            new AntiObbyTrap();
+            new NameTag();
+            new GhostBlockCreator();
+            new CrystalGetter();
+            new WitherESP();
+            new Projectiles();
+            new Animation();
+            new PixelPartyBot();
+            new ThunderLord();
+            new ADSwitcher();
+            new PingSpoof();
+            new ClientSpoof();
+            new ActionBot();
+            new Sneak();
+            new UngrabMouse();
 
-
-
-        //init functions and register function event
-        new AutoFish();
-        new AutoKillWorm();
-        new WormLavaESP();
-        new SilverfishESP();
-        new GolemESP();
-        new GuardianESP();
-        new GemstoneHidePane();
-        new FullBright();
-        new StarredMobESP();
-        new DungeonKeyESP();
-        new CustomPetName();
-        new CustomItemSound();
-        new LanternESP();
-        new TitleManager();
-        new AntiAFK();
-        new Sprint();
-        new Eagle();
-        new Velocity();
-        new ItemTranslate();
-        new GhostBlock();
-        new InstantSwitch();
-        new AutoClicker();
-        new TerminalESP();
-        new HideDungeonMobNameTag();
-        new PlayerFinder();
-        new SecretBot();
-        new AutoCannon();
-        new DroppedItemESP();
-        new MouseISwitch();
-        new Rat();
-        new Killaura();
-        new AutoUse();
-        new HollowAutoPurchase();
-        new WTap();
-        new FreeCamera();
-        new TargetESP();
-        new Cartoon();
-        new Interface();
-        new ShortBowAura();
-        new HideFallingBlock();
-        new AutoWolfSlayer();
-        new ChestFinder();
-        new AutoLeave();
-        new CropBot();
-        new MarketingGenerator();
-        new PeltESP();
-        new ForagingBot();
-        new JasperESP();
-        new SynthesizerAura();
-        new Nuker();
-        new FrozenTreasureESP();
-        new CaveSpiderESP();
-        new KillerBot();
-        new AutoTerminal();
-        new DragonEggESP();
-        new DanmakuChat();
-        new PowderBot();
-        new FrozenTreasureBot();
-        new SapphireGrottoESP();
-        new FPSAccelerator();
-        new Disabler();
-        new Timer();
-        new MacroerDetector();
-        new RainbowEntity();
-        new AutoArmadillo();
-        new BHop();
-        new AutoTool();
-        new AutoWeapon();
-        new BlockTarget();
-        new ChatDetector();
-        new FrozenScytheAura();
-        new JadeCrystalBot();
-        //new WebBrowser();
-        new HarpBot();
-        new ExperimentsBot();
-        new GemstoneBot();
-        new AutoSS();
-        new GiftRecipient();
-        new DojoSolver();
 
         //init blur
         Blur.register();
@@ -396,563 +485,750 @@ public class Antimony {
 
         //init antimony channel
         //disable until server back to work
-        /*
-        new AntimonyChannel();
-        new CheckConnect();*/
+        //new AntimonyChannel();
+        //new CheckConnect();
 
         //some rank thing
         new RankList();
         new CustomRank();
 
-        //register functions
-        AntimonyRegister register = new AntimonyRegister();
-        register.RegisterFunction(new AntimonyFunction("AutoClicker"));
-        register.RegisterFunction(new AntimonyFunction("Killaura"));
-        register.RegisterFunction(new AntimonyFunction("Reach"));
-        register.RegisterFunction(new AntimonyFunction("WTap"));
-        register.RegisterFunction(new AntimonyFunction("FreeCamera"));
-        register.RegisterFunction(new AntimonyFunction("TargetESP"));
-        register.RegisterFunction(new AntimonyFunction("WormLavaESP"));
-        register.RegisterFunction(new AntimonyFunction("LanternESP"));
-        register.RegisterFunction(new AntimonyFunction("SilverfishESP"));
-        register.RegisterFunction(new AntimonyFunction("GolemESP"));
-        register.RegisterFunction(new AntimonyFunction("GuardianESP"));
-        register.RegisterFunction(new AntimonyFunction("AutoFish"));
-        register.RegisterFunction(new AntimonyFunction("AutoKillWorm"));
-        register.RegisterFunction(new AntimonyFunction("GemstoneHidePane"));
-        register.RegisterFunction(new AntimonyFunction("FullBright"));
-        register.RegisterFunction(new AntimonyFunction("StarredMobESP"));
-        register.RegisterFunction(new AntimonyFunction("DungeonKeyESP"));
-        register.RegisterFunction(new AntimonyFunction("CustomPetNameTag"));
-        register.RegisterFunction(new AntimonyFunction("CustomItemSound"));
-        register.RegisterFunction(new AntimonyFunction("AntiAFK"));
-        register.RegisterFunction(new AntimonyFunction("Sprint"));
-        register.RegisterFunction(new AntimonyFunction("Eagle"));
-        register.RegisterFunction(new AntimonyFunction("Velocity"));
-        register.RegisterFunction(new AntimonyFunction("AutoCannon"));
-        register.RegisterFunction(new AntimonyFunction("ItemTranslate"));
-        register.RegisterFunction(new AntimonyFunction("HUD"));
-        register.RegisterFunction(new AntimonyFunction("GhostBlock"));
-        register.RegisterFunction(new AntimonyFunction("InstantSwitch"));
-        register.RegisterFunction(new AntimonyFunction("NoSlow"));
-        register.RegisterFunction(new AntimonyFunction("TerminalESP"));
-        register.RegisterFunction(new AntimonyFunction("HideDungeonMobNameTag"));
-        register.RegisterFunction(new AntimonyFunction("PlayerFinder"));
-        register.RegisterFunction(new AntimonyFunction("SecretBot"));
-        register.RegisterFunction(new AntimonyFunction("DroppedItemESP"));
-        register.RegisterFunction(new AntimonyFunction("MouseISwitch"));
-        register.RegisterFunction(new AntimonyFunction("AutoUse"));
-        register.RegisterFunction(new AntimonyFunction("Cartoon"));
-        register.RegisterFunction(new AntimonyFunction("HollowAutoPurchase"));
-        register.RegisterFunction(new AntimonyFunction("AntimonyChannel"));
-        register.RegisterFunction(new AntimonyFunction("Rat"));
-        register.RegisterFunction(new AntimonyFunction("Interface"));
-        register.RegisterFunction(new AntimonyFunction("ShortBowAura"));
-        register.RegisterFunction(new AntimonyFunction("HideFallingBlock"));
-        register.RegisterFunction(new AntimonyFunction("Pathfinding"));
-        register.RegisterFunction(new AntimonyFunction("AutoWolfSlayer"));
-        register.RegisterFunction(new AntimonyFunction("ChestFinder"));
-        register.RegisterFunction(new AntimonyFunction("AutoLeave"));
-        register.RegisterFunction(new AntimonyFunction("CropBot"));
-        register.RegisterFunction(new AntimonyFunction("MarketingGenerator"));
-        register.RegisterFunction(new AntimonyFunction("PeltESP"));
-        register.RegisterFunction(new AntimonyFunction("BlackList"));
-        register.RegisterFunction(new AntimonyFunction("ForagingBot"));
-        register.RegisterFunction(new AntimonyFunction("JasperESP"));
-        register.RegisterFunction(new AntimonyFunction("SynthesizerAura"));
-        register.RegisterFunction(new AntimonyFunction("Nuker"));
-        register.RegisterFunction(new AntimonyFunction("NukerWrapper"));
-        register.RegisterFunction(new AntimonyFunction("FrozenTreasureESP"));
-        register.RegisterFunction(new AntimonyFunction("CaveSpiderESP"));
-        register.RegisterFunction(new AntimonyFunction("KillerBot"));
-        register.RegisterFunction(new AntimonyFunction("AutoTerminal"));
-        register.RegisterFunction(new AntimonyFunction("NickHider"));
-        register.RegisterFunction(new AntimonyFunction("DragonEggESP"));
-        register.RegisterFunction(new AntimonyFunction("DanmakuChat"));
-        register.RegisterFunction(new AntimonyFunction("PowderBot"));
-        register.RegisterFunction(new AntimonyFunction("FrozenTreasureBot"));
-        register.RegisterFunction(new AntimonyFunction("SapphireGrottoESP"));
-        register.RegisterFunction(new AntimonyFunction("FPS Accelerator"));
-        register.RegisterFunction(new AntimonyFunction("Disabler"));
-        register.RegisterFunction(new AntimonyFunction("Timer"));
-        register.RegisterFunction(new AntimonyFunction("MacroerDetector"));
-        register.RegisterFunction(new AntimonyFunction("Camera"));
-        register.RegisterFunction(new AntimonyFunction("RainbowEntity"));
-        register.RegisterFunction(new AntimonyFunction("AutoArmadillo"));
-        register.RegisterFunction(new AntimonyFunction("BHop"));
-        register.RegisterFunction(new AntimonyFunction("AutoTool"));
-        register.RegisterFunction(new AntimonyFunction("AutoWeapon"));
-        register.RegisterFunction(new AntimonyFunction("BlockTarget"));
-        register.RegisterFunction(new AntimonyFunction("ChatDetector"));
-        register.RegisterFunction(new AntimonyFunction("FrozenScytheAura"));
-        register.RegisterFunction(new AntimonyFunction("JadeCrystalBot"));
-        //register.RegisterFunction(new AntimonyFunction("WebBrowser"));
-        register.RegisterFunction(new AntimonyFunction("HarpBot"));
-        register.RegisterFunction(new AntimonyFunction("ExperimentsBot"));
-        register.RegisterFunction(new AntimonyFunction("InputFix"));
-        register.RegisterFunction(new AntimonyFunction("GemstoneBot"));
-        register.RegisterFunction(new AntimonyFunction("Giant"));
-        register.RegisterFunction(new AntimonyFunction("AutoSS"));
-        register.RegisterFunction(new AntimonyFunction("GiftRecipient"));
-        register.RegisterFunction(new AntimonyFunction("DojoSolver"));
-
-
-        //register tables
-        register.RegisterTable(new SelectTable("root"));
-        register.RegisterTable(new SelectTable("Combat"));
-        register.RegisterTable(new SelectTable("Render"));
-        register.RegisterTable(new SelectTable("Player"));
-        register.RegisterTable(new SelectTable("Dungeon"));
-        register.RegisterTable(new SelectTable("Macro"));
-        register.RegisterTable(new SelectTable("CrystalHollow"));
-        register.RegisterTable(new SelectTable("Movement"));
-        register.RegisterTable(new SelectTable("Misc"));
-        register.RegisterTable(new SelectTable("Fun"));
-
-        //register select objects (add a select objects)
-        //SelectObjects first argument is it type,table is SelectTable,is an openable classification,Some function are included inside
-        //function is AntimonyFunction,These functions will appear in the table and can be turned on and off from here
-        //second argument is name,These names will be seen by the user
-        //third argument is parent table's name,The outermost table is called root
-        register.RegisterSelectObject(new SelectObject("table", "Combat", "root"));
-        register.RegisterSelectObject(new SelectObject("table", "Render", "root"));
-        register.RegisterSelectObject(new SelectObject("table", "Player", "root"));
-        register.RegisterSelectObject(new SelectObject("table", "Dungeon", "root"));
-        register.RegisterSelectObject(new SelectObject("table", "Macro", "root"));
-        register.RegisterSelectObject(new SelectObject("table", "CrystalHollow", "root"));
-        register.RegisterSelectObject(new SelectObject("table", "Movement", "root"));
-        register.RegisterSelectObject(new SelectObject("table", "Misc", "root"));
-        register.RegisterSelectObject(new SelectObject("table", "Fun", "root"));
-
-        register.RegisterSelectObject(new SelectObject("function", "AutoClicker", "Combat"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoCannon", "Combat"));
-        register.RegisterSelectObject(new SelectObject("function", "TargetESP", "Combat"));
-        register.RegisterSelectObject(new SelectObject("function", "NoSlow", "Combat"));
-        register.RegisterSelectObject(new SelectObject("function", "Killaura", "Combat"));
-        register.RegisterSelectObject(new SelectObject("function", "ShortBowAura", "Combat"));
-        register.RegisterSelectObject(new SelectObject("function", "FrozenScytheAura", "Combat"));
-        register.RegisterSelectObject(new SelectObject("function", "Reach", "Combat"));
-        register.RegisterSelectObject(new SelectObject("function", "WTap", "Combat"));
-
-        register.RegisterSelectObject(new SelectObject("function", "SilverfishESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "GuardianESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "GolemESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "CaveSpiderESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "LanternESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "PlayerFinder", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "FullBright", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "DroppedItemESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "PeltESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "Camera", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "HideFallingBlock", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "JasperESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "DragonEggESP", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "ChestFinder", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
-        register.RegisterSelectObject(new SelectObject("function", "FPS Accelerator","Render"));
-
-        register.RegisterSelectObject(new SelectObject("function", "AutoTool","Player"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoWeapon","Player"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoUse", "Player"));
-        register.RegisterSelectObject(new SelectObject("function", "BlockTarget", "Player"));
-        register.RegisterSelectObject(new SelectObject("function", "ChatDetector", "Player"));
-        register.RegisterSelectObject(new SelectObject("function", "NickHider", "Player"));
-
-        register.RegisterSelectObject(new SelectObject("function", "StarredMobESP", "Dungeon"));
-        register.RegisterSelectObject(new SelectObject("function", "DungeonKeyESP", "Dungeon"));
-        register.RegisterSelectObject(new SelectObject("function", "TerminalESP", "Dungeon"));
-        register.RegisterSelectObject(new SelectObject("function", "HideDungeonMobNameTag", "Dungeon"));
-        register.RegisterSelectObject(new SelectObject("function", "SecretBot", "Dungeon"));
-        register.RegisterSelectObject(new SelectObject("function", "GhostBlock", "Dungeon"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoTerminal", "Dungeon"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoSS", "Dungeon"));
-
-        register.RegisterSelectObject(new SelectObject("function", "AutoFish", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoKillWorm", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoLeave", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoWolfSlayer", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "CropBot", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "ForagingBot", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "KillerBot", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "SynthesizerAura", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "Nuker", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "GiftRecipient", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "HarpBot", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "ExperimentsBot", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "PowderBot", "Macro"));
-        register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureBot", "Macro"));
-
-        register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
-        register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
-        register.RegisterSelectObject(new SelectObject("function", "JadeCrystalBot", "CrystalHollow"));
-        register.RegisterSelectObject(new SelectObject("function", "AutoArmadillo", "CrystalHollow"));
-        register.RegisterSelectObject(new SelectObject("function", "GemstoneBot", "CrystalHollow"));
-        register.RegisterSelectObject(new SelectObject("function", "SapphireGrottoESP", "CrystalHollow"));
-        register.RegisterSelectObject(new SelectObject("function", "WormLavaESP", "CrystalHollow"));
-
-        register.RegisterSelectObject(new SelectObject("function", "AntiAFK", "Movement"));
-        register.RegisterSelectObject(new SelectObject("function", "Sprint", "Movement"));
-        register.RegisterSelectObject(new SelectObject("function", "Eagle", "Movement"));
-        register.RegisterSelectObject(new SelectObject("function", "Velocity", "Movement"));
-        register.RegisterSelectObject(new SelectObject("function", "BHop", "Movement"));
-        register.RegisterSelectObject(new SelectObject("function", "Timer", "Movement"));
-
-        register.RegisterSelectObject(new SelectObject("function", "AntimonyChannel", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "InstantSwitch", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "MouseISwitch", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "BlackList", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "Interface", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "InputFix", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function","DojoSolver","Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "Disabler", "Misc"));
-        register.RegisterSelectObject(new SelectObject("function", "HUD", "Misc"));
-
-
-        register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
-        register.RegisterSelectObject(new SelectObject("function", "CustomItemSound", "Fun"));
-        //register.RegisterSelectObject(new SelectObject("function", "WebBrowser", "Fun"));
-        register.RegisterSelectObject(new SelectObject("function", "Cartoon", "Fun"));
-        register.RegisterSelectObject(new SelectObject("function", "MarketingGenerator", "Fun"));
-        register.RegisterSelectObject(new SelectObject("function", "DanmakuChat", "Fun"));
-        register.RegisterSelectObject(new SelectObject("function", "MacroerDetector", "Fun"));
-        register.RegisterSelectObject(new SelectObject("function", "RainbowEntity", "Fun"));
-        register.RegisterSelectObject(new SelectObject("function", "Giant", "Fun"));
-        register.RegisterSelectObject(new SelectObject("function", "Rat", "Fun"));
-
-
-        //register.RegisterSelectObject(new SelectObject("function", "ItemTranslate", "root"));
-
-        //Rearrange the function arrays to make them look more aesthetically pleasing
-        AntimonyRegister.ReList();
-
-        //Re-enable the last turned on function
-        ConfigLoader.applyFunctionState();
-
-        //Manage certain functions that need to be turned on or off at startup
-        FunctionManager.setStatus("CustomPetNameTag", false);
-        FunctionManager.setStatus("Pathfinding", false);
-        FunctionManager.setStatus("Interface", true);
-        FunctionManager.setStatus("BlackList", true);
-        nukerWrapper.disable();
-
-        //FunctionManage.bindFunction is bind a function to function manage
-        //addConfiguration is to apply the configuration to the currently bind function
-        FunctionManager.bindFunction("Killaura");
-        FunctionManager.addConfiguration(new SettingLimitDouble("CPS", "cps", 5.0D,18.0D,1.0D));
-        HashMap<String, Integer> KillauraTypeMap = new HashMap<String, Integer>();
-        KillauraTypeMap.put("Single",0);
-        KillauraTypeMap.put("Switch",1);
-        FunctionManager.addConfiguration(new SettingTypeSelector("模式","mode",0,KillauraTypeMap));
-        FunctionManager.addConfiguration(new SettingLimitDouble("Switch模式切换时间", "switchDelay", 400.0D,1000.0D,50.0D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("穿墙攻击距离", "wallRange", 3.5D,7.0D,1.0D));
-        FunctionManager.addConfiguration(new SettingBoolean("攻击玩家", "isAttackPlayer", true));
-        FunctionManager.addConfiguration(new SettingBoolean("目标实体透视", "targetESP", true));
-        FunctionManager.addConfiguration(new SettingLimitDouble("最大纵向旋转角度", "maxPitch", 180.0D,180.0D,1.0D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("最大横向旋转角度", "maxYaw", 180.0D,180.0D,1.0D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("最大旋转距离", "maxRotationRange", 6.0D,12.0D,2.0D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("视场角", "Fov", 270.0D,360.0D,90.0D));
-        FunctionManager.addConfiguration(new SettingLimitInt("平滑旋转度", "smooth", 60,100,1));
-        FunctionManager.addConfiguration(new SettingBoolean("攻击NPC", "isAttackNPC", false));
-        FunctionManager.addConfiguration(new SettingBoolean("攻击同队伍玩家", "isAttackTeamMember", false));
-        FunctionManager.addConfiguration(new SettingBoolean("仅持剑开启", "onlySword", false));
-        FunctionManager.addConfiguration(new SettingBoolean("自动格挡", "autoBlock", false));
-        FunctionManager.addConfiguration(new SettingLimitDouble("格挡距离", "blockRange", 3.5D,10.0D,1.0D));
-        FunctionManager.addConfiguration(new SettingBoolean("使用LagCheck", "lagCheck", false));
-
-        FunctionManager.bindFunction("InstantSwitch");
-        FunctionManager.addConfiguration(new SettingString("物品名称", "itemName", "of the End"));
-        FunctionManager.addConfiguration(new SettingBoolean("左键模式", "leftClick", false));
-
-        FunctionManager.bindFunction("AutoUse");
-        FunctionManager.addConfiguration(new SettingLimitInt("间隔时间","cooldown",10,Integer.MAX_VALUE,0));
-        FunctionManager.addConfiguration(new SettingString("物品名称(部分匹配,无需写全名)","itemName","of the End"));
-        FunctionManager.addConfiguration(new SettingInt("计时器位置(X)", "timerX", 200));
-        FunctionManager.addConfiguration(new SettingInt("计时器位置(Y)", "timerY", 130));
-
-        FunctionManager.bindFunction("Reach");
-        FunctionManager.addConfiguration(new SettingLimitDouble("距离","distance",3.0D,4.0D,3.0D));
-
-        FunctionManager.bindFunction("AutoFish");
-        FunctionManager.addConfiguration(new SettingBoolean("SlugFish模式", "slug", false));
-        FunctionManager.addConfiguration(new SettingBoolean("状态提示", "message", true));
-        FunctionManager.addConfiguration(new SettingBoolean("显示抛竿计时器", "timer", true));
-        FunctionManager.addConfiguration(new SettingBoolean("强制潜行", "sneak", false));
-        FunctionManager.addConfiguration(new SettingBoolean("自动抛竿", "throwHook", true));
-        FunctionManager.addConfiguration(new SettingInt("自动抛竿超时时间(秒)","throwHookCooldown",5));
-        FunctionManager.addConfiguration(new SettingBoolean("太久未上钩自动重抛竿", "rethrow", true));
-        FunctionManager.addConfiguration(new SettingLimitInt("自动重抛竿超时时间(秒)","rethrowCooldown",20,30,1));
-        FunctionManager.addConfiguration(new SettingInt("抛竿计时器位置(X)", "timerX", 200));
-        FunctionManager.addConfiguration(new SettingInt("抛竿计时器位置(Y)", "timerY", 100));
-
-        FunctionManager.bindFunction("WTap");
-        FunctionManager.addConfiguration(new SettingBoolean("对弓的支持", "bowMode", true));
-
-        HashMap<String, Integer> HUDTypeMap = new HashMap<String, Integer>();
-        HUDTypeMap.put("Classic",0);
-        HUDTypeMap.put("White",1);
-        HUDTypeMap.put("Transparent",2);
-        HUDTypeMap.put("QSF",3);
-        HashMap<String, Integer> HUDHideMap = new HashMap<String, Integer>();
-        HUDHideMap.put("Left",0);
-        HUDHideMap.put("Right",1);
-        HUDHideMap.put("Both",2);
-        FunctionManager.bindFunction("HUD");
-        FunctionManager.addConfiguration(new SettingInt("左上方(SelectGUI)距屏幕顶部距离","HUDHeight",0));
-        FunctionManager.addConfiguration(new SettingInt("右上方(FunctionList)距屏幕顶部距离","FunctionListHeight",0));
-        FunctionManager.addConfiguration(new SettingTypeSelector("HUD样式","style",3,HUDTypeMap));
-        FunctionManager.addConfiguration(new SettingTypeSelector("HUD关闭时隐藏部分","hide",2,HUDHideMap));
-
-        FunctionManager.bindFunction("CustomPetNameTag");
-        FunctionManager.addConfiguration(new SettingString("规则为\"原始字符=要替换的字符\",如果添加多项规则请使用\",\"分割,如果想清空自定义名称规则请填写null", "petName", "null"));
-        FunctionManager.addConfiguration(new SettingInt("宠物等级,如果想取消自定义等级请填写0","petLevel",0));
-
-        FunctionManager.bindFunction("MouseISwitch");
-        FunctionManager.addConfiguration(new SettingString("物品名称", "itemName", "Shadow Fu"));
-        FunctionManager.addConfiguration(new SettingBoolean("左键触发", "leftTrigger", true));
-
-        FunctionManager.bindFunction("AutoKillWorm");
-        FunctionManager.addConfiguration(new SettingLimitInt("间隔时间","cooldown",300,Integer.MAX_VALUE,0));
-        FunctionManager.addConfiguration(new SettingBoolean("瞄准Worm", "aim", false));
-        FunctionManager.addConfiguration(new SettingString("右键物品名称", "itemName", "staff of the vol"));
-        FunctionManager.addConfiguration(new SettingInt("右键次数", "rcCount", 1));
-        FunctionManager.addConfiguration(new SettingInt("右键延迟(游戏刻)", "rcCooldown", 10));
-        FunctionManager.addConfiguration(new SettingInt("计时器位置(X)", "timerX", 200));
-        FunctionManager.addConfiguration(new SettingInt("计时器位置(Y)", "timerY", 115));
-
-        FunctionManager.bindFunction("AntimonyChannel");
-        FunctionManager.addConfiguration(new SettingBoolean("重连提示", "notice", true));
-
-        FunctionManager.bindFunction("NoSlow");
-        FunctionManager.addConfiguration(new SettingLimitDouble("剑格挡减速效果","sword",0.5D,1.0D,0.2D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("拉弓减速效果","bow",1.0D,1.0D,0.2D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("进食减速效果","eat",1.0D,1.0D,0.2D));
-
-        HashMap<String, Integer> BackgroundStyleMap = new HashMap<String, Integer>();
-        BackgroundStyleMap.put("Vanilla",0);
-        BackgroundStyleMap.put("Blur",1);
-        FunctionManager.bindFunction("Interface");
-        FunctionManager.addConfiguration(new SettingBoolean("FPS显示", "fps", false));
-        FunctionManager.addConfiguration(new SettingInt("FPS位置(X)", "fpsX", 200));
-        FunctionManager.addConfiguration(new SettingInt("FPS位置(Y)", "fpsY", 130));
-        FunctionManager.addConfiguration(new SettingBoolean("坐标显示", "location", false));
-        FunctionManager.addConfiguration(new SettingInt("坐标位置(X)", "locationX", 200));
-        FunctionManager.addConfiguration(new SettingInt("坐标位置(Y)", "locationY", 145));
-        FunctionManager.addConfiguration(new SettingBoolean("服务器天数显示", "day", false));
-        FunctionManager.addConfiguration(new SettingInt("天数位置(X)", "dayX", 200));
-        FunctionManager.addConfiguration(new SettingInt("天数位置(Y)", "dayY", 190));
-        FunctionManager.addConfiguration(new SettingTypeSelector("GUI背景样式","bgstyle",1,BackgroundStyleMap));
-
-        FunctionManager.bindFunction("ShortBowAura");
-        FunctionManager.addConfiguration(new SettingLimitDouble("延迟", "delay", 3.0D,10.0D,1.0D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 15.0D,100.0D,5.0D));
-        FunctionManager.addConfiguration(new SettingBoolean("右键模式", "right", false));
-        FunctionManager.addConfiguration(new SettingBoolean("攻击同队成员", "attackTeam", false));
-
-        FunctionManager.bindFunction("AutoWolfSlayer");
-        HashMap<String, Integer> SlayMode = new HashMap<String, Integer>();
-        SlayMode.put("Killaura",0);
-        SlayMode.put("ShortBowAura",1);
-        FunctionManager.addConfiguration(new SettingTypeSelector("击杀Wolf模式","mode",0,SlayMode));
-        FunctionManager.addConfiguration(new SettingString("近战物品名称", "swordName", "livid"));
-        FunctionManager.addConfiguration(new SettingString("短弓名称", "bowName", "juju"));
-
-        FunctionManager.bindFunction("ChestFinder");
-        HashMap<String, Integer> renderMode = new HashMap<String, Integer>();
-        renderMode.put("Outline",0);
-        renderMode.put("Full",1);
-        renderMode.put("Tracer",2);
-        FunctionManager.addConfiguration(new SettingTypeSelector("模式","mode",0,renderMode));
-
-        FunctionManager.bindFunction("AutoLeave");
-        FunctionManager.addConfiguration(new SettingInt("检测半径", "radius",30));
-        FunctionManager.addConfiguration(new SettingLimitInt("附近最大可存在玩家数量", "limit",0,100,0));
-        FunctionManager.addConfiguration(new SettingLimitInt("附近玩家大于可存在玩家数量后执行命令前冷却(游戏Tick)", "tickLimit",200,Integer.MAX_VALUE,0));
-        FunctionManager.addConfiguration(new SettingString("需执行的命令", "command", "/warp home"));
-        FunctionManager.addConfiguration(new SettingBoolean("只提示声音不发送命令", "soundOnly", false));
-
-        FunctionManager.bindFunction("CropBot");
-        HashMap<String, Integer> crops = new HashMap<String, Integer>();
-        crops.put("Potato",0);
-        crops.put("Carrot",1);
-        crops.put("Mushroom",2);
-        crops.put("Nether Wart",3);
-        crops.put("Wheat",4);
-        FunctionManager.addConfiguration(new SettingTypeSelector("作物种类","crop",0,crops));
-        FunctionManager.addConfiguration(new SettingInt("检测半径(设置太高小心卡死)", "radius",8));
-        FunctionManager.addConfiguration(new SettingLimitInt("IgnoreList大小", "listSize",5120,Integer.MAX_VALUE,1));
-
-        FunctionManager.bindFunction("MarketingGenerator");
-        FunctionManager.addConfiguration(new SettingString("名称", "name", "Necron"));
-        FunctionManager.addConfiguration(new SettingString("事件", "event","不能与Kuudra一起吃"));
-        FunctionManager.addConfiguration(new SettingString("另一种解释", "explain", "容易Yikes"));
-
-        FunctionManager.bindFunction("BlackList");
-        HashMap<String, Integer> apiSource = new HashMap<String, Integer>();
-        apiSource.put("API Source 1",0);
-        apiSource.put("API Source 2",1);
-        FunctionManager.addConfiguration(new SettingTypeSelector("API","api",0,apiSource));
-
-        FunctionManager.bindFunction("PlayerFinder");
-        FunctionManager.addConfiguration(new SettingBoolean("不显示头顶假人与NPC", "showNpc", true));
-        HashMap<String, Integer> playerFinderMode = new HashMap<String, Integer>();
-        playerFinderMode.put("3D Box",0);
-        playerFinderMode.put("XRay",1);
-        playerFinderMode.put("OutlineTest",2);
-        FunctionManager.addConfiguration(new SettingTypeSelector("渲染模式","mode",1,playerFinderMode));
-
-        FunctionManager.bindFunction("Nuker");
-        HashMap<String, Integer> rotation = new HashMap<String, Integer>();
-        rotation.put("ServerRotation",0);
-        rotation.put("Rotation",1);
-        rotation.put("SmoothRotation",2);
-        FunctionManager.addConfiguration(new SettingTypeSelector("旋转模式","rotation",0,rotation));
-        HashMap<String, Integer> nukerType = new HashMap<String, Integer>();
-        nukerType.put("Gemstone(No Panel)",0);
-        nukerType.put("Gemstone",1);
-        nukerType.put("Ore",2);
-        nukerType.put("Stone",3);
-        nukerType.put("Netherrack",4);
-        nukerType.put("Sand",5);
-        nukerType.put("Gold Block",6);
-        nukerType.put("Mithril",7);
-        nukerType.put("Frozen Treasure",8);
-        nukerType.put("Mithril With Titanium",9);
-        nukerType.put("Foraging",10);
-        nukerType.put("Stone With Cobblestone",11);
-        nukerType.put("Mithril With Titanium (Blue Wool First)",12);
-        nukerType.put("Obsidian",13);
-        nukerType.put("Crops",14);
-        FunctionManager.addConfiguration(new SettingTypeSelector("模式","type",0,nukerType));
-        FunctionManager.addConfiguration(new SettingBoolean("周围有人自动停止", "disable", false));
-        FunctionManager.addConfiguration(new SettingBoolean("不挖掘位置比玩家低的方块", "ignoreGround", false));
-        FunctionManager.addConfiguration(new SettingInt("检测半径", "radius",30));
-        HashMap<String, Integer> miningType = new HashMap<String, Integer>();
-        miningType.put("Normal",0);
-        miningType.put("Instantly",1);
-        miningType.put("Core 1",2);
-        FunctionManager.addConfiguration(new SettingTypeSelector("挖掘类型","miningType",0,miningType));
-
-        FunctionManager.bindFunction("KillerBot");
-        HashMap<String, Integer> BotSlayMode = new HashMap<String, Integer>();
-        BotSlayMode.put("Killaura",0);
-        BotSlayMode.put("ShortBowAura",1);
-        FunctionManager.addConfiguration(new SettingTypeSelector("击杀模式","mode",0,BotSlayMode));
-        FunctionManager.addConfiguration(new SettingString("近战物品名称", "swordName", "livid"));
-        FunctionManager.addConfiguration(new SettingString("短弓名称", "bowName", "juju"));
-        HashMap<String, Integer> type = new HashMap<String, Integer>();
-        type.put("Graveyard Zombie",0);
-        type.put("Crypt Zombie",1);
-        type.put("Star Sentry",2);
-        type.put("Enderman",3);
-        type.put("Treasure Hoarder",4);
-        FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",0,type));
-
-        FunctionManager.bindFunction("Velocity");
-        FunctionManager.addConfiguration(new SettingBoolean("在地牢自动禁用", "disableInDungeon", true));
-
-        FunctionManager.bindFunction("DroppedItemESP");
-        FunctionManager.addConfiguration(new SettingInt("ESP颜色(R)", "colorR",218));
-        FunctionManager.addConfiguration(new SettingInt("ESP颜色(G)", "colorG",105));
-        FunctionManager.addConfiguration(new SettingInt("ESP颜色(B)", "colorB",156));
-
-        FunctionManager.bindFunction("AutoTerminal");
-        FunctionManager.addConfiguration(new SettingLimitInt("点击延迟", "cooldown",2,10,0));
-
-        FunctionManager.bindFunction("NickHider");
-        FunctionManager.addConfiguration(new SettingString("名称", "name", "CoolGuy123"));
-
-        FunctionManager.bindFunction("PowderBot");
-        FunctionManager.addConfiguration(new SettingBoolean("仅启用自动开箱", "chestOnly", false));
-
-        FunctionManager.bindFunction("DragonEggESP");
-        FunctionManager.addConfiguration(new SettingInt("线程数量", "thread",5));
-        FunctionManager.addConfiguration(new SettingInt("扫描步长", "step",32));
-
-        FunctionManager.bindFunction("SapphireGrottoESP");
-        FunctionManager.addConfiguration(new SettingInt("线程数量", "thread",5));
-        FunctionManager.addConfiguration(new SettingInt("扫描步长", "step",64));
-
-        FunctionManager.bindFunction("FPS Accelerator");
-        FunctionManager.addConfiguration(new SettingLimitInt("盔甲架渲染距离","armorStandDistance",16,128,1));
-        FunctionManager.addConfiguration(new SettingLimitInt("TileEntity渲染距离","tileEntityDistance",32,128,1));
-        FunctionManager.addConfiguration(new SettingBoolean("实体渲染剔除", "entityCulling", true));
-
-        FunctionManager.bindFunction("Disabler");
-        FunctionManager.addConfiguration(new SettingBoolean("Ban警告", "banWarning", true));
-        FunctionManager.addConfiguration(new SettingBoolean("Timer Disabler", "timer", true));
-        FunctionManager.addConfiguration(new SettingLimitInt("Strafe Packets数量","strafePackets",70,120,60));
-        FunctionManager.addConfiguration(new SettingBoolean("Strafe Disabler", "strafeDisabler", false));
-        FunctionManager.addConfiguration(new SettingBoolean("禁用C03", "noC03", true));
-        FunctionManager.addConfiguration(new SettingBoolean("Anti Watchdog(更少的标记)", "antiWatchdog", true));
-        FunctionManager.addConfiguration(new SettingBoolean("禁用C00", "C00Disabler", false));
-        FunctionManager.addConfiguration(new SettingBoolean("禁用C0B", "C0BDisabler", false));
-
-        FunctionManager.bindFunction("Timer");
-        FunctionManager.addConfiguration(new SettingLimitDouble("速度","speed",2.0,10.0,0.1));
-        FunctionManager.addConfiguration(new SettingBoolean("仅移动时可用", "onlyMoving", false));
-
-        FunctionManager.bindFunction("MacroerDetector");
-        FunctionManager.addConfiguration(new SettingLimitInt("范围","range",250,2000,100));
-
-        FunctionManager.bindFunction("Camera");
-        FunctionManager.addConfiguration(new SettingLimitDouble("相机距离","distance",2.0,10000,0.01));
-        FunctionManager.addConfiguration(new SettingBoolean("取消受伤镜头", "noHurtCamera", true));
-        FunctionManager.addConfiguration(new SettingBoolean("相机穿墙", "clip", true));
-
-        FunctionManager.bindFunction("AntiAFK");
-        HashMap<String, Integer> antiAFKType = new HashMap<String, Integer>();
-        antiAFKType.put("Jump",0);
-        antiAFKType.put("Move Left and Right",1);
-        FunctionManager.addConfiguration(new SettingTypeSelector("类型","type",1,antiAFKType));
-
-        FunctionManager.bindFunction("BHop");
-        FunctionManager.addConfiguration(new SettingBoolean("Strafe", "strafe", false));
-
-        FunctionManager.bindFunction("ChatDetector");
-        FunctionManager.addConfiguration(new SettingString("聊天触发器", "trigger", "a message"));
-        FunctionManager.addConfiguration(new SettingString("要发送的聊天信息", "message", "send this message when received a message include trigger message"));
-
-        FunctionManager.bindFunction("FrozenScytheAura");
-        FunctionManager.addConfiguration(new SettingLimitDouble("延迟", "delay", 3.0D,10.0D,1.0D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 15.0D,100.0D,5.0D));
-        FunctionManager.addConfiguration(new SettingBoolean("攻击同队成员", "attackTeam", false));
-
-        FunctionManager.bindFunction("HarpBot");
-        FunctionManager.addConfiguration(new SettingInt("延迟", "delay",200));
-
-        FunctionManager.bindFunction("ExperimentsBot");
-        FunctionManager.addConfiguration(new SettingBoolean("自动退出", "autoExit", true));
-        FunctionManager.addConfiguration(new SettingInt("点击延迟", "delay",200));
-
-        FunctionManager.bindFunction("AutoArmadillo");
-        FunctionManager.addConfiguration(new SettingInt("延迟(毫秒)", "delay",250));
-
-        FunctionManager.bindFunction("GemstoneBot");
-        FunctionManager.addConfiguration(new SettingInt("延迟(毫秒)", "delay",250));
-        FunctionManager.addConfiguration(new SettingBoolean("挖掘玻璃板", "panel", false));
-
-        FunctionManager.bindFunction("Giant");
-        FunctionManager.addConfiguration(new SettingDouble("所有部分缩放","allScale",2.0D));
-        FunctionManager.addConfiguration(new SettingDouble("头部缩放","headScale",1.0D));
-
-        FunctionManager.bindFunction("GiftRecipient");
-        FunctionManager.addConfiguration(new SettingInt("延迟", "delay",5));
-        FunctionManager.addConfiguration(new SettingBoolean("只检测名字", "onlyName", false));
-
-        FunctionManager.bindFunction("DojoSolver");
-        FunctionManager.addConfiguration(new SettingBoolean("自动切换剑", "swordSwap", true));
-        FunctionManager.addConfiguration(new SettingBoolean("Tenacity悬浮", "tenacity", true));
-        FunctionManager.addConfiguration(new SettingBoolean("Mastery自动瞄准", "mastery", true));
-        FunctionManager.addConfiguration(new SettingLimitDouble("时间", "time", 0.3D,5.0D,0.1D));
-        FunctionManager.addConfiguration(new SettingLimitDouble("拉弓时间", "bowChargeTime", 0.6D,1.0D,0.1D));
-
-        //check if new user
-        NewUserFunction();
-        AntimonyRegister.reloadEnableListUncheck();
-
-        //refresh the function bind
-        reloadKeyMapping();
+        new Thread(() -> {
+            //register functions
+            AntimonyRegister register = new AntimonyRegister();
+            register.RegisterFunction(new AntimonyFunction("AutoClicker"));
+            register.RegisterFunction(new AntimonyFunction("Killaura"));
+            register.RegisterFunction(new AntimonyFunction("Reach"));
+            register.RegisterFunction(new AntimonyFunction("WTap"));
+            register.RegisterFunction(new AntimonyFunction("FreeCamera"));
+            register.RegisterFunction(new AntimonyFunction("TargetESP"));
+            register.RegisterFunction(new AntimonyFunction("WormLavaESP"));
+            register.RegisterFunction(new AntimonyFunction("LanternESP"));
+            register.RegisterFunction(new AntimonyFunction("SilverfishESP"));
+            register.RegisterFunction(new AntimonyFunction("GolemESP"));
+            register.RegisterFunction(new AntimonyFunction("GuardianESP"));
+            register.RegisterFunction(new AntimonyFunction("AutoFish"));
+            register.RegisterFunction(new AntimonyFunction("AutoKillWorm"));
+            register.RegisterFunction(new AntimonyFunction("GemstoneHidePane"));
+            register.RegisterFunction(new AntimonyFunction("FullBright"));
+            register.RegisterFunction(new AntimonyFunction("StarredMobESP"));
+            register.RegisterFunction(new AntimonyFunction("DungeonKeyESP"));
+            register.RegisterFunction(new AntimonyFunction("CustomPetNameTag"));
+            register.RegisterFunction(new AntimonyFunction("CustomItemSound"));
+            register.RegisterFunction(new AntimonyFunction("AntiAFK"));
+            register.RegisterFunction(new AntimonyFunction("Sprint"));
+            register.RegisterFunction(new AntimonyFunction("Eagle"));
+            register.RegisterFunction(new AntimonyFunction("Velocity"));
+            register.RegisterFunction(new AntimonyFunction("AutoCannon"));
+            register.RegisterFunction(new AntimonyFunction("ItemTranslate"));
+            register.RegisterFunction(new AntimonyFunction("HUD"));
+            register.RegisterFunction(new AntimonyFunction("GhostBlock"));
+            register.RegisterFunction(new AntimonyFunction("InstantSwitch"));
+            register.RegisterFunction(new AntimonyFunction("NoSlow"));
+            register.RegisterFunction(new AntimonyFunction("TerminalESP"));
+            register.RegisterFunction(new AntimonyFunction("PlayerESP"));
+            register.RegisterFunction(new AntimonyFunction("SecretBot"));
+            register.RegisterFunction(new AntimonyFunction("DroppedItemESP"));
+            register.RegisterFunction(new AntimonyFunction("MouseISwitch"));
+            register.RegisterFunction(new AntimonyFunction("AutoUse"));
+            register.RegisterFunction(new AntimonyFunction("Cartoon"));
+            register.RegisterFunction(new AntimonyFunction("HollowAutoPurchase"));
+            register.RegisterFunction(new AntimonyFunction("AntimonyChannel"));
+            register.RegisterFunction(new AntimonyFunction("Rat"));
+            register.RegisterFunction(new AntimonyFunction("Interface"));
+            register.RegisterFunction(new AntimonyFunction("ShortBowAura"));
+            register.RegisterFunction(new AntimonyFunction("HideFallingBlock"));
+            register.RegisterFunction(new AntimonyFunction("Pathfinding"));
+            register.RegisterFunction(new AntimonyFunction("AutoWolfSlayer"));
+            register.RegisterFunction(new AntimonyFunction("ChestFinder"));
+            register.RegisterFunction(new AntimonyFunction("AutoLeave"));
+            register.RegisterFunction(new AntimonyFunction("CropBot"));
+            register.RegisterFunction(new AntimonyFunction("MarketingGenerator"));
+            register.RegisterFunction(new AntimonyFunction("PeltESP"));
+            register.RegisterFunction(new AntimonyFunction("BlackList"));
+            register.RegisterFunction(new AntimonyFunction("ForagingBot"));
+            register.RegisterFunction(new AntimonyFunction("JasperESP"));
+            register.RegisterFunction(new AntimonyFunction("SynthesizerAura"));
+            register.RegisterFunction(new AntimonyFunction("Nuker"));
+            register.RegisterFunction(new AntimonyFunction("NukerWrapper"));
+            register.RegisterFunction(new AntimonyFunction("FrozenTreasureESP"));
+            register.RegisterFunction(new AntimonyFunction("CaveSpiderESP"));
+            register.RegisterFunction(new AntimonyFunction("KillerBot"));
+            register.RegisterFunction(new AntimonyFunction("AutoTerminal"));
+            register.RegisterFunction(new AntimonyFunction("NickHider"));
+            register.RegisterFunction(new AntimonyFunction("DragonEggESP"));
+            register.RegisterFunction(new AntimonyFunction("DanmakuChat"));
+            register.RegisterFunction(new AntimonyFunction("PowderBot"));
+            register.RegisterFunction(new AntimonyFunction("FrozenTreasureBot"));
+            register.RegisterFunction(new AntimonyFunction("SapphireGrottoESP"));
+            register.RegisterFunction(new AntimonyFunction("FPS Accelerator"));
+            register.RegisterFunction(new AntimonyFunction("Disabler"));
+            register.RegisterFunction(new AntimonyFunction("Timer"));
+            register.RegisterFunction(new AntimonyFunction("MacroerDetector"));
+            register.RegisterFunction(new AntimonyFunction("Camera"));
+            register.RegisterFunction(new AntimonyFunction("RainbowEntity"));
+            register.RegisterFunction(new AntimonyFunction("AutoArmadillo"));
+            register.RegisterFunction(new AntimonyFunction("BHop"));
+            register.RegisterFunction(new AntimonyFunction("AutoTool"));
+            register.RegisterFunction(new AntimonyFunction("AutoWeapon"));
+            register.RegisterFunction(new AntimonyFunction("BlockTarget"));
+            register.RegisterFunction(new AntimonyFunction("ChatDetector"));
+            register.RegisterFunction(new AntimonyFunction("FrozenScytheAura"));
+            register.RegisterFunction(new AntimonyFunction("JadeCrystalBot"));
+            //register.RegisterFunction(new AntimonyFunction("WebBrowser"));
+            register.RegisterFunction(new AntimonyFunction("HarpBot"));
+            register.RegisterFunction(new AntimonyFunction("ExperimentsBot"));
+            register.RegisterFunction(new AntimonyFunction("InputFix"));
+            register.RegisterFunction(new AntimonyFunction("GemstoneBot"));
+            register.RegisterFunction(new AntimonyFunction("Giant"));
+            register.RegisterFunction(new AntimonyFunction("AutoSS"));
+            register.RegisterFunction(new AntimonyFunction("GiftRecipient"));
+            register.RegisterFunction(new AntimonyFunction("DojoSolver"));
+            register.RegisterFunction(new AntimonyFunction("NBTCanceller"));
+            register.RegisterFunction(new AntimonyFunction("AntiObbyTrap"));
+            register.RegisterFunction(new AntimonyFunction("NameTag"));
+            register.RegisterFunction(new AntimonyFunction("GhostBlockCreator"));
+            register.RegisterFunction(new AntimonyFunction("CrystalGetter"));
+            register.RegisterFunction(new AntimonyFunction("WitherESP"));
+            register.RegisterFunction(new AntimonyFunction("Projectiles"));
+            register.RegisterFunction(new AntimonyFunction("Animation"));
+            register.RegisterFunction(new AntimonyFunction("PixelPartyBot"));
+            register.RegisterFunction(new AntimonyFunction("ThunderLord"));
+            register.RegisterFunction(new AntimonyFunction("ADSwitcher"));
+            register.RegisterFunction(new AntimonyFunction("PingSpoof"));
+            register.RegisterFunction(new AntimonyFunction("ClientSpoof"));
+            register.RegisterFunction(new AntimonyFunction("ActionBot"));
+            register.RegisterFunction(new AntimonyFunction("ChatSuffix"));
+            register.RegisterFunction(new AntimonyFunction("Sneak"));
+            register.RegisterFunction(new AntimonyFunction("UngrabMouse"));
+
+
+            //register tables
+            register.RegisterTable(new SelectTable("root"));
+            register.RegisterTable(new SelectTable("Combat"));
+            register.RegisterTable(new SelectTable("Render"));
+            register.RegisterTable(new SelectTable("Player"));
+            register.RegisterTable(new SelectTable("Dungeon"));
+            register.RegisterTable(new SelectTable("Macro"));
+            register.RegisterTable(new SelectTable("CrystalHollow"));
+            register.RegisterTable(new SelectTable("Movement"));
+            register.RegisterTable(new SelectTable("Misc"));
+            register.RegisterTable(new SelectTable("Fun"));
+
+            //register select objects (add a select objects)
+            //SelectObjects first argument is it type,table is SelectTable,is an openable classification,Some function are included inside
+            //function is AntimonyFunction,These functions will appear in the table and can be turned on and off from here
+            //second argument is name,These names will be seen by the user
+            //third argument is parent table's name,The outermost table is called root
+            register.RegisterSelectObject(new SelectObject("table", "Combat", "root"));
+            register.RegisterSelectObject(new SelectObject("table", "Render", "root"));
+            register.RegisterSelectObject(new SelectObject("table", "Player", "root"));
+            register.RegisterSelectObject(new SelectObject("table", "Dungeon", "root"));
+            register.RegisterSelectObject(new SelectObject("table", "Macro", "root"));
+            register.RegisterSelectObject(new SelectObject("table", "CrystalHollow", "root"));
+            register.RegisterSelectObject(new SelectObject("table", "Movement", "root"));
+            register.RegisterSelectObject(new SelectObject("table", "Misc", "root"));
+            register.RegisterSelectObject(new SelectObject("table", "Fun", "root"));
+
+            register.RegisterSelectObject(new SelectObject("function", "AutoClicker", "Combat"));
+            register.RegisterSelectObject(new SelectObject("function", "AutoCannon", "Combat"));
+            register.RegisterSelectObject(new SelectObject("function", "TargetESP", "Combat"));
+            register.RegisterSelectObject(new SelectObject("function", "NoSlow", "Combat"));
+            register.RegisterSelectObject(new SelectObject("function", "Killaura", "Combat"));
+            register.RegisterSelectObject(new SelectObject("function", "ShortBowAura", "Combat"));
+            register.RegisterSelectObject(new SelectObject("function", "FrozenScytheAura", "Combat"));
+            register.RegisterSelectObject(new SelectObject("function", "Reach", "Combat"));
+            register.RegisterSelectObject(new SelectObject("function", "WTap", "Combat"));
+
+            register.RegisterSelectObject(new SelectObject("function", "Animation", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "SilverfishESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "GuardianESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "GolemESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "CaveSpiderESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "WitherESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "LanternESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "PlayerESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "Projectiles", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "NameTag", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "FullBright", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "DroppedItemESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "PeltESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "Camera", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "HideFallingBlock", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "JasperESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "DragonEggESP", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "ChestFinder", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "FreeCamera", "Render"));
+            register.RegisterSelectObject(new SelectObject("function", "FPS Accelerator", "Render"));
+
+            register.RegisterSelectObject(new SelectObject("function", "AutoTool", "Player"));
+            register.RegisterSelectObject(new SelectObject("function", "AutoWeapon", "Player"));
+            register.RegisterSelectObject(new SelectObject("function", "AntiObbyTrap", "Player"));
+            register.RegisterSelectObject(new SelectObject("function", "AutoUse", "Player"));
+            register.RegisterSelectObject(new SelectObject("function", "BlockTarget", "Player"));
+            register.RegisterSelectObject(new SelectObject("function", "ChatDetector", "Player"));
+            register.RegisterSelectObject(new SelectObject("function", "NickHider", "Player"));
+
+            register.RegisterSelectObject(new SelectObject("function", "StarredMobESP", "Dungeon"));
+            register.RegisterSelectObject(new SelectObject("function", "DungeonKeyESP", "Dungeon"));
+            register.RegisterSelectObject(new SelectObject("function", "TerminalESP", "Dungeon"));
+            register.RegisterSelectObject(new SelectObject("function", "SecretBot", "Dungeon"));
+            register.RegisterSelectObject(new SelectObject("function", "GhostBlock", "Dungeon"));
+            register.RegisterSelectObject(new SelectObject("function", "CrystalGetter", "Dungeon"));
+            register.RegisterSelectObject(new SelectObject("function", "AutoTerminal", "Dungeon"));
+            register.RegisterSelectObject(new SelectObject("function", "AutoSS", "Dungeon"));
+
+            register.RegisterSelectObject(new SelectObject("function", "AutoFish", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "AutoKillWorm", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "AutoLeave", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "AutoWolfSlayer", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "CropBot", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "ForagingBot", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "KillerBot", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "SynthesizerAura", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "Nuker", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "GiftRecipient", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "HarpBot", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "ExperimentsBot", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "ActionBot", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "PowderBot", "Macro"));
+            register.RegisterSelectObject(new SelectObject("function", "FrozenTreasureBot", "Macro"));
+
+            register.RegisterSelectObject(new SelectObject("function", "GemstoneHidePane", "CrystalHollow"));
+            register.RegisterSelectObject(new SelectObject("function", "HollowAutoPurchase", "CrystalHollow"));
+            register.RegisterSelectObject(new SelectObject("function", "JadeCrystalBot", "CrystalHollow"));
+            register.RegisterSelectObject(new SelectObject("function", "AutoArmadillo", "CrystalHollow"));
+            register.RegisterSelectObject(new SelectObject("function", "GemstoneBot", "CrystalHollow"));
+            register.RegisterSelectObject(new SelectObject("function", "SapphireGrottoESP", "CrystalHollow"));
+            register.RegisterSelectObject(new SelectObject("function", "WormLavaESP", "CrystalHollow"));
+
+            register.RegisterSelectObject(new SelectObject("function", "AntiAFK", "Movement"));
+            register.RegisterSelectObject(new SelectObject("function", "Sprint", "Movement"));
+            register.RegisterSelectObject(new SelectObject("function", "Sneak", "Movement"));
+            register.RegisterSelectObject(new SelectObject("function", "Eagle", "Movement"));
+            register.RegisterSelectObject(new SelectObject("function", "Velocity", "Movement"));
+            register.RegisterSelectObject(new SelectObject("function", "BHop", "Movement"));
+            register.RegisterSelectObject(new SelectObject("function", "Timer", "Movement"));
+
+            register.RegisterSelectObject(new SelectObject("function", "AntimonyChannel", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "InstantSwitch", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "MouseISwitch", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "BlackList", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "Interface", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "InputFix", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "DojoSolver", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "NBTCanceller", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "GhostBlockCreator", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "UngrabMouse", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "ADSwitcher", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "Disabler", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "PingSpoof", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "ClientSpoof", "Misc"));
+            register.RegisterSelectObject(new SelectObject("function", "HUD", "Misc"));
+
+
+            register.RegisterSelectObject(new SelectObject("function", "CustomPetNameTag", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "CustomItemSound", "Fun"));
+            //register.RegisterSelectObject(new SelectObject("function", "WebBrowser", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "Cartoon", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "MarketingGenerator", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "DanmakuChat", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "ChatSuffix", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "MacroerDetector", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "ThunderLord", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "PixelPartyBot", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "RainbowEntity", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "Giant", "Fun"));
+            register.RegisterSelectObject(new SelectObject("function", "Rat", "Fun"));
+
+
+            //register.RegisterSelectObject(new SelectObject("function", "ItemTranslate", "root"));
+
+            //Rearrange the function arrays to make them look more aesthetically pleasing
+            AntimonyRegister.ReList();
+
+            //Re-enable the last turned on function
+            ConfigLoader.applyFunctionState();
+
+            //Manage certain functions that need to be turned on or off at startup
+            FunctionManager.setStatus("CustomPetNameTag", false);
+            FunctionManager.setStatus("Pathfinding", false);
+            FunctionManager.setStatus("Interface", true);
+            FunctionManager.setStatus("BlackList", true);
+            nukerWrapper.disable();
+
+            //FunctionManage.bindFunction is bind a function to function manage
+            //addConfiguration is to apply the configuration to the currently bind function
+            FunctionManager.bindFunction("Killaura");
+            FunctionManager.addConfiguration(new SettingLimitDouble("CPS", "cps", 5.0D, 20.0D, 1.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("CPS抖动", "cps_spike", 2.5D, 5.0D, 0.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 4.5D, 8.0D, 1.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("搜寻距离", "find_range", 6D, 10.0D, 1.0D));
+            HashMap<String, Integer> KillAuraModeMap = new HashMap<String, Integer>();
+            KillAuraModeMap.put("Single", 0);
+            KillAuraModeMap.put("Switch", 1);
+            FunctionManager.addConfiguration(new SettingTypeSelector("目标选择模式", "mode", 1, KillAuraModeMap));
+            FunctionManager.addConfiguration(new SettingLimitInt("Switch模式切换目标延迟", "switchDelay", 350, 1000, 50));
+            FunctionManager.addConfiguration(new SettingBoolean("仅攻击玩家", "playerOnly", false));
+            FunctionManager.addConfiguration(new SettingBoolean("静默旋转", "silent_rotation", true));
+            FunctionManager.addConfiguration(new SettingBoolean("平滑旋转", "smooth_rotation", true));
+            FunctionManager.addConfiguration(new SettingBoolean("保持疾跑", "keep_sprint", false));
+            FunctionManager.addConfiguration(new SettingBoolean("自动格挡", "auto_block", false));
+            FunctionManager.addConfiguration(new SettingBoolean("旋转", "rotation", true));
+            FunctionManager.addConfiguration(new SettingBoolean("1.9以上PVP模式", "19_mode", false));
+            FunctionManager.addConfiguration(new SettingBoolean("攻击NPC", "isAttackNPC", false));
+            FunctionManager.addConfiguration(new SettingBoolean("攻击同队伍玩家", "isAttackTeamMember", false));
+            FunctionManager.addConfiguration(new SettingBoolean("攻击玩家", "isAttackPlayer", true));
+            FunctionManager.addConfiguration(new SettingBoolean("仅持剑开启", "swordOnly", false));
+            HashMap<String, Integer> AutoBlockTypeMap = new HashMap<String, Integer>();
+            AutoBlockTypeMap.put("Fake", 1);
+            AutoBlockTypeMap.put("Item Use", 2);
+            AutoBlockTypeMap.put("Hypixel", 3);
+            AutoBlockTypeMap.put("Vanilla", 4);
+            AutoBlockTypeMap.put("Matrix", 5);
+            FunctionManager.addConfiguration(new SettingTypeSelector("自动格挡模式", "auto_block_mode", 1, AutoBlockTypeMap));
+            FunctionManager.addConfiguration(new SettingLimitInt("Hypixel AB Ticks", "hypixel_ticks", 3, 10, 1));
+            HashMap<String, Integer> RotationTypeMap = new HashMap<String, Integer>();
+            RotationTypeMap.put("Decent", 1);
+            RotationTypeMap.put("Simple", 2);
+            RotationTypeMap.put("Simple2", 3);
+            RotationTypeMap.put("Snap", 4);
+            FunctionManager.addConfiguration(new SettingTypeSelector("旋转模式", "rotation_mode", 1, RotationTypeMap));
+            FunctionManager.addConfiguration(new SettingBoolean("Hack vs Hack模式", "hvh", false));
+            FunctionManager.addConfiguration(new SettingLimitInt("包数量", "packets", 100, 200, 1));
+            FunctionManager.addConfiguration(new SettingBoolean("无延迟", "no_delay", false));
+            FunctionManager.addConfiguration(new SettingBoolean("目标ESP", "targetESP", true));
+
+            FunctionManager.bindFunction("InstantSwitch");
+            FunctionManager.addConfiguration(new SettingString("物品名称", "itemName", "of the End"));
+            FunctionManager.addConfiguration(new SettingBoolean("左键模式", "leftClick", false));
+
+            FunctionManager.bindFunction("AutoUse");
+            FunctionManager.addConfiguration(new SettingLimitInt("间隔时间", "cooldown", 10, Integer.MAX_VALUE, 0));
+            FunctionManager.addConfiguration(new SettingString("物品名称(部分匹配,无需写全名)", "itemName", "of the End"));
+            FunctionManager.addConfiguration(new SettingInt("计时器位置(X)", "timerX", 200));
+            FunctionManager.addConfiguration(new SettingInt("计时器位置(Y)", "timerY", 130));
+
+            FunctionManager.bindFunction("Reach");
+            FunctionManager.addConfiguration(new SettingLimitDouble("距离", "distance", 3.0D, 4.0D, 3.0D));
+
+            FunctionManager.bindFunction("AutoFish");
+            FunctionManager.addConfiguration(new SettingBoolean("SlugFish模式", "slug", false));
+            FunctionManager.addConfiguration(new SettingBoolean("状态提示", "message", true));
+            FunctionManager.addConfiguration(new SettingBoolean("显示抛竿计时器", "timer", true));
+            FunctionManager.addConfiguration(new SettingBoolean("强制潜行", "sneak", false));
+            FunctionManager.addConfiguration(new SettingBoolean("自动抛竿", "throwHook", true));
+            FunctionManager.addConfiguration(new SettingInt("自动抛竿超时时间(秒)", "throwHookCooldown", 5));
+            FunctionManager.addConfiguration(new SettingBoolean("太久未上钩自动重抛竿", "rethrow", true));
+            FunctionManager.addConfiguration(new SettingLimitInt("自动重抛竿超时时间(秒)", "rethrowCooldown", 20, 30, 1));
+            FunctionManager.addConfiguration(new SettingInt("抛竿计时器位置(X)", "timerX", 200));
+            FunctionManager.addConfiguration(new SettingInt("抛竿计时器位置(Y)", "timerY", 100));
+
+            FunctionManager.bindFunction("WTap");
+            FunctionManager.addConfiguration(new SettingBoolean("对弓的支持", "bowMode", true));
+
+            HashMap<String, Integer> HUDTypeMap = new HashMap<String, Integer>();
+            HUDTypeMap.put("Classic", 0);
+            HUDTypeMap.put("White", 1);
+            HUDTypeMap.put("Transparent", 2);
+            HUDTypeMap.put("QSF", 3);
+            HashMap<String, Integer> HUDHideMap = new HashMap<String, Integer>();
+            HUDHideMap.put("Left", 0);
+            HUDHideMap.put("Right", 1);
+            HUDHideMap.put("Both", 2);
+            FunctionManager.bindFunction("HUD");
+            FunctionManager.addConfiguration(new SettingInt("左上方(SelectGUI)距屏幕顶部距离", "HUDHeight", 0));
+            FunctionManager.addConfiguration(new SettingInt("右上方(FunctionList)距屏幕顶部距离", "FunctionListHeight", 0));
+            FunctionManager.addConfiguration(new SettingTypeSelector("HUD样式", "style", 3, HUDTypeMap));
+            FunctionManager.addConfiguration(new SettingTypeSelector("HUD关闭时隐藏部分", "hide", 2, HUDHideMap));
+
+            FunctionManager.bindFunction("CustomPetNameTag");
+            FunctionManager.addConfiguration(new SettingString("规则为\"原始字符=要替换的字符\",如果添加多项规则请使用\",\"分割,如果想清空自定义名称规则请填写null", "petName", "null"));
+            FunctionManager.addConfiguration(new SettingInt("宠物等级,如果想取消自定义等级请填写0", "petLevel", 0));
+
+            FunctionManager.bindFunction("MouseISwitch");
+            FunctionManager.addConfiguration(new SettingString("物品名称", "itemName", "Shadow Fu"));
+            FunctionManager.addConfiguration(new SettingBoolean("左键触发", "leftTrigger", true));
+
+            FunctionManager.bindFunction("AutoKillWorm");
+            FunctionManager.addConfiguration(new SettingLimitInt("间隔时间", "cooldown", 300, Integer.MAX_VALUE, 0));
+            FunctionManager.addConfiguration(new SettingBoolean("瞄准Worm", "aim", false));
+            FunctionManager.addConfiguration(new SettingString("右键物品名称", "itemName", "staff of the vol"));
+            FunctionManager.addConfiguration(new SettingInt("右键次数", "rcCount", 1));
+            FunctionManager.addConfiguration(new SettingInt("右键延迟(游戏刻)", "rcCooldown", 10));
+            FunctionManager.addConfiguration(new SettingInt("计时器位置(X)", "timerX", 200));
+            FunctionManager.addConfiguration(new SettingInt("计时器位置(Y)", "timerY", 115));
+
+            FunctionManager.bindFunction("AntimonyChannel");
+            FunctionManager.addConfiguration(new SettingBoolean("重连提示", "notice", true));
+
+            FunctionManager.bindFunction("NoSlow");
+            FunctionManager.addConfiguration(new SettingLimitDouble("剑格挡减速效果", "sword", 0.5D, 1.0D, 0.2D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("拉弓减速效果", "bow", 1.0D, 1.0D, 0.2D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("进食减速效果", "eat", 1.0D, 1.0D, 0.2D));
+
+            HashMap<String, Integer> BackgroundStyleMap = new HashMap<String, Integer>();
+            BackgroundStyleMap.put("Vanilla", 0);
+            BackgroundStyleMap.put("Blur", 1);
+            FunctionManager.bindFunction("Interface");
+            FunctionManager.addConfiguration(new SettingBoolean("FPS显示", "fps", false));
+            FunctionManager.addConfiguration(new SettingInt("FPS位置(X)", "fpsX", 200));
+            FunctionManager.addConfiguration(new SettingInt("FPS位置(Y)", "fpsY", 130));
+            FunctionManager.addConfiguration(new SettingBoolean("坐标显示", "location", false));
+            FunctionManager.addConfiguration(new SettingInt("坐标位置(X)", "locationX", 200));
+            FunctionManager.addConfiguration(new SettingInt("坐标位置(Y)", "locationY", 145));
+            FunctionManager.addConfiguration(new SettingBoolean("服务器天数显示", "day", false));
+            FunctionManager.addConfiguration(new SettingInt("天数位置(X)", "dayX", 200));
+            FunctionManager.addConfiguration(new SettingInt("天数位置(Y)", "dayY", 190));
+            FunctionManager.addConfiguration(new SettingTypeSelector("GUI背景样式", "bgstyle", 1, BackgroundStyleMap));
+            FunctionManager.addConfiguration(new SettingBoolean("按钮音效", "buttonSound", true));
+            FunctionManager.addConfiguration(new SettingBoolean("修改按钮渲染", "buttonRender", true));
+            FunctionManager.addConfiguration(new SettingBoolean("快捷栏动画", "HotBarAnimation", true));
+            LinkedHashMap<String, Integer> HotBarStyleMap = new LinkedHashMap<String, Integer>();
+            HotBarStyleMap.put("Vanilla", 0);
+            HotBarStyleMap.put("Blur", 1);
+            HotBarStyleMap.put("Black", 2);
+            FunctionManager.addConfiguration(new SettingTypeSelector("快捷栏背景样式", "hotbar", 1, HotBarStyleMap));
+
+            FunctionManager.bindFunction("ShortBowAura");
+            FunctionManager.addConfiguration(new SettingLimitDouble("延迟", "delay", 3.0D, 10.0D, 1.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 15.0D, 100.0D, 5.0D));
+            FunctionManager.addConfiguration(new SettingBoolean("右键模式", "right", false));
+            FunctionManager.addConfiguration(new SettingBoolean("攻击同队成员", "attackTeam", false));
+
+            FunctionManager.bindFunction("AutoWolfSlayer");
+            HashMap<String, Integer> SlayMode = new HashMap<String, Integer>();
+            SlayMode.put("Killaura", 0);
+            SlayMode.put("ShortBowAura", 1);
+            FunctionManager.addConfiguration(new SettingTypeSelector("击杀Wolf模式", "mode", 0, SlayMode));
+            FunctionManager.addConfiguration(new SettingString("近战物品名称", "swordName", "livid"));
+            FunctionManager.addConfiguration(new SettingString("短弓名称", "bowName", "juju"));
+
+            FunctionManager.bindFunction("ChestFinder");
+            HashMap<String, Integer> renderMode = new HashMap<String, Integer>();
+            renderMode.put("Outline", 0);
+            renderMode.put("Full", 1);
+            renderMode.put("Tracer", 2);
+            FunctionManager.addConfiguration(new SettingTypeSelector("模式", "mode", 0, renderMode));
+
+            FunctionManager.bindFunction("AutoLeave");
+            FunctionManager.addConfiguration(new SettingInt("检测半径", "radius", 30));
+            FunctionManager.addConfiguration(new SettingLimitInt("附近最大可存在玩家数量", "limit", 0, 100, 0));
+            FunctionManager.addConfiguration(new SettingLimitInt("附近玩家大于可存在玩家数量后执行命令前冷却(游戏Tick)", "tickLimit", 200, Integer.MAX_VALUE, 0));
+            FunctionManager.addConfiguration(new SettingString("需执行的命令", "command", "/warp home"));
+            FunctionManager.addConfiguration(new SettingBoolean("只提示声音不发送命令", "soundOnly", false));
+            FunctionManager.addConfiguration(new SettingBoolean("更换世界时自动关闭", "autoDisable", true));
+
+            FunctionManager.bindFunction("CropBot");
+            HashMap<String, Integer> crops = new HashMap<String, Integer>();
+            crops.put("Potato", 0);
+            crops.put("Carrot", 1);
+            crops.put("Mushroom", 2);
+            crops.put("Nether Wart", 3);
+            crops.put("Wheat", 4);
+            crops.put("Garden", 5);
+            crops.put("Melon", 6);
+            crops.put("Pumpkin", 7);
+            FunctionManager.addConfiguration(new SettingTypeSelector("作物种类", "crop", 0, crops));
+            FunctionManager.addConfiguration(new SettingInt("检测半径(设置太高小心卡死)", "radius", 8));
+            FunctionManager.addConfiguration(new SettingLimitInt("IgnoreList大小", "listSize", 5120, Integer.MAX_VALUE, 1));
+
+            FunctionManager.bindFunction("MarketingGenerator");
+            FunctionManager.addConfiguration(new SettingString("名称", "name", "Necron"));
+            FunctionManager.addConfiguration(new SettingString("事件", "event", "不能与Kuudra一起吃"));
+            FunctionManager.addConfiguration(new SettingString("另一种解释", "explain", "容易Yikes"));
+
+            FunctionManager.bindFunction("BlackList");
+            HashMap<String, Integer> apiSource = new HashMap<String, Integer>();
+            apiSource.put("API Source 1", 0);
+            apiSource.put("API Source 2", 1);
+            FunctionManager.addConfiguration(new SettingTypeSelector("API", "api", 0, apiSource));
+
+            FunctionManager.bindFunction("PlayerESP");
+            HashMap<String, Integer> playerFinderMode = new HashMap<String, Integer>();
+            playerFinderMode.put("3D Box", 0);
+            playerFinderMode.put("2D", 1);
+            playerFinderMode.put("Outline", 2);
+            playerFinderMode.put("Glow", 3);
+            FunctionManager.addConfiguration(new SettingTypeSelector("渲染模式", "mode", 2, playerFinderMode));
+
+            FunctionManager.bindFunction("Nuker");
+            HashMap<String, Integer> rotation = new HashMap<String, Integer>();
+            rotation.put("ServerRotation", 0);
+            rotation.put("Rotation", 1);
+            rotation.put("SmoothRotation", 2);
+            FunctionManager.addConfiguration(new SettingTypeSelector("旋转模式", "rotation", 0, rotation));
+            LinkedHashMap<String, Integer> nukerType = new LinkedHashMap<String, Integer>();
+            nukerType.put("Gemstone(No Panel)", 0);
+            nukerType.put("Gemstone", 1);
+            nukerType.put("Ore", 2);
+            nukerType.put("Stone", 3);
+            nukerType.put("Netherrack", 4);
+            nukerType.put("Sand", 5);
+            nukerType.put("Gold Block", 6);
+            nukerType.put("Mithril", 7);
+            nukerType.put("Frozen Treasure", 8);
+            nukerType.put("Mithril With Titanium", 9);
+            nukerType.put("Foraging", 10);
+            nukerType.put("Stone With Cobblestone", 11);
+            nukerType.put("Mithril With Titanium (Blue Wool First)", 12);
+            nukerType.put("Obsidian", 13);
+            nukerType.put("Crops", 14);
+            nukerType.put("Garden", 15);
+            nukerType.put("Melon", 16);
+            nukerType.put("Pumpkin", 17);
+            nukerType.put("Potato Only", 18);
+            nukerType.put("Wheat Only", 19);
+            nukerType.put("Carrot Only", 20);
+            nukerType.put("Nether Wart Only", 21);
+            nukerType.put("SugarCane", 22);
+            nukerType.put("Cactus", 23);
+            nukerType.put("Cocoa", 24);
+            FunctionManager.addConfiguration(new SettingTypeSelector("模式", "type", 0, nukerType));
+            FunctionManager.addConfiguration(new SettingBoolean("周围有人自动停止", "disable", false));
+            FunctionManager.addConfiguration(new SettingBoolean("不挖掘位置比玩家低的方块", "ignoreGround", false));
+            FunctionManager.addConfiguration(new SettingInt("检测半径", "radius", 30));
+            FunctionManager.addConfiguration(new SettingInt("Core 1模式Extra BPS", "extraBPS", 0));
+            FunctionManager.addConfiguration(new SettingBoolean("Core 1模式无延迟", "noDelay", false));
+            FunctionManager.addConfiguration(new SettingBoolean("Core 1模式不转头", "noCore1Rotate", false));
+            FunctionManager.addConfiguration(new SettingInt("Core 1模式BPS Skip", "bpsSkip", 0));
+            FunctionManager.addConfiguration(new SettingLimitDouble("Core 1模式半径", "core1radius", 4.5, 6.0, 0.1));
+            HashMap<String, Integer> miningType = new HashMap<>();
+            miningType.put("Normal", 0);
+            miningType.put("Instantly", 1);
+            miningType.put("Core 1", 2);
+            FunctionManager.addConfiguration(new SettingTypeSelector("挖掘类型", "miningType", 0, miningType));
+
+            FunctionManager.bindFunction("KillerBot");
+            HashMap<String, Integer> BotSlayMode = new HashMap<String, Integer>();
+            BotSlayMode.put("Killaura", 0);
+            BotSlayMode.put("ShortBowAura", 1);
+            FunctionManager.addConfiguration(new SettingTypeSelector("击杀模式", "mode", 0, BotSlayMode));
+            FunctionManager.addConfiguration(new SettingString("近战物品名称", "swordName", "livid"));
+            FunctionManager.addConfiguration(new SettingString("短弓名称", "bowName", "juju"));
+            HashMap<String, Integer> type = new HashMap<String, Integer>();
+            type.put("Graveyard Zombie", 0);
+            type.put("Crypt Zombie", 1);
+            type.put("Star Sentry", 2);
+            type.put("Enderman", 3);
+            type.put("Treasure Hoarder", 4);
+            FunctionManager.addConfiguration(new SettingTypeSelector("类型", "type", 0, type));
+
+            FunctionManager.bindFunction("Velocity");
+            FunctionManager.addConfiguration(new SettingBoolean("在地牢自动禁用", "disableInDungeon", true));
+
+            FunctionManager.bindFunction("DroppedItemESP");
+            FunctionManager.addConfiguration(new SettingInt("ESP颜色(R)", "colorR", 0));
+            FunctionManager.addConfiguration(new SettingInt("ESP颜色(G)", "colorG", 255));
+            FunctionManager.addConfiguration(new SettingInt("ESP颜色(B)", "colorB", 118));
+
+            FunctionManager.bindFunction("AutoTerminal");
+            FunctionManager.addConfiguration(new SettingLimitInt("点击延迟", "cooldown", 2, 10, 0));
+
+            FunctionManager.bindFunction("NickHider");
+            FunctionManager.addConfiguration(new SettingString("名称", "name", "CoolGuy123"));
+
+            FunctionManager.bindFunction("PowderBot");
+            FunctionManager.addConfiguration(new SettingBoolean("仅启用自动开箱", "chestOnly", false));
+
+            FunctionManager.bindFunction("DragonEggESP");
+            FunctionManager.addConfiguration(new SettingInt("线程数量", "thread", 5));
+            FunctionManager.addConfiguration(new SettingInt("扫描步长", "step", 32));
+
+            FunctionManager.bindFunction("SapphireGrottoESP");
+            FunctionManager.addConfiguration(new SettingInt("线程数量", "thread", 5));
+            FunctionManager.addConfiguration(new SettingInt("扫描步长", "step", 64));
+
+            FunctionManager.bindFunction("FPS Accelerator");
+            FunctionManager.addConfiguration(new SettingLimitInt("盔甲架渲染距离", "armorStandDistance", 16, 128, 1));
+            FunctionManager.addConfiguration(new SettingLimitInt("TileEntity渲染距离", "tileEntityDistance", 32, 128, 1));
+
+            FunctionManager.bindFunction("Disabler");
+            FunctionManager.addConfiguration(new SettingBoolean("Ban警告", "banWarning", true));
+            FunctionManager.addConfiguration(new SettingBoolean("Timer Disabler", "timer", true));
+            FunctionManager.addConfiguration(new SettingLimitInt("Strafe Packets数量", "strafePackets", 70, 120, 60));
+            FunctionManager.addConfiguration(new SettingBoolean("Strafe Disabler", "strafeDisabler", false));
+            FunctionManager.addConfiguration(new SettingBoolean("禁用C03", "noC03", true));
+            FunctionManager.addConfiguration(new SettingBoolean("Anti Watchdog(更少的标记)", "antiWatchdog", true));
+            FunctionManager.addConfiguration(new SettingBoolean("禁用C00", "C00Disabler", false));
+            FunctionManager.addConfiguration(new SettingBoolean("禁用C0B", "C0BDisabler", false));
+
+            FunctionManager.bindFunction("Timer");
+            FunctionManager.addConfiguration(new SettingLimitDouble("速度", "speed", 2.0, 10.0, 0.1));
+            FunctionManager.addConfiguration(new SettingBoolean("仅移动时可用", "onlyMoving", false));
+
+            FunctionManager.bindFunction("MacroerDetector");
+            FunctionManager.addConfiguration(new SettingLimitInt("范围", "range", 250, 2000, 100));
+
+            FunctionManager.bindFunction("Camera");
+            FunctionManager.addConfiguration(new SettingLimitDouble("相机距离", "distance", 2.0, 10000, 0.01));
+            FunctionManager.addConfiguration(new SettingBoolean("取消受伤镜头", "noHurtCamera", true));
+            FunctionManager.addConfiguration(new SettingBoolean("相机穿墙", "clip", true));
+
+            FunctionManager.bindFunction("AntiAFK");
+            HashMap<String, Integer> antiAFKType = new HashMap<String, Integer>();
+            antiAFKType.put("Jump", 0);
+            antiAFKType.put("Move Left and Right", 1);
+            FunctionManager.addConfiguration(new SettingTypeSelector("类型", "type", 1, antiAFKType));
+
+            FunctionManager.bindFunction("BHop");
+            FunctionManager.addConfiguration(new SettingBoolean("Strafe", "strafe", false));
+
+            FunctionManager.bindFunction("ChatDetector");
+            FunctionManager.addConfiguration(new SettingString("聊天触发器", "trigger", "a message"));
+            FunctionManager.addConfiguration(new SettingString("要发送的聊天信息", "message", "send this message when received a message include trigger message"));
+
+            FunctionManager.bindFunction("FrozenScytheAura");
+            FunctionManager.addConfiguration(new SettingLimitDouble("延迟", "delay", 3.0D, 10.0D, 1.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("距离", "range", 15.0D, 100.0D, 5.0D));
+            FunctionManager.addConfiguration(new SettingBoolean("攻击同队成员", "attackTeam", false));
+
+            FunctionManager.bindFunction("HarpBot");
+            FunctionManager.addConfiguration(new SettingInt("延迟", "delay", 200));
+
+            FunctionManager.bindFunction("ExperimentsBot");
+            FunctionManager.addConfiguration(new SettingBoolean("自动退出", "autoExit", true));
+            FunctionManager.addConfiguration(new SettingInt("点击延迟", "delay", 200));
+
+            FunctionManager.bindFunction("AutoArmadillo");
+            FunctionManager.addConfiguration(new SettingInt("延迟(毫秒)", "delay", 250));
+
+            FunctionManager.bindFunction("GemstoneBot");
+            FunctionManager.addConfiguration(new SettingInt("延迟(毫秒)", "delay", 250));
+            FunctionManager.addConfiguration(new SettingBoolean("挖掘玻璃板", "panel", false));
+
+            FunctionManager.bindFunction("Giant");
+            FunctionManager.addConfiguration(new SettingDouble("所有部分缩放", "allScale", 2.0D));
+            FunctionManager.addConfiguration(new SettingDouble("头部缩放", "headScale", 1.0D));
+
+            FunctionManager.bindFunction("GiftRecipient");
+            FunctionManager.addConfiguration(new SettingInt("延迟", "delay", 5));
+            FunctionManager.addConfiguration(new SettingBoolean("只检测名字", "onlyName", false));
+
+            FunctionManager.bindFunction("DojoSolver");
+            FunctionManager.addConfiguration(new SettingBoolean("自动切换剑", "swordSwap", true));
+            FunctionManager.addConfiguration(new SettingBoolean("Tenacity悬浮", "tenacity", true));
+            FunctionManager.addConfiguration(new SettingBoolean("Mastery自动瞄准", "mastery", true));
+            FunctionManager.addConfiguration(new SettingLimitDouble("时间", "time", 0.3D, 5.0D, 0.1D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("拉弓时间", "bowChargeTime", 0.6D, 1.0D, 0.1D));
+
+            FunctionManager.bindFunction("GhostBlockCreator");
+            FunctionManager.addConfiguration(new SettingBoolean("铁栅栏", "iron_bar", true));
+            FunctionManager.addConfiguration(new SettingBoolean("地毯", "carpet", true));
+
+            FunctionManager.bindFunction("NameTag");
+            FunctionManager.addConfiguration(new SettingDouble("放大倍数", "scale", 2.0D));
+
+            FunctionManager.bindFunction("AutoClicker");
+            FunctionManager.addConfiguration(new SettingLimitInt("最大CPS", "maxCPS", 8, 20, 1));
+            FunctionManager.addConfiguration(new SettingLimitInt("最小CPS", "minCPS", 5, 20, 1));
+            FunctionManager.addConfiguration(new SettingBoolean("左键AutoClicker", "left", true));
+            FunctionManager.addConfiguration(new SettingBoolean("右键AutoClicker", "right", true));
+            FunctionManager.addConfiguration(new SettingBoolean("抖动", "jitter", false));
+
+            FunctionManager.bindFunction("Animation");
+            FunctionManager.addConfiguration(new SettingBoolean("始终显示格挡动画", "anythingBlock", false));
+            LinkedHashMap<String, Integer> blockType = new LinkedHashMap<String, Integer>();
+            int counter = 0;
+            blockType.put("1.7", counter);
+            counter++;
+            blockType.put("Akrien", counter);
+            counter++;
+            blockType.put("Avatar", counter);
+            counter++;
+            blockType.put("ETB", counter);
+            counter++;
+            blockType.put("Exhibition", counter);
+            counter++;
+            blockType.put("Push", counter);
+            counter++;
+            blockType.put("Reverse", counter);
+            counter++;
+            blockType.put("Shield", counter);
+            counter++;
+            blockType.put("Slide", counter);
+            counter++;
+            blockType.put("SlideDown", counter);
+            counter++;
+            blockType.put("Swong", counter);
+            counter++;
+            blockType.put("VisionFX", counter);
+            counter++;
+            blockType.put("Swank", counter);
+            counter++;
+            blockType.put("Jello", counter);
+            counter++;
+            blockType.put("HSlide", counter);
+            counter++;
+            blockType.put("None", counter);
+            counter++;
+            blockType.put("Rotate", counter);
+            counter++;
+            blockType.put("Fall", counter);
+            counter++;
+            blockType.put("Yeet", counter);
+            counter++;
+            blockType.put("Dortware", counter);
+            counter++;
+            blockType.put("Chaos", counter);
+            FunctionManager.addConfiguration(new SettingTypeSelector("格挡类型", "blockMode", 0, blockType));
+            FunctionManager.addConfiguration(new SettingLimitDouble("X轴偏移", "translateX", 0.0D, 1.5D, 0.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("Y轴偏移", "translateY", 0.0D, 0.5D, 0.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("Z轴偏移", "translateZ", 0.0D, 0.0D, -2.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("X轴旋转", "rotateX", 0.0D, 180.0D, -180.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("Y轴旋转", "rotateY", 0.0D, 180.0D, -180.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("Z轴旋转", "rotateZ", 0.0D, 180.0D, -180.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("X轴方位", "posX", 0.56D, 1.0D, -1.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("Y轴方位", "posY", -0.52D, 1.0D, -1.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("Z轴方位", "posZ", -0.71999997D, 1.0D, -1.0D));
+            FunctionManager.addConfiguration(new SettingLimitDouble("缩放", "scale", 0.4D, 2.0D, 0.0D));
+            FunctionManager.addConfiguration(new SettingBoolean("物品摇动", "swingItem", true));
+
+            FunctionManager.bindFunction("ADSwitcher");
+            LinkedHashMap<String, Integer> firstKeyPress = new LinkedHashMap<String, Integer>();
+            firstKeyPress.put("Left", 0);
+            firstKeyPress.put("Right", 1);
+            FunctionManager.addConfiguration(new SettingTypeSelector("开启时移动方向", "keyPress", 0, firstKeyPress));
+
+            FunctionManager.bindFunction("PingSpoof");
+            FunctionManager.addConfiguration(new SettingLimitInt("最大延迟", "maxPing", 1000, 5000, 0));
+            FunctionManager.addConfiguration(new SettingLimitInt("最小延迟", "minPing", 500, 5000, 0));
+            FunctionManager.addConfiguration(new SettingBoolean("C00包模拟延迟", "c00", true));
+            FunctionManager.addConfiguration(new SettingBoolean("C0F包模拟延迟", "c0f", false));
+            FunctionManager.addConfiguration(new SettingBoolean("C0B包模拟延迟", "c0b", false));
+            FunctionManager.addConfiguration(new SettingBoolean("C13包模拟延迟", "c13", false));
+            FunctionManager.addConfiguration(new SettingBoolean("C16包模拟延迟", "c16", true));
+            FunctionManager.addConfiguration(new SettingLimitDouble("丢包率", "packetLoss", 0.05D, 1.0D, 0.0D));
+
+            FunctionManager.bindFunction("ClientSpoof");
+            FunctionManager.addConfiguration(new SettingBoolean("FMLSpoof总开关", "fmlFix", true));
+            FunctionManager.addConfiguration(new SettingBoolean("FMLSpoof-ProxySpoof开关", "proxySpoof", false));
+            FunctionManager.addConfiguration(new SettingBoolean("FMLSpoof-BrandSpoof开关", "brandSpoof", true));
+            LinkedHashMap<String, Integer> brandSpoofMode = new LinkedHashMap<>();
+            brandSpoofMode.put("Vanilla", 0);
+            brandSpoofMode.put("LunarClient", 1);
+            brandSpoofMode.put("CheatBreaker", 2);
+            brandSpoofMode.put("Current Forge", 3);
+            FunctionManager.addConfiguration(new SettingTypeSelector("BrandSpoof模式", "brands", 1, brandSpoofMode));
+            FunctionManager.addConfiguration(new SettingBoolean("ClientSpoof开关", "clientSpoof", true));
+            LinkedHashMap<String, Integer> clientSpoofMode = new LinkedHashMap<>();
+            clientSpoofMode.put("Vanilla", 0);
+            clientSpoofMode.put("LabyMod", 1);
+            clientSpoofMode.put("CheatBreaker", 2);
+            clientSpoofMode.put("LunarClient", 3);
+            clientSpoofMode.put("PVPLounge", 4);
+            FunctionManager.addConfiguration(new SettingTypeSelector("ClientSpoof模式", "clientSpoofMode", 3, clientSpoofMode));
+
+            FunctionManager.bindFunction("ChatSuffix");
+            FunctionManager.addConfiguration(new SettingString("后缀内容", "content", " 还有马桶盖子"));
+
+            //check if new user
+            NewUserFunction();
+            AntimonyRegister.reloadEnableListUncheck();
+
+            //refresh the function bind
+            reloadKeyMapping();
+        }, "Antimony Loading Thread 2").start();
 
     }
 
@@ -970,14 +1246,15 @@ public class Antimony {
             CustomChatSend.send(token);
         }*/
     }
+
     private ByteBuffer readImageToBuffer(InputStream p_readImageToBuffer_1_) throws IOException {
         BufferedImage bufferedimage = ImageIO.read(p_readImageToBuffer_1_);
-        int[] aint = bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), (int[])null, 0, bufferedimage.getWidth());
+        int[] aint = bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), null, 0, bufferedimage.getWidth());
         ByteBuffer bytebuffer = ByteBuffer.allocate(4 * aint.length);
         int[] var5 = aint;
         int var6 = aint.length;
 
-        for(int var7 = 0; var7 < var6; ++var7) {
+        for (int var7 = 0; var7 < var6; ++var7) {
             int i = var5[var7];
             bytebuffer.putInt(i << 8 | i >> 24 & 255);
         }
@@ -988,34 +1265,20 @@ public class Antimony {
 
     public void NewUserFunction() {
         //check is new user
-        if (ConfigLoader.getBoolean("checkNewUser", true)) {
+        if (ConfigLoader.getBoolean("checkisNewUser", true)) {
             //if new user will setting something
             FunctionManager.setStatus("HUD", true);
+            FunctionManager.setStatus("ClientSpoof", true);
             FunctionManager.setStatus("AntimonyChannel", true);
 
             Minecraft.getMinecraft().gameSettings.guiScale = 2;
 
             //set non new user
-            ConfigLoader.setBoolean("checkNewUser", false, true);
+            ConfigLoader.setBoolean("checkisNewUser", false, true);
         }
     }
-    public static void onMinecraftShutdown() {
-        /*Log.info("Minecraft shutdown hook called!");
-        PROXY.onShutdown();*/
-    }
-    public static void reloadKeyMapping(){
-        //clear function key bind map
-        KeyBinding.clear();
-        //Iterate through all function
-        for (Map.Entry<String,AntimonyFunction> entry : AntimonyRegister.FunctionList.entrySet()) {
-            AntimonyFunction function = entry.getValue();
-            //get this function's key bind config
-            int keyCode = ConfigLoader.getInt(function.getName() + "_KeyBindValue",-114514);
-            //if key code equals -114514 mean it not have key bind
-            if(keyCode != -114514){
-                //add function and key bind to map
-                KeyBinding.put(function,keyCode);
-            }
-        }
+
+    public static class Color {
+        public static java.awt.Color AntimonyCyan = new java.awt.Color(30, 255, 243);
     }
 }

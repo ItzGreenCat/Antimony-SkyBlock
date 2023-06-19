@@ -4,6 +4,7 @@ import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.gui.ClickGUI;
 import com.greencat.antimony.core.gui.SettingsGUI;
+import me.greencat.lwebus.core.annotation.EventModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,7 +24,7 @@ public class Cartoon {
             }
         }
     }
-    @SubscribeEvent
+    @EventModule
     public void onFunctionDisable(CustomEventHandler.FunctionDisabledEvent event) {
         if(event.function.getName().equals("Cartoon")){
             if(!(Minecraft.getMinecraft().currentScreen instanceof ClickGUI) && !(Minecraft.getMinecraft().currentScreen instanceof SettingsGUI)) {
@@ -31,7 +32,7 @@ public class Cartoon {
             }
         }
     }
-    @SubscribeEvent
+    @EventModule
     public void onFunctionSwitch(CustomEventHandler.FunctionSwitchEvent event) {
         if(event.function.getName().equals("Cartoon") && !event.status){
             if(!(Minecraft.getMinecraft().currentScreen instanceof ClickGUI) && !(Minecraft.getMinecraft().currentScreen instanceof SettingsGUI)) {

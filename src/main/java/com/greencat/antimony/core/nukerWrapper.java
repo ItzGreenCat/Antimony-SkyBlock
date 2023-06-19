@@ -5,6 +5,7 @@ import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.notice.Notice;
 import com.greencat.antimony.core.notice.NoticeManager;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.annotation.EventModule;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -18,7 +19,7 @@ public class nukerWrapper {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
+    @EventModule
     public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
         if(event.function.getName().equals("NukerWrapper")){
             nuker.post();
@@ -26,7 +27,7 @@ public class nukerWrapper {
             nuker.enable = false;
         }
     }
-    @SubscribeEvent
+    @EventModule
     public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
         if(event.function.getName().equals("NukerWrapper")) {
             if(enable) {
@@ -47,7 +48,7 @@ public class nukerWrapper {
             }
         }
     }
-    @SubscribeEvent
+    @EventModule
     public void onEnable(CustomEventHandler.FunctionEnableEvent event){
         if(event.function.getName().equals("NukerWrapper")){
             if(enable) {

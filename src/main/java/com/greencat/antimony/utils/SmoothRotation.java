@@ -36,6 +36,9 @@ public class SmoothRotation {
         Minecraft.getMinecraft().thePlayer.rotationPitch = rotation.getPitch();
         Minecraft.getMinecraft().thePlayer.rotationYaw = rotation.getYaw();
     }
+    public static void lookYaw(Rotation rotation) {
+        Minecraft.getMinecraft().thePlayer.rotationYaw = rotation.getYaw();
+    }
     @SubscribeEvent
     public void onTick(TickEvent event) {
         if(Minecraft.getMinecraft().thePlayer == null) return;

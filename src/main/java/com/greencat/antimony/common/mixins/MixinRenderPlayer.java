@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.greencat.antimony.core.config.getConfigByFunctionName.get;
+import static com.greencat.antimony.core.config.ConfigInterface.get;
 
 @Mixin(RenderPlayer.class)
 public class MixinRenderPlayer {

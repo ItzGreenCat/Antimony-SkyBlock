@@ -1,12 +1,10 @@
 package com.greencat.antimony.common.mixins;
 
 import com.greencat.Antimony;
-import com.greencat.antimony.core.CustomSizeBackground;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.inputfix.GuiScreenFix;
 import com.greencat.antimony.utils.Blur;
-import com.greencat.antimony.utils.render.AnimationEngine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -20,8 +18,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.greencat.antimony.core.CustomSizeBackground.animation;
-import static com.greencat.antimony.core.CustomSizeBackground.next;
 
 @Mixin(GuiScreen.class)
 public abstract class MixinGuiScreen extends Gui {
@@ -43,10 +39,10 @@ public abstract class MixinGuiScreen extends Gui {
     public void defaultBackground(CallbackInfo cib){
         try {
             if (this.mc.theWorld != null) {
-                if((Integer) getConfigByFunctionName.get("Interface","bgstyle") == 0) {
+                if((Integer) ConfigInterface.get("Interface","bgstyle") == 0) {
                     this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
                 }
-                if((Integer) getConfigByFunctionName.get("Interface","bgstyle") == 1) {
+                if((Integer) ConfigInterface.get("Interface","bgstyle") == 1) {
                     Blur.renderBlur(0, 0, this.width, this.height, 20);
                 }
                 GlStateManager.pushMatrix();
@@ -81,28 +77,8 @@ public abstract class MixinGuiScreen extends Gui {
     public void modifyBackground(int p_drawBackground_1_, CallbackInfo ci){
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
-        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/CustomUI/wave/frames_" + (int)(animation.xCoord) + ".png"));
-        int fps = 20;
-            if(animation.xCoord + fps > 161 && animation.xCoord != 161){
-                if((int)animation.xCoord == next) {
-                    animation.moveTo(161, 0, 1);
-                    next = 161;
-                }
-            } else if((int) animation.xCoord == 161){
-                animation.xCoord = 1;
-                next = 1;
-            } else {
-                if((int)animation.xCoord == next) {
-                    next = (int) (animation.xCoord + fps);
-                    animation.moveTo((int) (animation.xCoord + fps), 0, 1);
-                }
-            }
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            if(!CustomSizeBackground.enable) {
-                Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, this.width, (int) (this.width * 0.5625F), this.width, this.width * 0.5625F);
-            } else {
-                Gui.drawModalRectWithCustomSizedTexture(CustomSizeBackground.x, CustomSizeBackground.y, 0, 0, CustomSizeBackground.w, CustomSizeBackground.h, this.width, this.width * 0.5625F);
-            }
+        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/CustomUI/defaultBackground.png"));
+        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, this.width, (int) (this.width * 0.5625F), this.width, this.width * 0.5625F);
         ci.cancel();
     }
 }

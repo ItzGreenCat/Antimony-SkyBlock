@@ -1,5 +1,6 @@
 package com.greencat.antimony.core.register;
 
+import com.greencat.Antimony;
 import com.greencat.antimony.core.storage.SelectGUIStorage;
 import com.greencat.antimony.core.type.AntimonyFunction;
 import com.greencat.antimony.core.type.SelectObject;
@@ -9,17 +10,19 @@ import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AntimonyRegister {
     static long lastReload = 0;
     //All registered functions are stored
     public static Map<String,AntimonyFunction> FunctionList = new HashMap<String,AntimonyFunction>();
-    public static List<AntimonyFunction> enabledList = new ArrayList<AntimonyFunction>();
+    public static CopyOnWriteArrayList<AntimonyFunction> enabledList = new CopyOnWriteArrayList<AntimonyFunction>();
     //GUI list storage
     SelectGUIStorage SelectGuiStorage = new SelectGUIStorage();
     //Register a function
     public void RegisterFunction(AntimonyFunction function) {
         FunctionList.put(function.getName(),function);
+        Antimony.LOGGER.info("Register Function -> " + function.getName());
     }
     //Reorder the list of functions to make the FunctionList more beautiful
     public static void ReList(){
@@ -52,35 +55,35 @@ public class AntimonyRegister {
             }
             NewList.add(table);
             SelectGuiStorage.SetWholeList(NewList);
-
         }
+        Antimony.LOGGER.info("Register Select Object -> " + object.getName());
     }
     //Register a empty list,you still need to invoke RegisterSelectObject to add SelectObject into list
     public void RegisterTable(SelectTable table) {
         SelectGUIStorage.TableStorage.add(table);
     }
     public static void reloadEnableList(){
-        if(Minecraft.getMinecraft().theWorld != null){
-            enabledList.clear();
-            for (Map.Entry<String,AntimonyFunction> entry : FunctionList.entrySet()) {
-                if(entry.getValue().getStatus()){
-                    enabledList.add(entry.getValue());
+            if (Minecraft.getMinecraft().theWorld != null) {
+                enabledList.clear();
+                for (Map.Entry<String, AntimonyFunction> entry : FunctionList.entrySet()) {
+                    if (entry.getValue().getStatus()) {
+                        enabledList.add(entry.getValue());
+                    }
                 }
+                Collections.sort(enabledList);
             }
-            Collections.sort(enabledList);
-        }
     }
     public static void reloadEnableListUncheck(){
-        if(System.currentTimeMillis() - lastReload > 1000) {
-            lastReload = System.currentTimeMillis();
-            enabledList.clear();
-            for (Map.Entry<String, AntimonyFunction> entry : FunctionList.entrySet()) {
-                if (entry.getValue().getStatus()) {
-                    enabledList.add(entry.getValue());
+            if (System.currentTimeMillis() - lastReload > 1000) {
+                lastReload = System.currentTimeMillis();
+                enabledList.clear();
+                for (Map.Entry<String, AntimonyFunction> entry : FunctionList.entrySet()) {
+                    if (entry.getValue().getStatus()) {
+                        enabledList.add(entry.getValue());
+                    }
                 }
+                Collections.sort(enabledList);
             }
-            Collections.sort(enabledList);
-        }
     }
 
 }

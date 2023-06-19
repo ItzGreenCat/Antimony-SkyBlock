@@ -22,16 +22,18 @@ public class AnimationEngine {
         yCoord = y;
         targetX = x;
         targetY = y;
-        MinecraftForge.EVENT_BUS.register(this);
     }
     public AnimationEngine() {
         xCoord = 0;
         yCoord = 0;
         targetX = 0;
         targetY = 0;
-        MinecraftForge.EVENT_BUS.register(this);
     }
+    public void register(){
+        AnimationManager.add(this);
+    };
     public void moveTo(int x,int y,double second){
+        register();
         if(targetX != x) {
             this.targetX = x;
             modifyX = true;
@@ -73,9 +75,7 @@ public class AnimationEngine {
             modifyY = false;
         }
     }
-    @SubscribeEvent
-    public void RenderTick(TickEvent.RenderTickEvent event){
-        if(event.phase == TickEvent.Phase.START){
+    public void RenderTick(){
             if(targetX != xCoord){
                 if(Math.abs(targetX - xCoord) > xStep) {
                     if (xCoord > targetX) {
@@ -98,17 +98,17 @@ public class AnimationEngine {
                     yCoord = targetY;
                 }
             }
+            if(targetX == xCoord && targetY == yCoord){
+                destroy();
+            }
             if(targetX != xCoord || targetY != yCoord){
                 if(Math.abs(Minecraft.getDebugFPS() - prevFPS) > 5){
+                    destroy();
                     moveTo((int)this.targetX,(int)this.targetY,(sec * 1000 - (System.currentTimeMillis() - lastMoveTo)) / 1000);
                 }
             }
-        }
     }
     public void destroy(){
-        MinecraftForge.EVENT_BUS.unregister(this);
-    }
-    public void enable(){
-        MinecraftForge.EVENT_BUS.register(this);
+        AnimationManager.destroy(this);
     }
 }

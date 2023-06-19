@@ -4,12 +4,11 @@ import com.greencat.Antimony;
 import com.greencat.antimony.common.key.KeyLoader;
 import com.greencat.antimony.common.mixins.GuiScreenAccessor;
 import com.greencat.antimony.common.test.Screenshot;
-import com.greencat.antimony.core.CustomSizeBackground;
 import com.greencat.antimony.core.EtherwarpTeleport;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.FunctionManager.SelectGuiFunctionExecutant;
 import com.greencat.antimony.core.config.EtherwarpWaypoints;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.gui.ClickGUI;
 import com.greencat.antimony.core.gui.KeyBindsGUI;
@@ -26,6 +25,8 @@ import com.greencat.antimony.core.ui.transparent.SelectGUI;
 import com.greencat.antimony.core.ui.white.NewFunctionList;
 import com.greencat.antimony.core.ui.white.NewSelectGUI;
 import com.greencat.antimony.develop.Console;
+import com.greencat.antimony.utils.render.HotBarShadow;
+import com.greencat.antimony.utils.render.Shadow;
 import com.greencat.antimony.utils.sound.SoundPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -71,8 +72,8 @@ public class EventLoader {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public void RenderEvent(RenderGameOverlayEvent.Post event) {
         if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
-            int hidePart = (Integer) getConfigByFunctionName.get("HUD", "hide");
-            int style = (Integer) getConfigByFunctionName.get("HUD", "style");
+            int hidePart = (Integer) ConfigInterface.get("HUD", "hide");
+            int style = (Integer) ConfigInterface.get("HUD", "style");
             if (FunctionManager.getStatus("HUD")) {
                 if (!(Minecraft.getMinecraft().currentScreen instanceof ClickGUI) && !(Minecraft.getMinecraft().currentScreen instanceof SettingsGUI)) {
                     if (style == 0) {
@@ -136,7 +137,7 @@ public class EventLoader {
 
     @SubscribeEvent
     public void OnKeyPressed(InputEvent.KeyInputEvent event) throws Exception {
-        if (FunctionManager.getStatus("HUD") || (Integer) getConfigByFunctionName.get("HUD", "style") == 1) {
+        if (FunctionManager.getStatus("HUD") || (Integer) ConfigInterface.get("HUD", "style") == 1) {
             if (KeyLoader.SelectGuiUP.isPressed()) {
                 for (SelectTable table : SelectGUIStorage.TableStorage) {
                     if (table.getID().equals(Antimony.PresentGUI)) {
@@ -247,41 +248,36 @@ public class EventLoader {
     @SubscribeEvent
     public void handleGuiSound(TickEvent.RenderTickEvent event) {
         if(event.phase == TickEvent.Phase.END && Minecraft.getMinecraft().currentScreen != null){
-            GuiScreen screen = Minecraft.getMinecraft().currentScreen;
-            List<? extends GuiButton> buttons = ((GuiScreenAccessor)screen).getButton();
-            if(buttons.isEmpty()){
-                return;
-            }
-            for(GuiButton button : buttons){
-                if(mouseX >= button.xPosition && mouseY >= button.yPosition && mouseX < button.xPosition + button.width && mouseY < button.yPosition + button.height) {
-                    if (prevButton == null) {
-                        prevButton = button;
-                        SoundPlayer.play(new ResourceLocation("antimony:button_select"));
-                    } else if (prevButton != button) {
-                        prevButton = button;
-                        SoundPlayer.play(new ResourceLocation("antimony:button_select"));
-                    }
+            if((Boolean) ConfigInterface.get("Interface","buttonSound")) {
+                GuiScreen screen = Minecraft.getMinecraft().currentScreen;
+                List<? extends GuiButton> buttons = ((GuiScreenAccessor) screen).getButton();
+                if (buttons.isEmpty()) {
                     return;
                 }
-            }
-            prevButton = null;
-        }
-    }
-    static double prevLocation = 1.0D;
-    static long lastCheck = 0L;
-    @SubscribeEvent
-    public void handleBackgroundAnimation(TickEvent.RenderTickEvent event) {
-        if(event.phase == TickEvent.Phase.END){
-            if(System.currentTimeMillis() - lastCheck > 1000){
-                lastCheck = System.currentTimeMillis();
-                if(CustomSizeBackground.animation.xCoord == prevLocation) {
-                    CustomSizeBackground.animation.xCoord = 1;
-                    CustomSizeBackground.next = 1;
+                for (GuiButton button : buttons) {
+                    if (mouseX >= button.xPosition && mouseY >= button.yPosition && mouseX < button.xPosition + button.width && mouseY < button.yPosition + button.height) {
+                        if (prevButton == null) {
+                            prevButton = button;
+                            SoundPlayer.play(new ResourceLocation("antimony:button_select"));
+                        } else if (prevButton != button) {
+                            prevButton = button;
+                            SoundPlayer.play(new ResourceLocation("antimony:button_select"));
+                        }
+                        return;
+                    }
                 }
-                prevLocation = CustomSizeBackground.animation.xCoord;
+                prevButton = null;
             }
         }
     }
+    /*@SubscribeEvent(priority = EventPriority.NORMAL)
+    public void RenderHotbarShadow(RenderGameOverlayEvent.Post event) {
+        if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
+            if (Minecraft.getMinecraft().currentScreen == null) {
+                Shadow.drawShadow(HotBarShadow.x, HotBarShadow.y, HotBarShadow.w, HotBarShadow.h);
+            }
+        }
+    }*/
     /*@SubscribeEvent
     public void clientRender(RenderWorldLastEvent event) {
         Utils.OutlinedBoxWithESP(new BlockPos(Minecraft.getMinecraft().thePlayer.getPositionVector()).down(),Color.CYAN,false,2.5F);

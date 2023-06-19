@@ -1,6 +1,5 @@
 package com.greencat.antimony.common.mixins;
 
-import com.greencat.antimony.core.CustomSizeBackground;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiSlot;
@@ -15,8 +14,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
-
-import static com.greencat.antimony.core.CustomSizeBackground.animation;
 
 @Mixin(GuiSlot.class)
 public abstract class MixinGuiSlot {
@@ -35,14 +32,14 @@ public abstract class MixinGuiSlot {
     }
     @Inject(method = "overlayBackground",at = @At("HEAD"),cancellable = true)
     public void modifyRender(int p_overlayBackground_1_, int p_overlayBackground_2_, int p_overlayBackground_3_, int p_overlayBackground_4_, CallbackInfo ci){
-        CustomSizeBackground.y = p_overlayBackground_1_;
-        CustomSizeBackground.h = p_overlayBackground_2_ - p_overlayBackground_1_;
-        CustomSizeBackground.x = 0;
-        CustomSizeBackground.w = this.width;
+        int y = p_overlayBackground_1_;
+        int h = p_overlayBackground_2_ - p_overlayBackground_1_;
+        int x = 0;
+        int w = this.width;
         GlStateManager.pushMatrix();
         GlStateManager.color(0.75F,0.75F,0.75F);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/CustomUI/wave/frames_" + (int)(animation.xCoord) + ".png"));
-        Gui.drawModalRectWithCustomSizedTexture(CustomSizeBackground.x,CustomSizeBackground.y, CustomSizeBackground.x,CustomSizeBackground.y, CustomSizeBackground.w, CustomSizeBackground.h, this.width, this.width * 0.5625F);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/CustomUI/defaultBackground.png"));
+        Gui.drawModalRectWithCustomSizedTexture(x,y, x,y, w, h, this.width, this.width * 0.5625F);
         GlStateManager.popMatrix();
         ci.cancel();
     }

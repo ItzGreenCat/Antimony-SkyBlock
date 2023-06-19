@@ -1,11 +1,12 @@
 package com.greencat.antimony.common.function;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.InventoryClicker;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.thread.ThreadPool;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -23,7 +24,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
-public class HarpBot {
+public class HarpBot implements ReflectionlessEventHandler {
     static boolean isInHarp = false;
     static Slot slot;
     static long timestamp;
@@ -49,7 +50,7 @@ public class HarpBot {
     @SubscribeEvent
     public void onGuiRender(GuiScreenEvent.DrawScreenEvent.Post event) {
         if (!isInHarp) return;
-        if (slot != null && System.currentTimeMillis() - timestamp < (Integer) getConfigByFunctionName.get("HarpBot","delay") * 0.75) {
+        if (slot != null && System.currentTimeMillis() - timestamp < (Integer) ConfigInterface.get("HarpBot","delay") * 0.75) {
             GlStateManager.disableLighting();
             GlStateManager.disableDepth();
             GlStateManager.disableBlend();
@@ -64,8 +65,7 @@ public class HarpBot {
             GlStateManager.enableDepth();
         }
     }
-    @SubscribeEvent
-    public void onPacket(CustomEventHandler.PacketReceivedEvent event) throws InterruptedException {
+    public void onPacket(CustomEventHandler.PacketReceivedEvent event){
         if (FunctionManager.getStatus("HarpBot")) {
             if (isInHarp) {
                 if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
@@ -100,7 +100,7 @@ public class HarpBot {
                             }
                             for (int i = 1; i <= clicksNeeded; i++) {
                                 try {
-                                    Thread.sleep((Integer) getConfigByFunctionName.get("HarpBot","delay"));
+                                    Thread.sleep((Integer) ConfigInterface.get("HarpBot","delay"));
                                 } catch (InterruptedException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -112,6 +112,13 @@ public class HarpBot {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void invoke(Event event) {
+        if(event instanceof CustomEventHandler.PacketReceivedEvent){
+            onPacket((CustomEventHandler.PacketReceivedEvent) event);
         }
     }
 }

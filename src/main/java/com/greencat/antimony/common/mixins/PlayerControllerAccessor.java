@@ -10,4 +10,6 @@ public interface PlayerControllerAccessor {
     void setSlot(int i);
     @Accessor("currentPlayerItem")
     int getSlot();
+    @Accessor("curBlockDamageMP")
+    float getCurBlockDamageMP();
 }

@@ -1,7 +1,7 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -22,7 +22,7 @@ public class ChestFinder {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event){
         if (event.phase == TickEvent.Phase.START) {
-            mode = (Integer) getConfigByFunctionName.get("ChestFinder","mode");
+            mode = (Integer) ConfigInterface.get("ChestFinder","mode");
         }
     }
     @SubscribeEvent

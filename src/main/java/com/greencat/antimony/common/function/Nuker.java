@@ -1,7 +1,8 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore;
 import com.greencat.antimony.core.nukerCore2;
@@ -18,6 +19,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -27,7 +29,7 @@ import java.util.Objects;
 
 import static com.greencat.antimony.core.PlayerNameFilter.isValid;
 
-public class Nuker {
+public class Nuker extends FunctionStatusTrigger {
     nukerCore2 nuker = nukerWrapper.nuker;
     nukerCore core1 = new nukerCore();
     BlockPos pos;
@@ -35,53 +37,48 @@ public class Nuker {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
-    public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
-        if(event.function.getName().equals("Nuker")){
-            nukerWrapper.enable = false;
-            nukerWrapper.disable();
-            core1.pos = null;
-        }
+
+    @Override
+    public String getName() {
+        return "Nuker";
     }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
-        if(event.function.getName().equals("Nuker")) {
-            if (!event.status) {
-                nukerWrapper.enable = false;
-                nukerWrapper.disable();
-                core1.pos = null;
-            } else {
-                nukerWrapper.enable = true;
-                nukerWrapper.enable();
-                core1.pos = null;
-            }
-        }
+
+    @Override
+    public void post() {
+        nukerWrapper.enable = false;
+        nukerWrapper.disable();
+        core1.pos = null;
+        nukerCore.skipBPS = 0;
     }
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event){
-        if(event.function.getName().equals("Nuker")){
-            nukerWrapper.enable = true;
-            nukerWrapper.enable();
-            core1.pos = null;
-        }
+
+    @Override
+    public void init() {
+        nukerWrapper.enable = true;
+        nukerWrapper.enable();
+        core1.pos = null;
+        nukerCore.skipBPS = 0;
     }
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event){
+        nukerCore.extraBPS = (Integer)ConfigInterface.get("Nuker","extraBPS");
+        nukerCore.noDelay = (Boolean)ConfigInterface.get("Nuker","noDelay");
+        nukerCore.noRotate = (Boolean)ConfigInterface.get("Nuker","noCore1Rotate");
+        nukerCore.bpsLimit = (Integer)ConfigInterface.get("Nuker","bpsSkip");
         if(FunctionManager.getStatus("Nuker")) {
-            int type = (Integer)getConfigByFunctionName.get("Nuker","miningType");
+            int type = (Integer) ConfigInterface.get("Nuker","miningType");
             if(type == 0){
                 nuker.miningType = nukerCore2.MiningType.NORMAL;
             } else if(type == 1){
                 nuker.miningType = nukerCore2.MiningType.ONE_TICK;
             }
-            if((Integer)getConfigByFunctionName.get("Nuker","rotation") == 0){
+            if((Integer) ConfigInterface.get("Nuker","rotation") == 0){
                 nuker.rotation = nukerCore2.RotationType.SERVER_ROTATION;
-            } else if((Integer)getConfigByFunctionName.get("Nuker","rotation") == 1){
+            } else if((Integer) ConfigInterface.get("Nuker","rotation") == 1){
                 nuker.rotation = nukerCore2.RotationType.ROTATION;
-            }   else if((Integer)getConfigByFunctionName.get("Nuker","rotation") == 2){
+            }   else if((Integer) ConfigInterface.get("Nuker","rotation") == 2){
                 nuker.rotation = nukerCore2.RotationType.SMOOTH;
             }
-            nuker.ignoreGround = (Boolean)getConfigByFunctionName.get("Nuker","ignoreGround");
+            nuker.ignoreGround = (Boolean) ConfigInterface.get("Nuker","ignoreGround");
             pos = getBlock();
             if (type != 2) {
                 if (nuker.requestBlock) {
@@ -90,7 +87,7 @@ public class Nuker {
             } else {
                 try {
                     if (pos != null) {
-                        core1.nuke(new Vec3(Objects.requireNonNull(pos)));
+                        core1.nuke(new Vec3(Objects.requireNonNull(pos)),this,this.getClass().getDeclaredMethod("getBlock"));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -120,7 +117,7 @@ public class Nuker {
         double xPos = Minecraft.getMinecraft().thePlayer.posX;
         double yPos = Minecraft.getMinecraft().thePlayer.posY;
         double zPos = Minecraft.getMinecraft().thePlayer.posZ;
-        int bound = (Integer) getConfigByFunctionName.get("Nuker", "radius") * 2;
+        int bound = (Integer) ConfigInterface.get("Nuker", "radius") * 2;
         List<EntityPlayer> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(xPos - (bound / 2d), yPos - (bound / 2d), zPos - (bound / 2d), xPos + (bound / 2d), yPos + (bound / 2d), zPos + (bound / 2d)), null);
         for(EntityPlayer entity : entities){
             if (isValid(entity,true)) {
@@ -128,11 +125,11 @@ public class Nuker {
                 break;
             }
         }
-        if(hasPlayer && (!(Boolean) getConfigByFunctionName.get("Nuker", "disable"))){
+        if(hasPlayer && (!(Boolean) ConfigInterface.get("Nuker", "disable"))){
             hasPlayer = false;
         }
         if(!hasPlayer) {
-            int nukerType = (Integer) getConfigByFunctionName.get("Nuker", "type");
+            int nukerType = (Integer) ConfigInterface.get("Nuker", "type");
             if (nukerType == 0) {
                 pos = nuker.closestMineableBlock(Blocks.stained_glass);
             }
@@ -225,6 +222,47 @@ public class Nuker {
             if (nukerType == 14) {
                 pos = nuker.closestCropBlock();
             }
+            if (nukerType == 15) {
+                List<Block> oreList = new ArrayList<Block>();
+                oreList.add(Blocks.grass);
+                oreList.add(Blocks.tallgrass);
+                oreList.add(Blocks.red_flower);
+                oreList.add(Blocks.yellow_flower);
+                oreList.add(Blocks.leaves);
+                oreList.add(Blocks.leaves2);
+                pos = nuker.closestMineableBlock(oreList);
+            }
+            if (nukerType == 16) {
+                List<Block> oreList = new ArrayList<Block>();
+                oreList.add(Blocks.melon_block);
+                pos = nuker.closestMineableBlock(oreList);
+            }
+            if (nukerType == 17) {
+                List<Block> oreList = new ArrayList<Block>();
+                oreList.add(Blocks.pumpkin);
+                pos = nuker.closestMineableBlock(oreList);
+            }
+            if (nukerType == 18) {
+                pos = nuker.closestCropBlock(Blocks.potatoes);
+            }
+            if (nukerType == 19) {
+                pos = nuker.closestCropBlock(Blocks.wheat);
+            }
+            if (nukerType == 20) {
+                pos = nuker.closestCropBlock(Blocks.carrots);
+            }
+            if (nukerType == 21) {
+                pos = nuker.closestCropBlock(Blocks.nether_wart);
+            }
+            if (nukerType == 22) {
+                pos = nuker.closestMineableBlockCheckDown(Blocks.reeds);
+            }
+            if (nukerType == 23) {
+                pos = nuker.closestMineableBlockCheckDown(Blocks.cactus);
+            }
+            if (nukerType == 24) {
+                pos = nuker.closestCropBlock(Blocks.cocoa);
+            }
             return pos;
         } else {
             return null;
@@ -241,5 +279,12 @@ public class Nuker {
             }
         }
         return isInCave;
+    }
+    @SubscribeEvent
+    public void WorldChangeTrigger(WorldEvent.Load event) {
+        if (FunctionManager.getStatus("Nuker")) {
+            Utils.print("检测到世界服务器改变,自动关闭Nuker");
+            FunctionManager.setStatus("Nuker", false);
+        }
     }
 }

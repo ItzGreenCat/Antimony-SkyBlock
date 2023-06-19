@@ -1,6 +1,7 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.Antimony;
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.common.mixins.MinecraftAccessor;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
@@ -8,6 +9,7 @@ import com.greencat.antimony.core.nukerCore;
 import com.greencat.antimony.core.type.Rotation;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.annotation.EventModule;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockDirt;
 import net.minecraft.block.BlockLog;
@@ -30,11 +32,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ForagingBot {
+public class ForagingBot{
     static EnumStage stage;
     static nukerCore nuker = new nukerCore();
     static int tick = 0;
-    static Utils utils = new Utils();
 
     List<BlockPos> dirtList = new ArrayList<BlockPos>();
     public static long latest;
@@ -44,23 +45,23 @@ public class ForagingBot {
         CustomEventHandler.EVENT_BUS.register(this);
     }
 
-    @SubscribeEvent
+    @EventModule
     public void onEnable(CustomEventHandler.FunctionEnableEvent event) {
         if (event.function.getName().equals("ForagingBot")) {
             if (!init()) {
                 event.setCanceled(true);
-                utils.print("无法找到附近泥土");
+                Utils.print("无法找到附近泥土");
             }
         }
     }
 
-    @SubscribeEvent
+    @EventModule
     public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
         if (event.function.getName().equals("ForagingBot")) {
             if (event.status) {
                 if (!init()) {
                     event.setCanceled(true);
-                    utils.print("无法找到附近泥土");
+                    Utils.print("无法找到附近泥土");
                 }
             } else {
                 post();
@@ -68,7 +69,7 @@ public class ForagingBot {
         }
     }
 
-    @SubscribeEvent
+    @EventModule
     public void onDisabled(CustomEventHandler.FunctionDisabledEvent event) {
         if (event.function.getName().equals("ForagingBot")) {
             post();
@@ -185,55 +186,13 @@ public class ForagingBot {
                         if (stage == EnumStage.LOG) {
                             checkSwitch("treecap");
                             BlockPos target = null;
-                            if (Minecraft.getMinecraft().theWorld != null) {
-                                int StartY;
-                                int StartX;
-                                int StartZ;
-                                EntityPlayer player;
-                                int EndX;
-                                int EndY;
-                                int EndZ;
-                                int NowX;
-                                int NowY;
-                                int NowZ;
-                                player = Minecraft.getMinecraft().thePlayer;
-                                int bound;
-                                bound = 4;
-                                StartY = (int) (player.posY - 4);
-                                StartX = (int) (player.posX - bound);
-                                StartZ = (int) (player.posZ - bound);
-                                EndX = (int) (player.posX + bound);
-                                EndY = (int) (player.posY + 4);
-                                EndZ = (int) (player.posZ + bound);
-                                NowX = StartX;
-                                NowY = StartY;
-                                NowZ = StartZ;
-                                while (NowY != EndY) {
-                                    if (NowX == EndX) {
-                                        if (NowZ == EndZ) {
-
-                                            NowZ = StartZ;
-                                            NowX = StartX;
-                                            NowY = NowY + 1;
-                                        } else {
-                                            NowX = StartX;
-                                            NowZ = NowZ + 1;
-                                        }
-                                    } else {
-                                        NowX = NowX + 1;
-                                    }
-                                    BlockPos pos = new BlockPos(NowX, NowY, NowZ);
-                                    if (Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockLog) {
-                                        target = pos;
-                                        break;
-                                    }
+                            target = getLog();
+                            try {
+                                if (target != null) {
+                                    nuker.nuke(new Vec3(target), this, this.getClass().getDeclaredMethod("getLog"));
                                 }
-                                NowX = StartX;
-                                NowY = StartY;
-                                NowZ = StartZ;
-                            }
-                            if (target != null) {
-                                nuker.nuke(new Vec3(target));
+                            } catch(Exception ignored){
+
                             }
                         }
                     }
@@ -292,7 +251,55 @@ public class ForagingBot {
             }
         }
     }
+    public BlockPos getLog(){
+        if (Minecraft.getMinecraft().theWorld != null) {
+            int StartY;
+            int StartX;
+            int StartZ;
+            EntityPlayer player;
+            int EndX;
+            int EndY;
+            int EndZ;
+            int NowX;
+            int NowY;
+            int NowZ;
+            player = Minecraft.getMinecraft().thePlayer;
+            int bound;
+            bound = 4;
+            StartY = (int) (player.posY - 4);
+            StartX = (int) (player.posX - bound);
+            StartZ = (int) (player.posZ - bound);
+            EndX = (int) (player.posX + bound);
+            EndY = (int) (player.posY + 4);
+            EndZ = (int) (player.posZ + bound);
+            NowX = StartX;
+            NowY = StartY;
+            NowZ = StartZ;
+            while (NowY != EndY) {
+                if (NowX == EndX) {
+                    if (NowZ == EndZ) {
 
+                        NowZ = StartZ;
+                        NowX = StartX;
+                        NowY = NowY + 1;
+                    } else {
+                        NowX = StartX;
+                        NowZ = NowZ + 1;
+                    }
+                } else {
+                    NowX = NowX + 1;
+                }
+                BlockPos pos = new BlockPos(NowX, NowY, NowZ);
+                if (Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockLog) {
+                    return pos;
+                }
+            }
+            NowX = StartX;
+            NowY = StartY;
+            NowZ = StartZ;
+        }
+        return null;
+    }
     public boolean init() {
         List<BlockPos> target = new ArrayList<BlockPos>();
         if (Minecraft.getMinecraft().theWorld != null) {

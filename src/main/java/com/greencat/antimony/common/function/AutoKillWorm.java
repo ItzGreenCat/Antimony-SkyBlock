@@ -1,7 +1,7 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.HUDManager;
 import com.greencat.antimony.utils.Utils;
@@ -9,9 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StringUtils;
-import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
@@ -36,27 +34,26 @@ public class AutoKillWorm {
         CustomEventHandler.EVENT_BUS.register(this);
     }
     Minecraft mc = Minecraft.getMinecraft();
-    Utils utils = new Utils();
     @SubscribeEvent
     public void ClientTickEvent(TickEvent.ClientTickEvent event){
         if(FunctionManager.getStatus("AutoKillWorm")) {
             if(event.phase == TickEvent.Phase.START) {
                 if(stage == 0) {
                     if (Minecraft.getMinecraft().theWorld != null) {
-                        if (Tick < ((Integer) getConfigByFunctionName.get("AutoKillWorm", "cooldown") * 20)) {
+                        if (Tick < ((Integer) ConfigInterface.get("AutoKillWorm", "cooldown") * 20)) {
                             Tick = Tick + 1;
                         } else {
                             if (mc.theWorld != null) {
                                 if(Minecraft.getMinecraft().thePlayer.getHeldItem() != null){
                                     Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
                                 }
-                                aim = (Boolean) getConfigByFunctionName.get("AutoKillWorm", "aim");
+                                aim = (Boolean) ConfigInterface.get("AutoKillWorm", "aim");
                                 if (aim) {
                                     rotations[0] = Minecraft.getMinecraft().thePlayer.rotationYaw;
                                     rotations[1] = Minecraft.getMinecraft().thePlayer.rotationPitch;
-                                    Double x = Minecraft.getMinecraft().thePlayer.posX;
-                                    Double y = Minecraft.getMinecraft().thePlayer.posY;
-                                    Double z = Minecraft.getMinecraft().thePlayer.posZ;
+                                    double x = Minecraft.getMinecraft().thePlayer.posX;
+                                    double y = Minecraft.getMinecraft().thePlayer.posY;
+                                    double z = Minecraft.getMinecraft().thePlayer.posZ;
                                     List<EntitySilverfish> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntitySilverfish.class, new AxisAlignedBB(x - (20 / 2d), y - (20 / 2d), z - (20 / 2d), x + (20 / 2d), y + (20 / 2d), z + (20 / 2d)), null);
                                     if (!entityList.isEmpty()) {
                                         float[] angles = Utils.getAngles(entityList.get(0));
@@ -65,7 +62,7 @@ public class AutoKillWorm {
                                     }
                                 }
                                 if (FunctionManager.getStatus("AutoFish")) {
-                                    utils.print("已经关闭AutoFish");
+                                    Utils.print("已经关闭AutoFish");
                                     FunctionManager.setStatus("AutoFish", false);
                                 }
                                 if (FunctionManager.getStatus("ItemTranslate")) {
@@ -85,10 +82,10 @@ public class AutoKillWorm {
             }
             if(event.phase == TickEvent.Phase.END) {
                 if (stage == 1) {
-                    if (rcCount < (Integer) getConfigByFunctionName.get("AutoKillWorm", "rcCount")) {
-                        if(rcTick > (Integer)getConfigByFunctionName.get("AutoKillWorm", "rcCooldown")) {
+                    if (rcCount < (Integer) ConfigInterface.get("AutoKillWorm", "rcCount")) {
+                        if(rcTick > (Integer) ConfigInterface.get("AutoKillWorm", "rcCooldown")) {
                             if (!ActiveStaff()) {
-                                utils.print("无法找到对应物品");
+                                Utils.print("无法找到对应物品");
                             }
                             rcCount = rcCount + 1;
                             rcTick = 0;
@@ -130,8 +127,8 @@ public class AutoKillWorm {
     public void RenderText(RenderGameOverlayEvent event){
         if(FunctionManager.getStatus("AutoKillWorm")) {
             if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
-                double second = ((double) (((Integer)getConfigByFunctionName.get("AutoKillWorm","cooldown") * 20)) - Tick) / 20;
-                HUDManager.Render("Worm Killer Cooldown",(int)second,(Integer)getConfigByFunctionName.get("AutoKillWorm","timerX"),(Integer)getConfigByFunctionName.get("AutoKillWorm","timerY"));
+                double second = ((double) (((Integer) ConfigInterface.get("AutoKillWorm","cooldown") * 20)) - Tick) / 20;
+                HUDManager.Render("Worm Killer Cooldown",(int)second,(Integer) ConfigInterface.get("AutoKillWorm","timerX"),(Integer) ConfigInterface.get("AutoKillWorm","timerY"));
             }
         }
     }
@@ -142,7 +139,7 @@ public class AutoKillWorm {
             latest = System.currentTimeMillis();
             for (int i = 0; i < 8; ++i) {
                 ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.mainInventory[i];
-                if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains(((String)getConfigByFunctionName.get("AutoKillWorm","itemName")).toLowerCase())) {
+                if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains(((String) ConfigInterface.get("AutoKillWorm","itemName")).toLowerCase())) {
                     Minecraft.getMinecraft().thePlayer.inventory.currentItem = i;
                     Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, stack);
                     foundStaff = true;
@@ -155,7 +152,7 @@ public class AutoKillWorm {
     @SubscribeEvent
     public void WorldChangeTrigger(WorldEvent.Load event) {
         if(FunctionManager.getStatus("AutoKillWorm")) {
-                new Utils().print("检测到世界服务器改变,自动关闭AutoWormKill");
+                Utils.print("检测到世界服务器改变,自动关闭AutoWormKill");
                 FunctionManager.setStatus("AutoKillWorm",false);
         }
     }

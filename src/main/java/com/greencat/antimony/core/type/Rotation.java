@@ -1,5 +1,7 @@
 package com.greencat.antimony.core.type;
 
+import com.greencat.antimony.utils.RotationUtils;
+
 public class Rotation {
     private float yaw;
     private float pitch;
@@ -39,5 +41,19 @@ public class Rotation {
 
     public String toString() {
         return "Rotation{yaw=" + this.yaw + ", pitch=" + this.pitch + '}';
+    }
+    public void fixedSensitivity(float sensitivity) {
+        float f = sensitivity * 0.6F + 0.2F;
+        float gcd = f * f * f * 1.2F;
+
+        Rotation rotation = RotationUtils.serverRotation;
+
+        float deltaYaw = yaw - rotation.yaw;
+        deltaYaw -= deltaYaw % gcd;
+        yaw = rotation.yaw + deltaYaw;
+
+        float deltaPitch = pitch - rotation.pitch;
+        deltaPitch -= deltaPitch % gcd;
+        pitch = rotation.pitch + deltaPitch;
     }
 }

@@ -1,5 +1,6 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.Pathfinder;
 import com.greencat.antimony.core.PathfinderProxy;
@@ -7,6 +8,8 @@ import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore2;
 import com.greencat.antimony.core.nukerWrapper;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.init.Blocks;
@@ -22,7 +25,7 @@ import java.util.List;
 
 import static com.greencat.antimony.utils.Utils.print;
 
-public class FrozenTreasureBot {
+public class FrozenTreasureBot extends FunctionStatusTrigger implements ReflectionlessEventHandler {
     public BlockPos pos = null;
     public BlockPos last = null;
     public BlockPos pathfinderPos = null;
@@ -35,37 +38,23 @@ public class FrozenTreasureBot {
         CustomEventHandler.EVENT_BUS.register(this);
     }
 
-    @SubscribeEvent
-    public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
-        if (event.function.getName().equals("FrozenTreasureBot")) {
-            nukerWrapper.enable = false;
-            nukerWrapper.disable();
-            pathfinderPos = null;
-            FunctionManager.setStatus("Pathfinding", false);
-        }
+    @Override
+    public String getName() {
+        return "FrozenTreasureBot";
     }
 
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
-        if (event.function.getName().equals("FrozenTreasureBot")) {
-            if (!event.status) {
-                nukerWrapper.enable = false;
-                nukerWrapper.disable();
-                pathfinderPos = null;
-                FunctionManager.setStatus("Pathfinding", false);
-            } else {
-                nukerWrapper.enable = true;
-                nukerWrapper.enable();
-            }
-        }
+    @Override
+    public void post() {
+        nukerWrapper.enable = false;
+        nukerWrapper.disable();
+        pathfinderPos = null;
+        FunctionManager.setStatus("Pathfinding", false);
     }
 
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event) {
-        if (event.function.getName().equals("FrozenTreasureBot")) {
-            nukerWrapper.enable = true;
-            nukerWrapper.enable();
-        }
+    @Override
+    public void init() {
+        nukerWrapper.enable = true;
+        nukerWrapper.enable();
     }
 
     @SubscribeEvent
@@ -99,7 +88,6 @@ public class FrozenTreasureBot {
             }
         }
     }
-    @SubscribeEvent
     public void BlockChangeEvent(CustomEventHandler.BlockChangeEvent event) {
         if (FunctionManager.getStatus("FrozenTreasureBot")) {
             if (BlockPosEquals(event.pos, last)) {
@@ -191,5 +179,11 @@ public class FrozenTreasureBot {
     }
     public static boolean BlockPosEquals(BlockPos pos1,BlockPos pos2) {
         return pos1.equals(pos2);
+    }
+    @Override
+    public void invoke(Event event){
+        if(event instanceof CustomEventHandler.BlockChangeEvent){
+            BlockChangeEvent((CustomEventHandler.BlockChangeEvent) event);
+        }
     }
 }

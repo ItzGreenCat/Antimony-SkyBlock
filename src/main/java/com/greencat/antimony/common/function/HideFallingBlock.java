@@ -18,9 +18,9 @@ public class HideFallingBlock {
     @SubscribeEvent
     public void getFallingBlock(RenderWorldLastEvent event) {
         if (FunctionManager.getStatus("HideFallingBlock")) {
-            Double x = Minecraft.getMinecraft().thePlayer.posX;
-            Double y = Minecraft.getMinecraft().thePlayer.posY;
-            Double z = Minecraft.getMinecraft().thePlayer.posZ;
+            double x = Minecraft.getMinecraft().thePlayer.posX;
+            double y = Minecraft.getMinecraft().thePlayer.posY;
+            double z = Minecraft.getMinecraft().thePlayer.posZ;
             List<EntityFallingBlock> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityFallingBlock.class, new AxisAlignedBB(x - (500 / 2d), y - (256 / 2d), z - (500 / 2d), x + (500 / 2d), y + (256 / 2d), z + (500 / 2d)), null);
             for(Entity entity : entityList){
                 if(entity instanceof EntityFallingBlock){

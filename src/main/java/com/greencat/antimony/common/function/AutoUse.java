@@ -1,7 +1,7 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.HUDManager;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -17,13 +17,12 @@ public class AutoUse {
     int Tick = 0;
     int maxTick = 0;
     Minecraft mc = Minecraft.getMinecraft();
-    Utils utils = new Utils();
     public AutoUse(){
         MinecraftForge.EVENT_BUS.register(this);
     }
     @SubscribeEvent
     public void ClientTickEvent(TickEvent.ClientTickEvent event){
-        maxTick = ((Integer)getConfigByFunctionName.get("AutoUse","cooldown")) * 40;
+        maxTick = ((Integer) ConfigInterface.get("AutoUse","cooldown")) * 40;
         if(FunctionManager.getStatus("AutoUse")) {
             if(Minecraft.getMinecraft().theWorld != null) {
                 if (Tick < maxTick) {
@@ -31,7 +30,7 @@ public class AutoUse {
                 } else {
                     if (mc.theWorld != null) {
                         if (!triggerInstantSwitch()) {
-                            utils.print("无法找到对应物品");
+                            Utils.print("无法找到对应物品");
                         }
                         Tick = 0;
                     }
@@ -45,7 +44,7 @@ public class AutoUse {
             latest = System.currentTimeMillis();
             for (int i = 0; i < 8; ++i) {
                 ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.mainInventory[i];
-                if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains(((String)getConfigByFunctionName.get("AutoUse","itemName")).toLowerCase())) {
+                if (stack != null && StringUtils.stripControlCodes(stack.getDisplayName().toLowerCase()).contains(((String) ConfigInterface.get("AutoUse","itemName")).toLowerCase())) {
                     int currentSlot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
                     Minecraft.getMinecraft().thePlayer.inventory.currentItem = i;
                     Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, stack);
@@ -61,8 +60,8 @@ public class AutoUse {
     public void RenderText(RenderGameOverlayEvent event){
         if(FunctionManager.getStatus("AutoUse")) {
             if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
-                double second = ((double) (((Integer)getConfigByFunctionName.get("AutoUse","cooldown") * 40) - Tick)) / 40;
-                HUDManager.Render("AutoUse Cooldown",(int)second,(Integer)getConfigByFunctionName.get("AutoUse","timerX"),(Integer)getConfigByFunctionName.get("AutoUse","timerY"));
+                double second = ((double) (((Integer) ConfigInterface.get("AutoUse","cooldown") * 40) - Tick)) / 40;
+                HUDManager.Render("AutoUse Cooldown",(int)second,(Integer) ConfigInterface.get("AutoUse","timerX"),(Integer) ConfigInterface.get("AutoUse","timerY"));
             }
         }
     }

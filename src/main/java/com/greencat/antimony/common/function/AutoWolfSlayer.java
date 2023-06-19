@@ -1,8 +1,8 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.Pathfinding;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.Pathfinder;
 import com.greencat.antimony.utils.Utils;
@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.List;
 
-public class AutoWolfSlayer {
+public class AutoWolfSlayer extends FunctionStatusTrigger {
     EntityLivingBase target;
     public static long latest;
     boolean inBoss;
@@ -29,40 +29,29 @@ public class AutoWolfSlayer {
     Boolean isKilledBoss = false;
     Boolean isSpawnedBoss = false;
     Minecraft mc = Minecraft.getMinecraft();
-    Utils utils = new Utils();
     boolean isSpawn = false;
 
     public AutoWolfSlayer() {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
-    public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
-        if(event.function.getName().equals("AutoWolfSlayer")){
-            FunctionManager.setStatus("Pathfinding",false);
-            FunctionManager.setStatus("ShortBowAura", false);
-            FunctionManager.setStatus("Killaura", false);
-        }
+
+    @Override
+    public String getName() {
+        return "AutoWolfSlayer";
     }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
-        if(!event.status){
-            if(event.function.getName().equals("AutoWolfSlayer")){
-                FunctionManager.setStatus("Pathfinding",false);
-                FunctionManager.setStatus("ShortBowAura", false);
-                FunctionManager.setStatus("Killaura", false);
-            }
-        } else {
-            isKilledBoss = false;
-            isSpawnedBoss = false;
-        }
+
+    @Override
+    public void post() {
+        FunctionManager.setStatus("Pathfinding",false);
+        FunctionManager.setStatus("ShortBowAura", false);
+        FunctionManager.setStatus("Killaura", false);
     }
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event){
-        if(event.function.getName().equals("AutoWolfSlayer")){
-            isKilledBoss = false;
-            isSpawnedBoss = false;
-        }
+
+    @Override
+    public void init() {
+        isKilledBoss = false;
+        isSpawnedBoss = false;
     }
 
     @SubscribeEvent
@@ -82,7 +71,7 @@ public class AutoWolfSlayer {
                             target = null;
                         }
                     } else {
-                        utils.print("附近无法找到狼");
+                        Utils.print("附近无法找到狼");
                     }
                 }
                 if(!FunctionManager.getStatus("Pathfinding")) {
@@ -109,17 +98,17 @@ public class AutoWolfSlayer {
                             FunctionManager.setStatus("AutoWolfSlayer", true);
                         }
                     }
-                    if(((Integer) getConfigByFunctionName.get("AutoWolfSlayer","mode") == 1) && !inBoss()){
+                    if(((Integer) ConfigInterface.get("AutoWolfSlayer","mode") == 1) && !inBoss()){
                         if(!FunctionManager.getStatus("ShortBowAura")) {
                             FunctionManager.setStatus("ShortBowAura", true);
                             FunctionManager.setStatus("Killaura", false);
-                            checkSwitch((String) getConfigByFunctionName.get("AutoWolfSlayer","bowName"));
+                            checkSwitch((String) ConfigInterface.get("AutoWolfSlayer","bowName"));
                         }
                     }
-                    if(((Integer) getConfigByFunctionName.get("AutoWolfSlayer","mode") == 0) || inBoss()) {
+                    if(((Integer) ConfigInterface.get("AutoWolfSlayer","mode") == 0) || inBoss()) {
                         if (!FunctionManager.getStatus("Killaura")) {
                             FunctionManager.setStatus("Killaura", true);
-                            checkSwitch((String) getConfigByFunctionName.get("AutoWolfSlayer","swordName"));
+                            checkSwitch((String) ConfigInterface.get("AutoWolfSlayer","swordName"));
                         }
                     }
                     if(disableCount > 160) {
@@ -144,7 +133,7 @@ public class AutoWolfSlayer {
                         disableCount = disableCount + 1;
                     }
                 } else {
-                    if((Integer) getConfigByFunctionName.get("AutoWolfSlayer","mode") == 0) {
+                    if((Integer) ConfigInterface.get("AutoWolfSlayer","mode") == 0) {
                         if (FunctionManager.getStatus("Killaura")) {
                             FunctionManager.setStatus("Killaura", false);
                         }

@@ -2,13 +2,12 @@ package com.greencat.antimony.core.ui.QSF;
 
 import com.greencat.Antimony;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.storage.SelectGUIStorage;
 import com.greencat.antimony.core.type.SelectObject;
 import com.greencat.antimony.core.type.SelectTable;
 import com.greencat.antimony.utils.FontManager;
 import com.greencat.antimony.utils.GaussianBlur;
-import com.greencat.antimony.utils.Utils;
 import com.greencat.antimony.utils.render.AnimationEngine;
 import com.greencat.antimony.utils.render.Shadow;
 import net.minecraft.client.Minecraft;
@@ -24,7 +23,7 @@ public class QSFSelectGUI {
     static String currentName;
     AnimationEngine animation = new AnimationEngine(5,0);
     public void draw(){
-        int configHeight = (Integer) getConfigByFunctionName.get("HUD","HUDHeight");
+        int configHeight = (Integer) ConfigInterface.get("HUD","HUDHeight");
         int height = configHeight + 30;
         int width = 10;
         FontManager.QuicksandFont47.drawString("Antimony",width,configHeight + 5,0xFFFFFF);

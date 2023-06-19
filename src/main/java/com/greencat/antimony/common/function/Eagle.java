@@ -2,6 +2,7 @@ package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
+import me.greencat.lwebus.core.annotation.EventModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
@@ -27,7 +28,7 @@ public class Eagle {
             }
         }
     }
-    @SubscribeEvent
+    @EventModule
     public void onDisabled(CustomEventHandler.FunctionDisabledEvent event) {
         if (event.function.getName().equals("Eagle")) {
             if (Minecraft.getMinecraft().theWorld != null) {

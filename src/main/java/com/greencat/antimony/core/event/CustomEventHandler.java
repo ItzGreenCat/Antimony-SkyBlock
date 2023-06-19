@@ -3,6 +3,8 @@ package com.greencat.antimony.core.event;
 
 import com.greencat.antimony.core.type.AntimonyFunction;
 import io.netty.channel.ChannelHandlerContext;
+import me.greencat.lwebus.core.EventBus;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
@@ -14,35 +16,37 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.Cancelable;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.EventBus;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.List;
 
 public class CustomEventHandler {
     public static final EventBus EVENT_BUS = new EventBus();
     //trigger on a function enable
-    @Cancelable
+    
     public static class FunctionEnableEvent extends Event {
         public AntimonyFunction function;
         public FunctionEnableEvent(AntimonyFunction function){
             this.function = function;
         }
+        @Override
+        public boolean isCancelable(){
+            return true;
+        }
     }
     //trigger on a function disable
-    @Cancelable
+    
     public static class FunctionDisabledEvent extends Event {
         public AntimonyFunction function;
         public FunctionDisabledEvent(AntimonyFunction function){
             this.function = function;
         }
+        @Override
+        public boolean isCancelable(){
+            return true;
+        }
     }
     //trigger on a function switching state
-    @Cancelable
+    
     public static class FunctionSwitchEvent extends Event {
         public AntimonyFunction function;
         public boolean status;
@@ -50,20 +54,28 @@ public class CustomEventHandler {
             this.function = function;
             this.status = status;
         }
+        @Override
+        public boolean isCancelable(){
+            return true;
+        }
     }
     //trigger on received a packet from server
-    @Cancelable
+    
     public static class PacketReceivedEvent extends Event {
-        public Packet packet;
+        public Packet<?> packet;
         public ChannelHandlerContext context;
 
         public PacketReceivedEvent(Packet packet,ChannelHandlerContext context) {
             this.packet = packet;
             this.context = context;
         }
+        @Override
+        public boolean isCancelable(){
+            return true;
+        }
     }
     //trigger on a player motion changed
-    @Cancelable
+    
     public static class MotionChangeEvent extends Event {
         public float yaw;
         public float pitch;
@@ -100,8 +112,12 @@ public class CustomEventHandler {
         public boolean isPre(){
             return pre;
         }
-        @Cancelable
+        
         public static class Post extends MotionChangeEvent {
+            @Override
+            public boolean isCancelable(){
+                return true;
+            }
             public Post(double x, double y, double z, float yaw, float pitch, boolean onGround, boolean sprinting, boolean sneaking) {
                 super(x, y, z, yaw, pitch, onGround, sprinting, sneaking);
             }
@@ -111,8 +127,12 @@ public class CustomEventHandler {
             }
         }
 
-        @Cancelable
+        
         public static class Pre extends MotionChangeEvent {
+            @Override
+            public boolean isCancelable(){
+                return true;
+            }
             public Pre(double x, double y, double z, float yaw, float pitch, boolean onGround, boolean sprinting, boolean sneaking) {
                 super(x, y, z, yaw, pitch, onGround, sprinting, sneaking);
             }
@@ -120,9 +140,13 @@ public class CustomEventHandler {
                 super(x, y, z, yaw, pitch, onGround, sprinting, sneaking,pre);
             }
         }
+        @Override
+        public boolean isCancelable(){
+            return true;
+        }
     }
     //trigger on client send a packet to server
-    @Cancelable
+    
     public static class PacketSentEvent extends Event {
         public Packet<?> packet;
 
@@ -137,12 +161,20 @@ public class CustomEventHandler {
                 this.packet = packet;
             }
         }
+        @Override
+        public boolean isCancelable(){
+            return true;
+        }
     }
-    @Cancelable
+    
     public static class PacketEvent extends Event{
         public Packet<?> packet;
         public PacketEvent(Packet<?> packet) {
             this.packet = packet;
+        }
+        @Override
+        public boolean isCancelable(){
+            return true;
         }
     }
     //trigger on player LivingUpdated
@@ -173,12 +205,16 @@ public class CustomEventHandler {
             this.context = context;
         }
     }
-    @Cancelable
+    
     public static class RenderTileEntityPreEvent extends Event {
         public TileEntity entity;
 
         public RenderTileEntityPreEvent(TileEntity entity) {
             this.entity = entity;
+        }
+        @Override
+        public boolean isCancelable(){
+            return true;
         }
     }
     public static class ClickBlockEvent extends Event{
@@ -189,20 +225,28 @@ public class CustomEventHandler {
             this.facing = facing;
         }
     }
-    @Cancelable
+    
     public static class GuiContainerEvent extends Event {
         public Container container;
         public GuiScreen gui;
         public Slot slot;
-        @Cancelable
+        @Override
+        public boolean isCancelable(){
+            return true;
+        }
+        
         public static class DrawSlotEvent extends GuiContainerEvent{
             public DrawSlotEvent(Container c, GuiScreen g, Slot s) {
                 container = c;
                 gui = g;
                 slot = s;
             }
+            @Override
+            public boolean isCancelable(){
+                return true;
+            }
         }
-        @Cancelable
+        
         public static class SlotClickEvent extends GuiContainerEvent{
             public int slot_id;
             public SlotClickEvent(Container c, GuiScreen g, Slot s,int sid) {
@@ -211,6 +255,10 @@ public class CustomEventHandler {
                 slot = s;
                 slot_id = sid;
             }
+            @Override
+            public boolean isCancelable(){
+                return true;
+            }
         }
     }
     /*public static class AttackEvent extends Event{
@@ -218,7 +266,7 @@ public class CustomEventHandler {
 
         }
     }*/
-    @Cancelable
+    
     public static class CurrentPlayerMoveEvent extends Event {
         private double x;
         private double y;
@@ -237,6 +285,10 @@ public class CustomEventHandler {
         public CurrentPlayerMoveEvent setZ(final double z) {
             this.z = z;
             return this;
+        }
+        @Override
+        public boolean isCancelable(){
+            return true;
         }
 
         public double getX() {
@@ -276,7 +328,15 @@ public class CustomEventHandler {
             this.entity = entity;
         }
     }
-    @Cancelable
+    public static class ScreenRender2DEvent extends Event
+    {
+        public float partialTicks;
+
+        public ScreenRender2DEvent(float partialTicks) {
+            this.partialTicks = partialTicks;
+        }
+    }
+    
     public static class BlockBoundsEvent extends Event {
         public AxisAlignedBB aabb;
         public Block block;
@@ -288,6 +348,10 @@ public class CustomEventHandler {
             this.block = block;
             this.pos = pos;
             this.collidingEntity = collidingEntity;
+        }
+        @Override
+        public boolean isCancelable(){
+            return true;
         }
     }
 }

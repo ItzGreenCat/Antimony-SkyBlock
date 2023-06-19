@@ -1,20 +1,19 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
 import com.greencat.antimony.core.event.CustomEventHandler;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.client.Minecraft;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
-import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class AutoWeapon {
+public class AutoWeapon implements ReflectionlessEventHandler {
     public static boolean isEnable = false;
     public static long latest;
     public AutoWeapon(){
@@ -29,7 +28,6 @@ public class AutoWeapon {
             isEnable = false;
         }
     }
-    @SubscribeEvent
     public void onPacketSent(CustomEventHandler.PacketSentEvent event){
         if (isEnable && event.packet instanceof C02PacketUseEntity && ((C02PacketUseEntity) event.packet).getAction() == C02PacketUseEntity.Action.ATTACK){
             Switch();
@@ -53,6 +51,13 @@ public class AutoWeapon {
             }
         } catch(Exception e){
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void invoke(Event event) {
+        if(event instanceof CustomEventHandler.PacketSentEvent){
+            onPacketSent((CustomEventHandler.PacketSentEvent) event);
         }
     }
 }

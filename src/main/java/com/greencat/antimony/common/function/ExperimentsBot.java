@@ -2,8 +2,6 @@ package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
-import com.greencat.antimony.core.type.AntimonyFunction;
-import com.greencat.antimony.utils.FontManager;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -13,7 +11,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,7 +18,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
 
-import static com.greencat.antimony.core.config.getConfigByFunctionName.get;
+import static com.greencat.antimony.core.config.ConfigInterface.get;
 
 public class ExperimentsBot {
     Minecraft mc = Minecraft.getMinecraft();

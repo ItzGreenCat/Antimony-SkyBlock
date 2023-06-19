@@ -6,6 +6,7 @@ import com.greencat.antimony.core.type.Rotation;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.Utils;
 import com.greencat.antimony.utils.timer.SystemTimer;
+import me.greencat.lwebus.core.annotation.EventModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.KeyBinding;
@@ -26,13 +27,14 @@ public class Pathfinding {
     private static SystemTimer unstucker;
     private static int unstucktime = 3;
     private static int tick = 0;
-    Utils utils = new Utils();
+    public static boolean noCheck = false;
+    public static boolean blockTarget = false;
 
     public Pathfinding() {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
+    @EventModule
     public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
         if(event.function.getName().equals("Pathfinding")){
             if(event.status){
@@ -40,10 +42,10 @@ public class Pathfinding {
                 oldPos = null;
                 curPos = null;
                 if (!Pathfinder.hasPath()) {
-                    utils.print("Pathfinder无法找到路径");
+                    Utils.print("Pathfinder无法找到路径");
                     FunctionManager.setStatus("Pathfinding",false);
                 } else {
-                    utils.print("Pathfinder路径目标: " + Pathfinder.getGoal());
+                    Utils.print("Pathfinder路径目标: " + Pathfinder.getGoal());
                 }
             } else {
                 Pathfinder.path = null;
@@ -52,29 +54,36 @@ public class Pathfinding {
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), false);
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindBack.getKeyCode(), false);
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(), false);
+                noCheck = false;
             }
         }
     }
 
-    @SubscribeEvent
+    @EventModule
     public void onEnable(CustomEventHandler.FunctionEnableEvent event) {
-        if(event.function.getName().equals("Pathfinding")) {
-            stuckTicks = 0;
-            oldPos = null;
-            curPos = null;
-            if (!Pathfinder.hasPath()) {
-                utils.print("Pathfinder无法找到路径");
-                FunctionManager.switchStatus("Pathfinding");
-            } else {
-                utils.print("Pathfinder路径目标: " + Pathfinder.getGoal());
+        try {
+            if (event.function.getName().equals("Pathfinding")) {
+                stuckTicks = 0;
+                oldPos = null;
+                curPos = null;
+                if (!Pathfinder.hasPath()) {
+                    Utils.print("Pathfinder无法找到路径");
+                    FunctionManager.switchStatus("Pathfinding");
+                } else {
+                    Utils.print("Pathfinder路径目标: " + Pathfinder.getGoal());
+                }
             }
+        } catch(Exception ignored){
+
         }
     }
 
-    @SubscribeEvent
+    @EventModule
     public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
         if(event.function.getName().equals("Pathfinding")) {
             Pathfinder.path = null;
+            noCheck = false;
+            blockTarget = false;
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindLeft.getKeyCode(), false);
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindRight.getKeyCode(), false);
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), false);
@@ -104,6 +113,10 @@ public class Pathfinding {
                     KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(), false);
                     KeyBinding.setKeyBindState(mc.gameSettings.keyBindRight.getKeyCode(), false);
                     unstucker = null;
+                }
+                if (Pathfinder.path != null && !Pathfinder.path.isEmpty() && blockTarget && Pathfinder.getCurrent() != null) {
+                    Rotation rotation = Utils.getRotation(new BlockPos(Pathfinder.getCurrent()));
+                    Minecraft.getMinecraft().thePlayer.rotationYaw = rotation.getYaw();
                 }
 
                 Vec3 first = Pathfinder.getCurrent().addVector(0.5D, 0.0D, 0.5D);
@@ -140,16 +153,18 @@ public class Pathfinding {
                             KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(), false);
                         }
                     } else {
-                        BlockPos fromPos = new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector()));
-                        BlockPos toPos = Pathfinder.toPos;
-                        Pathfinder.setup(fromPos,toPos,0.0D);
-                        if(Pathfinder.hasPath()){
-                            FunctionManager.setStatus("Pathfinding",true);
-                        } else {
-                            FunctionManager.setStatus("Pathfinding",false);
-                            utils.print("无法找到去此方块的路径");
+                        if(!noCheck) {
+                            BlockPos fromPos = new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector()));
+                            BlockPos toPos = Pathfinder.toPos;
+                            Pathfinder.setup(fromPos, toPos, 0.0D);
+                            if (Pathfinder.hasPath()) {
+                                FunctionManager.setStatus("Pathfinding", true);
+                            } else {
+                                FunctionManager.setStatus("Pathfinding", false);
+                                Utils.print("无法找到去此方块的路径");
+                            }
+                            tick = 0;
                         }
-                        tick = 0;
                     }
                 } else {
                     tick = 0;

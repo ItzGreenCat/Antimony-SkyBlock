@@ -8,4 +8,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface GuiTextFieldAccessor {
     @Accessor("id")
     void setID(int id);
+    @Accessor("visible")
+    boolean getVisible();
+    @Accessor("visible")
+    void setVisible(boolean visible);
+    @Accessor("lineScrollOffset")
+    int getLineScrollOffset();
 }

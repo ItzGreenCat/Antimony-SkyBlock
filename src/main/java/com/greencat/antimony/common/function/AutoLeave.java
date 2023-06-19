@@ -1,10 +1,9 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.HUDManager;
 import com.greencat.antimony.utils.Utils;
-import com.viaversion.viaversion.protocols.protocol1_13to1_12_2.data.SoundSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,7 +32,7 @@ public class AutoLeave {
                 double x = Minecraft.getMinecraft().thePlayer.posX;
                 double y = Minecraft.getMinecraft().thePlayer.posY;
                 double z = Minecraft.getMinecraft().thePlayer.posZ;
-                int bound = (Integer) getConfigByFunctionName.get("AutoLeave", "radius") * 2;
+                int bound = (Integer) ConfigInterface.get("AutoLeave", "radius") * 2;
                 List<EntityPlayer> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(x - (bound / 2d), y - (bound / 2d), z - (bound / 2d), x + (bound / 2d), y + (bound / 2d), z + (bound / 2d)), null);
                 validList.clear();
                 for (EntityPlayer entityplayer : entityList) {
@@ -41,13 +40,13 @@ public class AutoLeave {
                         validList.add(entityplayer);
                     }
                 }
-                int playerLimit = (Integer) getConfigByFunctionName.get("AutoLeave", "limit");
+                int playerLimit = (Integer) ConfigInterface.get("AutoLeave", "limit");
                 if (validList.size() > playerLimit) {
                     countTick = countTick + 1;
                 } else {
                     countTick = 0;
                 }
-                int tickLimit = (Integer) getConfigByFunctionName.get("AutoLeave", "tickLimit");
+                int tickLimit = (Integer) ConfigInterface.get("AutoLeave", "tickLimit");
                 if (countTick > tickLimit) {
                     ISound sound = new PositionedSound(new ResourceLocation("random.orb")) {{
                         volume = 1;
@@ -57,8 +56,8 @@ public class AutoLeave {
                         attenuationType = ISound.AttenuationType.NONE;
                     }};
                     countTick = 0;
-                    if(!(Boolean) getConfigByFunctionName.get("AutoLeave", "soundOnly")) {
-                        Minecraft.getMinecraft().thePlayer.sendChatMessage((String) getConfigByFunctionName.get("AutoLeave", "command"));
+                    if(!(Boolean) ConfigInterface.get("AutoLeave", "soundOnly")) {
+                        Minecraft.getMinecraft().thePlayer.sendChatMessage((String) ConfigInterface.get("AutoLeave", "command"));
                     }
                     float oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
                     Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
@@ -74,17 +73,17 @@ public class AutoLeave {
             if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
                 if(Minecraft.getMinecraft().theWorld != null) {
                     HUDManager.Render("Nearly Player", validList.size(), 200, 220);
-                    HUDManager.Render("Player Limit", getConfigByFunctionName.get("AutoLeave", "limit"), 200, 235);
+                    HUDManager.Render("Player Limit", ConfigInterface.get("AutoLeave", "limit"), 200, 235);
                     HUDManager.Render("Command Timer", countTick, 200, 250);
-                    HUDManager.Render("Max Command Tick", getConfigByFunctionName.get("AutoLeave", "tickLimit"), 200, 275);
-                    HUDManager.Render("Command", getConfigByFunctionName.get("AutoLeave", "command"), 200, 290);
+                    HUDManager.Render("Max Command Tick", ConfigInterface.get("AutoLeave", "tickLimit"), 200, 275);
+                    HUDManager.Render("Command", ConfigInterface.get("AutoLeave", "command"), 200, 290);
                 }
             }
         }
     }
     @SubscribeEvent
     public void WorldChangeTrigger(WorldEvent.Load event) {
-        if (FunctionManager.getStatus("AutoLeave")) {
+        if (FunctionManager.getStatus("AutoLeave") && (Boolean) ConfigInterface.get("AutoLeave", "autoDisable")) {
             Utils.print("检测到世界服务器改变,自动关闭AutoLeave");
             FunctionManager.setStatus("AutoLeave", false);
         }

@@ -1,8 +1,9 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.EtherwarpTeleport;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.type.Rotation;
 import com.greencat.antimony.utils.Utils;
@@ -15,7 +16,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StringUtils;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -25,12 +28,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AutoArmadillo {
+public class AutoArmadillo extends FunctionStatusTrigger {
     public static boolean isEnable = false;
     public static long latest;
     public static long latestSnake = 0;
     public static long latestFinish = 0;
     public static long latestSwitch = 0;
+    public static long latestNoEnergy = 0;
     public static int stage = 0;
     public static BlockPos pos = null;
     public AutoArmadillo() {
@@ -45,33 +49,20 @@ public class AutoArmadillo {
             isEnable = false;
         }
     }
-    @SubscribeEvent
-    public void onDisable(CustomEventHandler.FunctionDisabledEvent event){
-        if(event.function.getName().equals("AutoArmadillo")){
-            post();
-        }
+
+
+    @Override
+    public String getName() {
+        return "AutoArmadillo";
     }
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionDisabledEvent event){
-        if(event.function.getName().equals("AutoArmadillo")){
-            init();
-        }
-    }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
-        if(event.function.getName().equals("AutoArmadillo")){
-            if(event.status){
-                init();
-            } else {
-                post();
-            }
-        }
-    }
-    private void init(){
+
+    @Override
+    public void init(){
         stage = -1;
         pos = null;
     }
-    private void post(){
+    @Override
+    public void post(){
         stage = -1;
         pos = null;
     }
@@ -80,7 +71,10 @@ public class AutoArmadillo {
         try {
             if (isEnable && Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null) {
                 if (stage == -1) {
-                    if (System.currentTimeMillis() - latestFinish >= (Integer) getConfigByFunctionName.get("AutoArmadillo","delay")) {
+                    if(System.currentTimeMillis() - latestNoEnergy < 300000){
+                        return;
+                    }
+                    if (System.currentTimeMillis() - latestFinish >= (Integer) ConfigInterface.get("AutoArmadillo","delay")) {
                         pos = EtherwarpTeleport.position.get(0);
                         if (Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() != Blocks.air) {
                             EtherwarpTeleport.next();
@@ -242,6 +236,15 @@ public class AutoArmadillo {
             }
         } catch(Exception e){
             e.printStackTrace();
+        }
+    }
+    @SubscribeEvent
+    public void onChatReceived(ClientChatReceivedEvent event){
+        if(FunctionManager.getStatus("AutoArmadillo")) {
+            if (EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).toLowerCase().contains("Your armadillo is Exhausted".toLowerCase())) {
+                latestNoEnergy = System.currentTimeMillis();
+                stage = -1;
+            }
         }
     }
 }

@@ -10,8 +10,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.greencat.antimony.core.config.getConfigByFunctionName;
-import net.minecraft.client.Minecraft;
+import com.greencat.antimony.core.config.ConfigInterface;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -64,7 +63,7 @@ public class BlackListManager {
 	}
 
 	public static void loadBlackList() throws IOException {
-		String result = get(url[(Integer) getConfigByFunctionName.get("BlackList","api")]);
+		String result = get(url[(Integer) ConfigInterface.get("BlackList","api")]);
 		if (result == null) {
 			logger.error("Result cannot be 'null'.");
 			return;

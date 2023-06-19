@@ -1,6 +1,8 @@
 package com.greencat.antimony.common.function;
 
 import com.google.common.collect.Iterables;
+import com.greencat.Antimony;
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.common.key.KeyLoader;
@@ -20,7 +22,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SecretBot {
+public class SecretBot extends FunctionStatusTrigger {
     public SecretBot() {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
@@ -29,18 +31,19 @@ public class SecretBot {
     List<BlockPos> clickedBlock = new ArrayList<BlockPos>();
     public boolean isInTheCatacombs = false;
 
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event) {
-        if (event.function.getName().equals("SecretBot")) {
-            clickedBlock.clear();
-        }
+    @Override
+    public String getName() {
+        return "SecretBot";
     }
 
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
-        if (event.function.getName().equals("SecretBot")) {
-            clickedBlock.clear();
-        }
+    @Override
+    public void post() {
+
+    }
+
+    @Override
+    public void init() {
+        clickedBlock.clear();
     }
 
     @SubscribeEvent
@@ -75,14 +78,13 @@ public class SecretBot {
     public void AutoRefreshInDungeon(ClientChatReceivedEvent event) {
         if (FunctionManager.getStatus("SecretBot")) {
             String msg = EnumChatFormatting.getTextWithoutFormattingCodes(event.message.getFormattedText()).toLowerCase();
-            Utils utils = new Utils();
             if (msg.contains("entered") && msg.contains("catacomb")) {
                 clickedBlock.clear();
-                utils.print("检测到加入地牢,已经刷新SecretBot");
+                Utils.print("检测到加入地牢,已经刷新SecretBot");
             }
             if (msg.contains("warped") && msg.contains("dungeon")) {
                 clickedBlock.clear();
-                utils.print("检测到加入地牢,已经刷新SecretBot");
+                Utils.print("检测到加入地牢,已经刷新SecretBot");
             }
         }
     }
@@ -104,7 +106,7 @@ public class SecretBot {
 
     private boolean isInDungeon() {
         isInTheCatacombs = false;
-        Utils utils = new Utils();
+        Utils utils = Antimony.instance.utils;
         List<String> scoreBoardLines = utils.getSidebarLines();
         int size = scoreBoardLines.size() - 1;
         final String combatZoneName = "the catacombs";

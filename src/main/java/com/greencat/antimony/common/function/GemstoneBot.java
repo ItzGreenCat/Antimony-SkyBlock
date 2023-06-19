@@ -1,8 +1,9 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.EtherwarpTeleport;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore2;
 import com.greencat.antimony.core.nukerWrapper;
@@ -16,7 +17,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class GemstoneBot {
+public class GemstoneBot extends FunctionStatusTrigger {
     public static boolean isEnable = false;
     public static long latest;
     public static long latestFinish = 0;
@@ -36,35 +37,20 @@ public class GemstoneBot {
             isEnable = false;
         }
     }
-    @SubscribeEvent
-    public void onDisable(CustomEventHandler.FunctionDisabledEvent event){
-        if(event.function.getName().equals("GemstoneBot")){
-            post();
-        }
+
+    @Override
+    public String getName() {
+        return "GemstoneBot";
     }
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionDisabledEvent event){
-        if(event.function.getName().equals("GemstoneBot")){
-            init();
-        }
-    }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
-        if(event.function.getName().equals("GemstoneBot")){
-            if(event.status){
-                init();
-            } else {
-                post();
-            }
-        }
-    }
-    private void init(){
+    @Override
+    public void init(){
         stage = -1;
         pos = null;
         nukerWrapper.enable = true;
         nukerWrapper.enable();
     }
-    private void post(){
+    @Override
+    public void post(){
         stage = -1;
         pos = null;
         nukerWrapper.enable = false;
@@ -76,7 +62,7 @@ public class GemstoneBot {
         try {
             if (isEnable && Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null) {
                 if (stage == -1) {
-                    if (System.currentTimeMillis() - latestFinish >= (Integer) getConfigByFunctionName.get("GemstoneBot","delay")) {
+                    if (System.currentTimeMillis() - latestFinish >= (Integer) ConfigInterface.get("GemstoneBot","delay")) {
                         pos = EtherwarpTeleport.position.get(0);
                         if (Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() != Blocks.air) {
                             EtherwarpTeleport.next();
@@ -103,7 +89,7 @@ public class GemstoneBot {
                         nukerWrapper.enable();
                     }
                     if(nuker.requestBlock) {
-                        if((Boolean)getConfigByFunctionName.get("GemstoneBot","panel")) {
+                        if((Boolean) ConfigInterface.get("GemstoneBot","panel")) {
                             BlockPos pos1 = nuker.closestMineableBlock(Blocks.stained_glass);
                             BlockPos pos2 = nuker.closestMineableBlock(Blocks.stained_glass_pane);
                             nukerPos = nuker.BlockPosMin(pos1, pos2);

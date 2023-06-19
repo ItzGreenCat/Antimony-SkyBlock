@@ -4,7 +4,7 @@ import com.greencat.antimony.common.Chat.CustomChatSend;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.ServerRotation;
 import com.greencat.antimony.core.config.ConfigLoader;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -59,7 +59,12 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
     }
     @ModifyVariable(method = "sendChatMessage",at = @At("HEAD"),ordinal = 0,argsOnly = true)
     public String sendChatMessage(@NotNull String value){
-        return value.replace("who asked","Hold on i gotta get more Magic Find So i can find who asked.");
+        String message = value;
+        message = message.replace("who asked","Hold on i gotta get more Magic Find So i can find who asked.");
+        if(FunctionManager.getStatus("ChatSuffix") && !message.startsWith("/")){
+            message = message + ConfigInterface.get("ChatSuffix","content");
+        }
+        return message;
     }
     //private static PlayerState stateCache;
     private static CustomEventHandler.MotionChangeEvent eventCache;
@@ -199,19 +204,19 @@ public abstract class MixinEntityPlayerSP extends MixinEntityPlayer {
                 MovementInput movement;
                 if (this.getItemInUse().getItem().getItemUseAction(this.getItemInUse()) == EnumAction.BLOCK) {
                     movement = this.movementInput;
-                    movement.moveForward = (float) ((double) movement.moveForward * (Double) getConfigByFunctionName.get("NoSlow","sword"));
+                    movement.moveForward = (float) ((double) movement.moveForward * (Double) ConfigInterface.get("NoSlow","sword"));
                     movement = this.movementInput;
-                    movement.moveStrafe = (float) ((double) movement.moveStrafe * (Double) getConfigByFunctionName.get("NoSlow","sword"));
+                    movement.moveStrafe = (float) ((double) movement.moveStrafe * (Double) ConfigInterface.get("NoSlow","sword"));
                 } else if (this.getItemInUse().getItem().getItemUseAction(this.getItemInUse()) == EnumAction.BOW) {
                     movement = this.movementInput;
-                    movement.moveForward = (float) ((double) movement.moveForward * (Double) getConfigByFunctionName.get("NoSlow","bow"));
+                    movement.moveForward = (float) ((double) movement.moveForward * (Double) ConfigInterface.get("NoSlow","bow"));
                     movement = this.movementInput;
-                    movement.moveStrafe = (float) ((double) movement.moveStrafe * (Double) getConfigByFunctionName.get("NoSlow","bow"));
+                    movement.moveStrafe = (float) ((double) movement.moveStrafe * (Double) ConfigInterface.get("NoSlow","bow"));
                 } else if (this.getItemInUse().getItem().getItemUseAction(this.getItemInUse()) != EnumAction.NONE) {
                     movement = this.movementInput;
-                    movement.moveForward = (float) ((double) movement.moveForward * (Double) getConfigByFunctionName.get("NoSlow","eat"));
+                    movement.moveForward = (float) ((double) movement.moveForward * (Double) ConfigInterface.get("NoSlow","eat"));
                     movement = this.movementInput;
-                    movement.moveStrafe = (float) ((double) movement.moveStrafe * (Double) getConfigByFunctionName.get("NoSlow","eat"));
+                    movement.moveStrafe = (float) ((double) movement.moveStrafe * (Double) ConfigInterface.get("NoSlow","eat"));
                 }
             }
         } catch (Exception e){

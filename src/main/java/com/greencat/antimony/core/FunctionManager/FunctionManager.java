@@ -1,5 +1,6 @@
 package com.greencat.antimony.core.FunctionManager;
 
+import com.greencat.Antimony;
 import com.greencat.antimony.core.config.ConfigLoader;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.register.AntimonyRegister;
@@ -27,7 +28,7 @@ public class FunctionManager {
         } else {
             return false;
         }*/
-        return AntimonyRegister.FunctionList.get(Name).getStatus();
+        return AntimonyRegister.FunctionList != null ? AntimonyRegister.FunctionList.get(Name) != null ? AntimonyRegister.FunctionList.get(Name).getStatus() : false : false;
         /*for(int i = 0;i < AntimonyRegister.FunctionList.size();++i){
             if(AntimonyRegister.FunctionList.get(i).getName().equals(Name)){
 
@@ -172,9 +173,11 @@ public class FunctionManager {
             if(option instanceof AbstractSettingOptionButton) {
                 ((AbstractSettingOptionButton)option).parentFunction = currentFunction;
                 FunctionManager.getFunctionByName(currentFunction).addConfigurationOption(option);
+                Antimony.LOGGER.info("Register Config -> type: " + option.getClass().getSimpleName() + " id: " + ((AbstractSettingOptionButton) option).ID);
             } else if(option instanceof AbstractSettingOptionTextField){
                 ((AbstractSettingOptionTextField)option).parentFunction = currentFunction;
                 FunctionManager.getFunctionByName(currentFunction).addConfigurationOption(option);
+                Antimony.LOGGER.info("Register Config -> type: " + option.getClass().getSimpleName() + " id: " + ((AbstractSettingOptionTextField) option).ID);
             }
         } catch(NullPointerException e){
             System.err.println("[Antimony] Unable to add Configuration " + option + " to " + currentFunction + ".");

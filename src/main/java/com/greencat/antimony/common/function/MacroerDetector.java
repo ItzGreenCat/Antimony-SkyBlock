@@ -1,10 +1,10 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.Utils;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -15,21 +15,20 @@ import net.minecraft.init.Items;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
-import net.minecraftforge.client.event.RenderWorldEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import static com.greencat.antimony.core.config.getConfigByFunctionName.get;
+import static com.greencat.antimony.core.config.ConfigInterface.get;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MacroerDetector {
+public class MacroerDetector extends FunctionStatusTrigger {
     List<EntityPlayer> players = new ArrayList<EntityPlayer>();
     List<EntityPlayer> probablyMacroers = new ArrayList<EntityPlayer>();
     HashMap<EntityPlayer, Vec3> lastRefreshPlayerPos = new HashMap<EntityPlayer, Vec3>();
@@ -141,19 +140,19 @@ public class MacroerDetector {
             lastRefreshPlayerPos.clear();
         }
     }
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event){
-        if(event.function.getName().equals("MacroerDetector")){
-            init();
-        }
+
+    @Override
+    public String getName() {
+        return "MacroerDetector";
     }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
-        if(event.function.getName().equals("MacroerDetector") && (event.status)){
-            init();
-        }
+
+    @Override
+    public void post() {
+
     }
-    private void init(){
+
+    @Override
+    public void init(){
         players.clear();
         probablyMacroers.clear();
         lastRefreshPlayerPos.clear();

@@ -2,7 +2,7 @@ package com.greencat.antimony.core.ui.white;
 
 import com.greencat.Antimony;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.storage.SelectGUIStorage;
 import com.greencat.antimony.core.type.SelectObject;
 import com.greencat.antimony.core.type.SelectTable;
@@ -17,15 +17,15 @@ public class NewSelectGUI {
 
 
 
-        int height = (Integer) getConfigByFunctionName.get("HUD","HUDHeight") + 25;
+        int height = (Integer) ConfigInterface.get("HUD","HUDHeight") + 25;
         int width = 0;
         GlStateManager.color(1.0F,1.0F,1.0F);
         ResourceLocation resourceLocation = new ResourceLocation(Antimony.MODID, "GuiHead.png");
         Minecraft.getMinecraft().renderEngine.bindTexture(resourceLocation);
-        Gui.drawModalRectWithCustomSizedTexture(0,(Integer) getConfigByFunctionName.get("HUD","HUDHeight"),0,0,FunctionManager.getLongestTextWidthAdd20(),25,16,16);
+        Gui.drawModalRectWithCustomSizedTexture(0,(Integer) ConfigInterface.get("HUD","HUDHeight"),0,0,FunctionManager.getLongestTextWidthAdd20(),25,16,16);
         ResourceLocation resourceLocation2 = new ResourceLocation(Antimony.MODID, "GuiHeadText.png");
         Minecraft.getMinecraft().renderEngine.bindTexture(resourceLocation2);
-        Gui.drawModalRectWithCustomSizedTexture(0,(Integer) getConfigByFunctionName.get("HUD","HUDHeight"),0,0,100,25,100,25);
+        Gui.drawModalRectWithCustomSizedTexture(0,(Integer) ConfigInterface.get("HUD","HUDHeight"),0,0,100,25,100,25);
         for(SelectTable table : SelectGUIStorage.TableStorage){
             if(table.getID().equals(Antimony.PresentGUI)){
                 for(SelectObject object : table.getList()){

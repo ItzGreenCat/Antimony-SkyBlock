@@ -46,8 +46,8 @@ public class Notice {
         FontManager.QuicksandBoldFont.drawString(title, x + (getLongestWidth() / 2.0f) - (FontManager.QuicksandBoldFont.getStringWidth(title) / 2.0f), y + height, 0xFFFFFF);
         height = height + 13;
         for(String str : message){
-            FontManager.QuicksandFont17.drawString(str,x + 3,y + height - 5,0xFFFFFF);
-            height = height + 11;
+            FontManager.QuicksandFont.drawString(str,x + 3,y + height - 5,0xFFFFFF);
+            height = height + 13;
         }
         Shadow.drawShadow(x,y,width,getHeight());
     }
@@ -60,7 +60,7 @@ public class Notice {
     private int getLongestWidth(){
         int longest = 0;
         for(String str : message){
-            longest = Math.max(longest,FontManager.QuicksandFont17.getStringWidth(str));
+            longest = Math.max(longest,FontManager.QuicksandFont.getStringWidth(str));
         }
         longest = Math.max(longest,15 + FontManager.QuicksandBoldFont.getStringWidth(title));
         return Math.max(longest, FunctionManager.getLongestTextWidthAdd5() - 5) + 15;

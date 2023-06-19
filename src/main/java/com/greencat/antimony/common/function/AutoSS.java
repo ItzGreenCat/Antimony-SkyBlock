@@ -3,6 +3,8 @@ package com.greencat.antimony.common.function;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -16,7 +18,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.List;
 
-public class AutoSS{
+public class AutoSS implements ReflectionlessEventHandler {
 
     public AutoSS(){
         MinecraftForge.EVENT_BUS.register(this);
@@ -47,8 +49,6 @@ public class AutoSS{
 
         }
     }
-
-    @SubscribeEvent
     public void onBlockChange(CustomEventHandler.BlockChangeEvent event) {
         if (this.clicked && !this.clickedButton && event.state.getBlock() == Blocks.sea_lantern && event.pos.getX() == 310 && event.pos.getY() >= 120 && event.pos.getY() <= 123 && event.pos.getZ() >= 291 && event.pos.getZ() <= 294) {
             clickPos = new BlockPos(event.pos.getX() - 1, event.pos.getY(), event.pos.getZ());
@@ -86,5 +86,12 @@ public class AutoSS{
             }
         }
         return isInTheCatacombs;
+    }
+
+    @Override
+    public void invoke(Event event) {
+        if(event instanceof CustomEventHandler.BlockChangeEvent){
+            onBlockChange((CustomEventHandler.BlockChangeEvent) event);
+        }
     }
 }

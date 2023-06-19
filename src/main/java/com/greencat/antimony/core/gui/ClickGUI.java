@@ -41,7 +41,7 @@ public class ClickGUI extends GuiScreen {
     //The width of the GUI sidebar
     private final int widthBound = FunctionManager.getLongestTextWidthAdd20() + 40;
     //Parent GUI
-    private GuiScreen parentScreen;
+    public GuiScreen parentScreen;
     private GuiButton BackButton;
     private GuiButton refreshButton;
     ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());

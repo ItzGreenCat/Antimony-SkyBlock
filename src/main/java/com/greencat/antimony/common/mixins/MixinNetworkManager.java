@@ -18,8 +18,12 @@ public abstract class MixinNetworkManager {
             cancellable = true
     )
     private void onSendPacket(Packet<?> packet, CallbackInfo callbackInfo) {
-        if (!Utils.noEvent.contains(packet) && CustomEventHandler.EVENT_BUS.post(new CustomEventHandler.PacketSentEvent(packet))) {
-            callbackInfo.cancel();
+        if (!Utils.noEvent.contains(packet)) {
+            CustomEventHandler.PacketSentEvent event = new CustomEventHandler.PacketSentEvent(packet);
+            CustomEventHandler.EVENT_BUS.post(event);
+            if(event.isCanceled()) {
+                callbackInfo.cancel();
+            }
         }
 
     }
@@ -30,8 +34,12 @@ public abstract class MixinNetworkManager {
             cancellable = true
     )
     private void onSendPacketPost(Packet<?> packet, CallbackInfo callbackInfo) {
-        if (!Utils.noEvent.contains(packet) && CustomEventHandler.EVENT_BUS.post(new CustomEventHandler.PacketSentEvent.Post(packet))) {
-            callbackInfo.cancel();
+        if (!Utils.noEvent.contains(packet)) {
+            CustomEventHandler.PacketSentEvent.Post event = new CustomEventHandler.PacketSentEvent.Post(packet);
+            CustomEventHandler.EVENT_BUS.post(event);
+            if(event.isCanceled()) {
+                callbackInfo.cancel();
+            }
         }
         Utils.noEvent.remove(packet);
     }

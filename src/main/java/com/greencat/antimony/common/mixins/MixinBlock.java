@@ -52,7 +52,8 @@ public abstract class MixinBlock {
     @Overwrite
     public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask,List<AxisAlignedBB> list,Entity collidingEntity) {
         CustomEventHandler.BlockBoundsEvent event = new CustomEventHandler.BlockBoundsEvent((Block)(Object)this, this.getCollisionBoundingBox(worldIn, pos, state), pos, collidingEntity);
-        if (CustomEventHandler.EVENT_BUS.post(event)) {
+        CustomEventHandler.EVENT_BUS.post(event);
+        if (event.isCanceled()) {
             return;
         }
         if (event.aabb != null && mask.intersectsWith(event.aabb)) {

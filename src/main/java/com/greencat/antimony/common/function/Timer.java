@@ -1,17 +1,20 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.common.mixins.MinecraftAccessor;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import static com.greencat.antimony.core.config.getConfigByFunctionName.get;
+import static com.greencat.antimony.core.config.ConfigInterface.get;
 
-public class Timer {
+public class Timer extends FunctionStatusTrigger implements ReflectionlessEventHandler {
     float speed = 1F;
     boolean onlyMoving = true;
     boolean isEnable = false;
@@ -20,18 +23,12 @@ public class Timer {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
-    public void onDisable(CustomEventHandler.FunctionDisabledEvent event){
-        if(event.function.getName().equals("Timer")){
-            post();
-        }
+
+    @Override
+    public String getName() {
+        return "Timer";
     }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
-        if(event.function.getName().equals("Timer") && (!event.status)){
-            post();
-        }
-    }
+
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event){
         if(event.phase == TickEvent.Phase.START){
@@ -44,7 +41,6 @@ public class Timer {
             }
         }
     }
-    @SubscribeEvent
     public void onPlayerUpdate(CustomEventHandler.PlayerUpdateEvent event){
         if(isEnable) {
             if (Utils.isMoving() || !onlyMoving) {
@@ -54,9 +50,21 @@ public class Timer {
             ((MinecraftAccessor) mc).getTimer().timerSpeed = 1F;
         }
     }
-    private void post(){
+    @Override
+    public void invoke(Event event){
+        if(event instanceof CustomEventHandler.PlayerUpdateEvent){
+            onPlayerUpdate((CustomEventHandler.PlayerUpdateEvent) event);
+        }
+    }
+    @Override
+    public void post(){
         if (mc.thePlayer != null) {
             ((MinecraftAccessor) mc).getTimer().timerSpeed = 1F;
         }
+    }
+
+    @Override
+    public void init() {
+
     }
 }

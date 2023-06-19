@@ -1,10 +1,14 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.common.mixins.S08PacketPlayerPosLookAccessor;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Utils;
+import com.greencat.antimony.utils.packet.PacketEvent;
 import com.greencat.antimony.utils.timer.SystemTimer;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.Packet;
@@ -15,7 +19,6 @@ import net.minecraft.network.play.server.S07PacketRespawn;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -23,9 +26,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static com.greencat.antimony.core.config.getConfigByFunctionName.get;
+import static com.greencat.antimony.core.config.ConfigInterface.get;
 
-public class Disabler {
+public class Disabler extends FunctionStatusTrigger implements ReflectionlessEventHandler {
     private final LinkedBlockingQueue<Packet<INetHandlerPlayServer>> packets = new LinkedBlockingQueue<Packet<INetHandlerPlayServer>>();
     Minecraft mc = Minecraft.getMinecraft();
     private int counter = 0;
@@ -51,18 +54,14 @@ public class Disabler {
         CustomEventHandler.EVENT_BUS.register(this);
     }
 
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event) {
-        if (event.function.getName().equals("Disabler")) {
-            init();
-        }
+    @Override
+    public String getName() {
+        return "Disabler";
     }
 
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
-        if (event.function.getName().equals("Disabler") && event.status) {
-            init();
-        }
+    @Override
+    public void post() {
+
     }
 
     @SubscribeEvent
@@ -89,8 +88,19 @@ public class Disabler {
             inCage = true;
         }
     }
-
-    @SubscribeEvent
+    @Override
+    public void invoke(Event event) {
+        if(event instanceof CustomEventHandler.PacketEvent){
+            try {
+                onPacket((CustomEventHandler.PacketEvent) event);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if(event instanceof CustomEventHandler.PlayerUpdateEvent){
+            onLivingUpdate((CustomEventHandler.PlayerUpdateEvent) event);
+        }
+    }
     public void onPacket(CustomEventHandler.PacketEvent event) throws InterruptedException {
         if(Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null) {
             if (isEnable) {
@@ -175,8 +185,6 @@ public class Disabler {
             }
         }
     }
-
-    @SubscribeEvent
     public void onLivingUpdate(CustomEventHandler.PlayerUpdateEvent event) {
         if(Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null) {
             if (isEnable) {
@@ -214,8 +222,7 @@ public class Disabler {
             }
         }
     }
-
-    private void init() {
+    public void init() {
         counter = 0;
         inCage = true;
         x = 0.0;

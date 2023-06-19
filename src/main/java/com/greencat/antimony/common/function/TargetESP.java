@@ -1,5 +1,6 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.Antimony;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -9,14 +10,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.awt.*;
-
 public class TargetESP {
     public TargetESP() {
         MinecraftForge.EVENT_BUS.register(this);
     }
-    public static Double[] currentHeight = {0.0D};
-    public static Boolean[] RenderStatus = {true};
     public static EntityLivingBase targetEntity;
     @SubscribeEvent
     public void AttackEntity(AttackEntityEvent event){
@@ -36,7 +33,7 @@ public class TargetESP {
     public void Render(RenderWorldLastEvent event) {
         if(FunctionManager.getStatus("TargetESP")) {
             if (targetEntity != null && !targetEntity.isDead) {
-                Utils.RenderTargetESP(targetEntity, new Color(25, 255, 251),2.5F,Math.max((float) ((targetEntity.getEntityBoundingBox().maxY - targetEntity.getEntityBoundingBox().minY) / 3.5),0.75F), currentHeight, RenderStatus);
+                Utils.RenderTargetESP(targetEntity, Antimony.Color.AntimonyCyan);
             }
         }
     }

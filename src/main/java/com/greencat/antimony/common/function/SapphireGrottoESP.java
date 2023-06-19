@@ -1,7 +1,8 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.BlockScanner;
 import com.greencat.antimony.utils.Utils;
@@ -19,7 +20,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SapphireGrottoESP {
+public class SapphireGrottoESP extends FunctionStatusTrigger {
     static BlockScanner scanner = new BlockScanner();
     static boolean checked = false;
     List<BlockPos> pos = new ArrayList<BlockPos>();
@@ -28,18 +29,17 @@ public class SapphireGrottoESP {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event){
-        if (event.function.getName().equals("SapphireGrottoESP")) {
-            init();
-        }
+
+    @Override
+    public String getName() {
+        return "SapphireGrottoESP";
     }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
-        if (event.function.getName().equals("SapphireGrottoESP") && event.status) {
-            init();
-        }
+
+    @Override
+    public void post() {
+
     }
+
     public void init(){
         possibleCoord.clear();
         if(Minecraft.getMinecraft().theWorld != null) {
@@ -48,7 +48,7 @@ public class SapphireGrottoESP {
             scanner.start(
                     new BlockPos(824, 64, 824),
                     new BlockPos(515, 187, 514),
-                    Blocks.stone_slab, (Integer) getConfigByFunctionName.get("SapphireGrottoESP", "step"), (Integer) getConfigByFunctionName.get("SapphireGrottoESP", "thread")
+                    Blocks.stone_slab, (Integer) ConfigInterface.get("SapphireGrottoESP", "step"), (Integer) ConfigInterface.get("SapphireGrottoESP", "thread")
             );
         }
     }

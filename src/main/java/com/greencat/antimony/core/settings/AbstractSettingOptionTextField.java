@@ -1,9 +1,6 @@
 package com.greencat.antimony.core.settings;
 
 import com.greencat.antimony.common.mixins.GuiTextFieldAccessor;
-import com.greencat.antimony.common.mixins.MixinC03PacketPlayer;
-import com.greencat.antimony.common.mixins.MixinGuiTextField;
-import com.greencat.antimony.utils.Chroma;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 
@@ -61,6 +58,6 @@ public abstract class AbstractSettingOptionTextField extends GuiTextField implem
         }
     }
     public void setVisible(Boolean visible) {
-        ((MixinGuiTextField)this).setVisible(visible);
+        ((GuiTextFieldAccessor)this).setVisible(visible);
     }
 }

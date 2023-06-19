@@ -1,7 +1,7 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.MinecraftForge;
@@ -16,8 +16,8 @@ public class MouseISwitch {
     String itemName = "";
     @SubscribeEvent
     public void ClientTickEvent(TickEvent.ClientTickEvent event){
-        leftTrigger = (Boolean) getConfigByFunctionName.get("MouseISwitch","leftTrigger");
-        itemName = (String) getConfigByFunctionName.get("MouseISwitch","itemName");
+        leftTrigger = (Boolean) ConfigInterface.get("MouseISwitch","leftTrigger");
+        itemName = (String) ConfigInterface.get("MouseISwitch","itemName");
         if(FunctionManager.getStatus("MouseISwitch")){
             if(Minecraft.getMinecraft().theWorld != null) {
                 try {

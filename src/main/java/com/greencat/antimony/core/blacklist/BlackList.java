@@ -3,6 +3,7 @@ package com.greencat.antimony.core.blacklist;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.gui.SettingsGUI;
+import me.greencat.lwebus.core.annotation.EventModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.renderer.entity.RenderPlayer;
@@ -22,14 +23,14 @@ public class BlackList {
 		MinecraftForge.EVENT_BUS.register(this);
 		CustomEventHandler.EVENT_BUS.register(this);
 	}
-	@SubscribeEvent
+	@EventModule
 	public void onFunctionDisable(CustomEventHandler.FunctionDisabledEvent event){
 		if(event.function.getName().equals("BlackList")){
 			event.setCanceled(true);
 			Minecraft.getMinecraft().displayGuiScreen(new SettingsGUI(Minecraft.getMinecraft().currentScreen,"BlackList", Objects.requireNonNull(FunctionManager.getFunctionByName("BlackList")).getConfigurationList()));
 		}
 	}
-	@SubscribeEvent
+	@EventModule
 	public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
 		if(event.function.getName().equals("BlackList")){
 			if(!event.status){

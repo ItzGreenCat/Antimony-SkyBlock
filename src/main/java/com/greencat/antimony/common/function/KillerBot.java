@@ -1,9 +1,9 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.Pathfinder;
-import com.greencat.antimony.core.Pathfinding;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.List;
 
-public class KillerBot {
+public class KillerBot extends FunctionStatusTrigger {
     EntityLivingBase target;
     public static long latest;
     int disableCount = 0;
@@ -33,28 +33,22 @@ public class KillerBot {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
-    public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
-        if(event.function.getName().equals("KillerBot")){
-            FunctionManager.setStatus("Pathfinding",false);
-            FunctionManager.setStatus("ShortBowAura", false);
-            FunctionManager.setStatus("Killaura", false);
-        }
+
+    @Override
+    public String getName() {
+        return "KillerBot";
     }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
-        if(!event.status){
-            if(event.function.getName().equals("KillerBot")){
-                FunctionManager.setStatus("Pathfinding",false);
-                FunctionManager.setStatus("ShortBowAura", false);
-                FunctionManager.setStatus("Killaura", false);
-            }
-        }
+
+    @Override
+    public void post() {
+        FunctionManager.setStatus("Pathfinding",false);
+        FunctionManager.setStatus("ShortBowAura", false);
+        FunctionManager.setStatus("Killaura", false);
     }
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event){
-        if(event.function.getName().equals("KillerBot")){
-        }
+
+    @Override
+    public void init() {
+
     }
 
     @SubscribeEvent
@@ -88,17 +82,17 @@ public class KillerBot {
                 int bound = 3;
                 List<EntityLivingBase> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(playerX - (bound / 2d), playerY - (256 / 2d), playerZ - (bound / 2d), playerX + (bound / 2d), playerY + (256 / 2d), playerZ + (bound / 2d)), null);
                 if (!entityList.isEmpty()) {
-                    if(((Integer) getConfigByFunctionName.get("KillerBot","mode") == 1)){
+                    if(((Integer) ConfigInterface.get("KillerBot","mode") == 1)){
                         if(!FunctionManager.getStatus("ShortBowAura")) {
                             FunctionManager.setStatus("ShortBowAura", true);
                             FunctionManager.setStatus("Killaura", false);
-                            checkSwitch((String) getConfigByFunctionName.get("KillerBot","bowName"));
+                            checkSwitch((String) ConfigInterface.get("KillerBot","bowName"));
                         }
                     }
-                    if(((Integer) getConfigByFunctionName.get("KillerBot","mode") == 0)) {
+                    if(((Integer) ConfigInterface.get("KillerBot","mode") == 0)) {
                         if (!FunctionManager.getStatus("Killaura")) {
                             FunctionManager.setStatus("Killaura", true);
-                            checkSwitch((String) getConfigByFunctionName.get("KillerBot","swordName"));
+                            checkSwitch((String) ConfigInterface.get("KillerBot","swordName"));
                         }
                     }
                     if(disableCount > 160) {
@@ -123,7 +117,7 @@ public class KillerBot {
                         disableCount = disableCount + 1;
                     }
                 } else {
-                    if((Integer) getConfigByFunctionName.get("KillerBot","mode") == 0) {
+                    if((Integer) ConfigInterface.get("KillerBot","mode") == 0) {
                         if (FunctionManager.getStatus("Killaura")) {
                             FunctionManager.setStatus("Killaura", false);
                         }
@@ -161,7 +155,7 @@ public class KillerBot {
         return null;
     }
     public boolean isValid(EntityLivingBase entity){
-        int type = (Integer) getConfigByFunctionName.get("KillerBot","type");
+        int type = (Integer) ConfigInterface.get("KillerBot","type");
         if(entity != null) {
             if (type == 0 && entity instanceof EntityZombie && entity.posY >= 70) {
                 return true;

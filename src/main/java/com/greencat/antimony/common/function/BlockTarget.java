@@ -1,40 +1,43 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.type.Rotation;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.annotation.EventModule;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
 
-public class BlockTarget {
+public class BlockTarget implements ReflectionlessEventHandler {
     BlockPos target = null;
     boolean isEnable = false;
     public BlockTarget(){
         CustomEventHandler.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
+    @EventModule
     public void onEnable(CustomEventHandler.FunctionEnableEvent event){
         if(event.function.getName().equals("BlockTarget")){
             init(event);
         }
     }
-    @SubscribeEvent
+    @EventModule
     public void onDisable(CustomEventHandler.FunctionDisabledEvent event){
         if(event.function.getName().equals("BlockTarget")){
             post();
         }
     }
-    @SubscribeEvent
+    @EventModule
     public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
         if(event.function.getName().equals("BlockTarget")){
             if(event.status){
@@ -58,7 +61,7 @@ public class BlockTarget {
     private void post(){
         target = null;
     }
-    @SubscribeEvent
+
     public void onMotion(CustomEventHandler.MotionChangeEvent event){
         if(Minecraft.getMinecraft().theWorld != null) {
             if (FunctionManager.getStatus("BlockTarget") && target != null) {
@@ -84,6 +87,13 @@ public class BlockTarget {
         if (isEnable) {
             Utils.print("检测到世界服务器改变,自动关闭BlockTarget");
             FunctionManager.setStatus("BlockTarget", false);
+        }
+    }
+
+    @Override
+    public void invoke(Event event) {
+        if(event instanceof CustomEventHandler.MotionChangeEvent){
+            onMotion((CustomEventHandler.MotionChangeEvent) event);
         }
     }
 }

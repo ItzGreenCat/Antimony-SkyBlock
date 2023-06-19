@@ -104,6 +104,6 @@ public class ConfigLoader {
     }
 
     private static void removeConfigCache(String key){
-        getConfigByFunctionName.cache.remove(key);
+        ConfigInterface.cache.remove(key);
     }
 }

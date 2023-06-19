@@ -5,6 +5,9 @@ import com.greencat.antimony.common.mixins.EntityPlayerSPAccessor;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.annotation.EventModule;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.settings.KeyBinding;
@@ -26,19 +29,19 @@ import java.util.List;
 
 import static org.lwjgl.input.Keyboard.KEY_UP;
 
-public class SynthesizerAura {
+public class SynthesizerAura implements ReflectionlessEventHandler {
     static Boolean hasCharm = false;
     static Boolean hasAtom = false;
-    Utils utils = new Utils();
     double range = 2.9;
     public static long latest;
+    public static long lastTrigger = 0L;
     public static EntityLivingBase entityTarget;
     static EntityLivingBase LastClickedEntity;
     public SynthesizerAura(){
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
+    @EventModule
     public void onEnable(CustomEventHandler.FunctionEnableEvent event){
         if(event.function.getName().equals("SynthesizerAura")){
             if(Minecraft.getMinecraft().theWorld != null) {
@@ -48,7 +51,7 @@ public class SynthesizerAura {
             }
         }
     }
-    @SubscribeEvent
+    @EventModule
     public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
         if(event.function.getName().equals("SynthesizerAura")){
             if(Minecraft.getMinecraft().theWorld != null) {
@@ -60,7 +63,6 @@ public class SynthesizerAura {
             }
         }
     }
-    @SubscribeEvent
     public void MotionChangePreEvent(CustomEventHandler.MotionChangeEvent.Pre event){
         if(Minecraft.getMinecraft().theWorld != null) {
             if (FunctionManager.getStatus("SynthesizerAura")) {
@@ -79,8 +81,11 @@ public class SynthesizerAura {
             }
         }
     }
-    @SubscribeEvent
     public void MotionChangePostEvent(CustomEventHandler.MotionChangeEvent event) {
+        if(System.currentTimeMillis() - lastTrigger < 250){
+            return;
+        }
+        lastTrigger = System.currentTimeMillis();
         if(Minecraft.getMinecraft().theWorld != null) {
             if (FunctionManager.getStatus("SynthesizerAura")) {
                 if (entityTarget != null) {
@@ -144,10 +149,10 @@ public class SynthesizerAura {
     private boolean onInit(){
         checkItem();
         if(!hasCharm && !hasAtom){
-            utils.print("无法在物品栏找到Charminizer或Atominizer");
+            Utils.print("无法在物品栏找到Charminizer或Atominizer");
             return true;
         }
-       utils.print("手持Charminizer或Atominizer左键来使用Aspect of the End/Void传送功能");
+       Utils.print("手持Charminizer或Atominizer左键来使用Aspect of the End/Void传送功能");
         entityTarget = null;
         LastClickedEntity = null;
         return false;
@@ -171,5 +176,15 @@ public class SynthesizerAura {
             }
         }
         hasAtom = atom;
+    }
+
+    @Override
+    public void invoke(Event event) {
+        if(event instanceof CustomEventHandler.MotionChangeEvent){
+            MotionChangePostEvent((CustomEventHandler.MotionChangeEvent) event);
+        }
+        if(event instanceof CustomEventHandler.MotionChangeEvent.Pre){
+            MotionChangePreEvent((CustomEventHandler.MotionChangeEvent.Pre) event);
+        }
     }
 }

@@ -4,7 +4,7 @@ import net.minecraft.util.MathHelper;
 
 public class SystemTimer2 {
 
-    private long lastMS;
+    protected long lastMS;
     private long previousTime;
 
     public SystemTimer2() {

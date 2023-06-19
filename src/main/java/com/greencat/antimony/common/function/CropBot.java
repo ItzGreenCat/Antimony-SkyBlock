@@ -1,15 +1,16 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.Pathfinding;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.Pathfinder;
+import com.greencat.antimony.core.notice.Notice;
+import com.greencat.antimony.core.notice.NoticeManager;
 import com.greencat.antimony.core.nukerCore;
 import com.greencat.antimony.utils.Chroma;
 import com.greencat.antimony.utils.Utils;
-import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockNetherWart;
+import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -21,18 +22,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
 
-public class CropBot {
+public class CropBot extends FunctionStatusTrigger {
     nukerCore nuker = new nukerCore();
-    static Utils utils = new Utils();
-    int StartY;
+    /*int StartY;
     int StartX;
-    int StartZ;
+    int StartZ;*/
     EntityPlayer player;
-    int EndX;
+    /*int EndX;
     int EndY;
     int EndZ;
     int NowX;
@@ -46,82 +45,96 @@ public class CropBot {
     int nearlyEndZ;
     int nearlyNowX;
     int nearlyNowY;
-    int nearlyNowZ;
+    int nearlyNowZ;*/
     static int nearlyCooldownTick = 0;
     static BlockPos target;
     static BlockPos nearlyTarget;
     static int finderCount = 0;
+    static boolean searching = false;
+    static long lastStart = 0L;
     Minecraft mc = Minecraft.getMinecraft();
-    List<BlockPos> ignoreList = new ArrayList<BlockPos>();
+    HashSet<BlockPos> ignoreList = new HashSet<BlockPos>();
 
     public CropBot() {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event) {
-        if (event.function.getName().equals("CropBot")) {
-            ignoreList.clear();
-            if (getTarget(true) == null) {
-                event.setCanceled(true);
-                utils.print("无法找到对应作物");
-            }
-        }
-    }
-    @SubscribeEvent
-    public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
-        if (event.function.getName().equals("CropBot")) {
-            target = null;
-            nearlyCooldownTick = 0;
-            nearlyTarget = null;
-            finderCount = 0;
-            nuker.pos = null;
-            FunctionManager.setStatus("Pathfinding", false);
-        }
+
+    @Override
+    public String getName() {
+        return "CropBot";
     }
 
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
-        if (!event.status) {
-            if (event.function.getName().equals("CropBot")) {
-                target = null;
-                nearlyCooldownTick = 0;
-                nearlyTarget = null;
-                finderCount = 0;
-                nuker.pos = null;
-                FunctionManager.setStatus("Pathfinding", false);
+    @Override
+    public void post() {
+        target = null;
+        nearlyCooldownTick = 0;
+        nearlyTarget = null;
+        finderCount = 0;
+        nuker.pos = null;
+        ignoreList.clear();
+        FunctionManager.setStatus("Pathfinding", false);
+    }
+
+    @Override
+    public void init() {
+        ignoreList.clear();
+        searching = false;
+        lastStart = System.currentTimeMillis();
+        new Thread(() -> {
+            if(searching){
+                return;
             }
-        } else {
-            if (event.function.getName().equals("CropBot")) {
-                ignoreList.clear();
-                if (getTarget(true) == null) {
-                    event.setCanceled(true);
-                    utils.print("无法找到对应作物");
-                }
+            Utils.print("搜寻中");
+            Notice notice0 = new Notice("CropBot",true,"Searching...");
+            NoticeManager.add(notice0);
+            searching = true;
+            if (getTarget(true) == null) {
+                FunctionManager.setStatus("CropBot",false);
+                Utils.print("无法找到对应作物");
+                Notice notice = new Notice("CropBot-Enable",true,"Cannot find Crops");
+                NoticeManager.add(notice);
             }
-        }
+            searching = false;
+        }).start();
     }
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if(FunctionManager.getStatus("CropBot")) {
+            if(System.currentTimeMillis() - lastStart < 2000){
+                return;
+            }
+            if(searching){
+                return;
+            }
             if (target == null) {
                 target = getNearlyTarget();
                 if(target == null) {
-                    target = getTarget(false);
-                    if (target != null) {
-                        Pathfinder.setup(new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector().addVector(0.0D,0.2D,0.0D))), target, 0.0D);
-                        if (Pathfinder.hasPath()) {
-                            FunctionManager.setStatus("Pathfinding", true);
-                        } else {
-                            target = null;
+                        target = getTarget(false);
+                        if (target != null) {
+                            Pathfinder.setup(new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector().addVector(0.0D,0.2D,0.0D))), target, 0.0D);
+                            if (Pathfinder.hasPath()) {
+                                FunctionManager.setStatus("Pathfinding", true);
+                            } else {
+                                target = null;
+                            }
                         }
-                    }
                 }
             }
             if(target == null){
-                    target = getTarget(true);
+                new Thread(() -> {
+                    if(searching){
+                        return;
+                    }
+                    if(FunctionManager.getStatus("Pathfinding")){
+                        return;
+                    }
+                    searching = true;
                     Utils.print("无法找到对应作物,启用大范围搜索");
+                    Notice notice = new Notice("CropBot",true,"Cannot find Crops","Enable extensive search");
+                    NoticeManager.add(notice);
+                    target = getTarget(true);
                     if (target != null) {
                         Pathfinder.setup(new BlockPos(Utils.floorVec(mc.thePlayer.getPositionVector().addVector(0.0D,0.2D,0.0D))), target, 0.0D);
                         if (Pathfinder.hasPath()) {
@@ -130,10 +143,17 @@ public class CropBot {
                             target = null;
                         }
                     }
+                    searching = false;
+                    if(target == null && !FunctionManager.getStatus("Pathfinding")){
+                        FunctionManager.setStatus("CropBot", false);
+                        Utils.print("无法找到对应作物");
+                        Notice notice2 = new Notice("CropBot",true,"Cannot find Crops");
+                        NoticeManager.add(notice2);
+                    }
+                }).start();
             }
-            if(target == null){
-                FunctionManager.setStatus("CropBot", false);
-                Utils.print("无法找到对应作物");
+            if(searching){
+                return;
             }
             if (!FunctionManager.getStatus("Pathfinding")) {
                 if (finderCount > 10) {
@@ -152,29 +172,29 @@ public class CropBot {
                 }
             }
             try {
-                nuker.nuke(new Vec3(Objects.requireNonNull(nearlyTarget)));
+                nuker.nuke(new Vec3(Objects.requireNonNull(nearlyTarget)),this,this.getClass().getDeclaredMethod("getNearlyTarget"));
                 if(nearlyTarget != null) {
-                    if (ignoreList.size() + 1 > (Integer)getConfigByFunctionName.get("CropBot","listSize")) {
+                    if (ignoreList.size() + 1 > (Integer) ConfigInterface.get("CropBot","listSize")) {
                         ignoreList.clear();
                     }
                     ignoreList.add(nearlyTarget);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ignored) {
             }
         }
     }
 
     private BlockPos getTarget(boolean large) {
         if (Minecraft.getMinecraft().theWorld != null) {
+            Utils.print("" + ignoreList.size());
             this.player = Minecraft.getMinecraft().thePlayer;
             int bound;
             if(!large) {
-                bound = (Integer) getConfigByFunctionName.get("CropBot", "radius");
+                bound = (Integer) ConfigInterface.get("CropBot", "radius");
             } else {
-                bound = 80;
+                bound = 40;
             }
-            this.StartY = (int) (this.player.posY - 5);
+            /*this.StartY = (int) (this.player.posY - 5);
             this.StartX = (int) (this.player.posX - bound);
             this.StartZ = (int) (this.player.posZ - bound);
             this.EndX = (int) (this.player.posX + bound);
@@ -205,14 +225,30 @@ public class CropBot {
             }
             this.NowX = this.StartX;
             this.NowY = this.StartY;
-            this.NowZ = this.StartZ;
+            this.NowZ = this.StartZ;*/
+            BlockPos temp = null;
+            for(BlockPos pos : BlockPos.getAllInBox(Minecraft.getMinecraft().thePlayer.getPosition().add(bound,bound,bound),Minecraft.getMinecraft().thePlayer.getPosition().add(-bound,-bound,-bound))){
+                if(isValid(pos)){
+                    if(temp == null) {
+                        temp = pos;
+                    }
+                } else {
+                    if(Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockCrops || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.melon_block || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.pumpkin || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockMushroom || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockNetherWart){
+                        if (ignoreList.size() + 1 > (Integer) ConfigInterface.get("CropBot","listSize")) {
+                            ignoreList.clear();
+                        }
+                        ignoreList.add(pos);
+                    }
+                }
+            }
+            return temp;
         }
         return null;
     }
     private BlockPos getNearlyTarget() {
         if (Minecraft.getMinecraft().theWorld != null) {
             this.player = Minecraft.getMinecraft().thePlayer;
-            this.nearlyStartY = (int) (this.player.posY - 3.5D);
+            /*this.nearlyStartY = (int) (this.player.posY - 3.5D);
             this.nearlyStartX = (int) (this.player.posX - 3.5D);
             this.nearlyStartZ = (int) (this.player.posZ - 3.5D);
             this.nearlyEndX = (int) (this.player.posX + 3.5D);
@@ -243,26 +279,52 @@ public class CropBot {
             }
             this.nearlyNowX = this.nearlyStartX;
             this.nearlyNowY = this.nearlyStartY;
-            this.nearlyNowZ = this.nearlyStartZ;
+            this.nearlyNowZ = this.nearlyStartZ;*/
+            double bound = 3.5D;
+            BlockPos temp = null;
+            for(BlockPos pos : BlockPos.getAllInBox(Minecraft.getMinecraft().thePlayer.getPosition().add(bound,bound,bound),Minecraft.getMinecraft().thePlayer.getPosition().add(-bound,-bound,-bound))){
+                if(isValid(pos)){
+                    if(temp == null) {
+                        temp = pos;
+                    }
+                } else {
+                    if(Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockCrops || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.melon_block || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() == Blocks.pumpkin || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockMushroom || Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockNetherWart){
+                        if (ignoreList.size() + 1 > (Integer) ConfigInterface.get("CropBot","listSize")) {
+                            ignoreList.clear();
+                        }
+                        ignoreList.add(pos);
+                    }
+                };
+            }
+            return temp;
         }
         return null;
     }
     private Boolean isValid(BlockPos block) {
         if(!isIgnored(block)) {
-            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.potatoes && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 0) {
+            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.potatoes && (Integer) ConfigInterface.get("CropBot", "crop") == 0) {
                 return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockCrops.AGE) == 7;
             }
-            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.carrots && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 1) {
+            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.carrots && (Integer) ConfigInterface.get("CropBot", "crop") == 1) {
                 return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockCrops.AGE) == 7;
             }
-            if ((Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.brown_mushroom || Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.red_mushroom) && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 2) {
+            if ((Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.brown_mushroom || Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.red_mushroom) && (Integer) ConfigInterface.get("CropBot", "crop") == 2) {
                 return true;
             }
-            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.nether_wart && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 3) {
+            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.nether_wart && (Integer) ConfigInterface.get("CropBot", "crop") == 3) {
                 return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockNetherWart.AGE) == 3;
             }
-            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.wheat && (Integer) getConfigByFunctionName.get("CropBot", "crop") == 4) {
+            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.wheat && (Integer) ConfigInterface.get("CropBot", "crop") == 4) {
                 return Minecraft.getMinecraft().theWorld.getBlockState(block).getValue(BlockCrops.AGE) == 7;
+            }
+            if ((Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() instanceof BlockFlower || Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() instanceof BlockGrass || Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() instanceof BlockTallGrass)&& (Integer) ConfigInterface.get("CropBot", "crop") == 5) {
+                return true;
+            }
+            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.melon_block && (Integer) ConfigInterface.get("CropBot", "crop") == 6) {
+                return true;
+            }
+            if (Minecraft.getMinecraft().theWorld.getBlockState(block).getBlock() == Blocks.pumpkin && (Integer) ConfigInterface.get("CropBot", "crop") == 7) {
+                return true;
             }
         }
         return false;
@@ -270,7 +332,7 @@ public class CropBot {
     private boolean isIgnored(BlockPos pos){
         boolean isIgnored = false;
         for(BlockPos ignored : ignoreList){
-            if(pos.equals(ignored)){
+            if(pos.getX() == ignored.getX() && pos.getZ() == ignored.getZ() && pos.getY() == ignored.getY()){
                 isIgnored = true;
                 break;
             }

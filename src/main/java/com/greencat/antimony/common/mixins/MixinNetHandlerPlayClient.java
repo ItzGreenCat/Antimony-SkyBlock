@@ -2,7 +2,7 @@ package com.greencat.antimony.common.mixins;
 
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.common.function.Velocity;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -24,7 +24,7 @@ public abstract class MixinNetHandlerPlayClient {
     WorldClient clientWorldController;
     @Inject(method = {"handleEntityVelocity"}, cancellable = true, at = {@At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocity(DDD)V")})
     public void handleEntityVelocity(S12PacketEntityVelocity s12packetv, CallbackInfo cbi) {
-        if (FunctionManager.getStatus("Velocity") && !(isInDungeon() && (Boolean) getConfigByFunctionName.get("Velocity","disableInDungeon"))) {
+        if (FunctionManager.getStatus("Velocity") && !(isInDungeon() && (Boolean) ConfigInterface.get("Velocity","disableInDungeon"))) {
             Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(s12packetv.getEntityID());
             if (entity != null) {
             if (s12packetv.getEntityID() == Minecraft.getMinecraft().thePlayer.getEntityId()) {

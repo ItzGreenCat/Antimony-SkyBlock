@@ -1,9 +1,12 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -25,36 +28,45 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ShortBowAura {
+public class ShortBowAura extends FunctionStatusTrigger implements ReflectionlessEventHandler {
     public static EntityLivingBase target;
     private static boolean attack;
-    private static ArrayList<EntityLivingBase> attackedMobs = new ArrayList();
+    private static ArrayList<EntityLivingBase> attackedMobs = new ArrayList<>();
     public ShortBowAura() {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
     }
-    @SubscribeEvent
-    public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
-        if(event.function.getName().equals("ShortBowAura")) {
-            target = null;
-            attack = false;
-            attackedMobs.clear();
-        }
+
+    @Override
+    public String getName() {
+        return "ShortBowAura";
     }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
-        if(event.function.getName().equals("ShortBowAura") && !event.status) {
-            target = null;
-            attack = false;
-            attackedMobs.clear();
+
+    @Override
+    public void post() {
+        target = null;
+        attack = false;
+        attackedMobs.clear();
+    }
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public void invoke(Event event){
+        if(event instanceof CustomEventHandler.MotionChangeEvent.Pre){
+            onUpdate((CustomEventHandler.MotionChangeEvent.Pre) event);
+            return;
+        }
+        if(event instanceof CustomEventHandler.MotionChangeEvent.Post){
+            onUpdatePost((CustomEventHandler.MotionChangeEvent.Post) event);
         }
     }
 
-    @SubscribeEvent(
-            priority = EventPriority.LOWEST
-    )
     public void onUpdate(CustomEventHandler.MotionChangeEvent.Pre event) {
-        if (Killaura.target == null && FunctionManager.getStatus("ShortBowAura") && (double)Minecraft.getMinecraft().thePlayer.ticksExisted % (Double) getConfigByFunctionName.get("ShortBowAura","delay") == 0.0D) {
+        if (Killaura.target == null && FunctionManager.getStatus("ShortBowAura") && (double)Minecraft.getMinecraft().thePlayer.ticksExisted % (Double) ConfigInterface.get("ShortBowAura","delay") == 0.0D) {
             boolean hasShortBow = Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == Items.bow;
             if (hasShortBow) {
                 target = this.getTarget(target);
@@ -69,7 +81,6 @@ public class ShortBowAura {
         }
     }
 
-    @SubscribeEvent
     public void onUpdatePost(CustomEventHandler.MotionChangeEvent.Post event) {
         if (attack) {
             int held = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
@@ -105,7 +116,7 @@ public class ShortBowAura {
     }
 
     private void click() {
-            if(!(Boolean) getConfigByFunctionName.get("ShortBowAura","right")) {
+            if(!(Boolean) ConfigInterface.get("ShortBowAura","right")) {
                 Minecraft.getMinecraft().thePlayer.swingItem();
 
             } else {
@@ -116,10 +127,10 @@ public class ShortBowAura {
 
     private boolean isValid(EntityLivingBase entity) {
         if ((!(entity == Minecraft.getMinecraft().thePlayer) && !entity.isInvisible()) && !(entity instanceof EntityArmorStand) &&  !(entity instanceof EntityBlaze) && !(entity instanceof EntityVillager) && (Minecraft.getMinecraft().thePlayer.canEntityBeSeen(entity)) && entity.getHealth() > 0.0F && !entity.getName().equals("Dummy") && !entity.getName().startsWith("Decoy")
-        && !((double)entity.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) > (Double) getConfigByFunctionName.get("ShortBowAura","range"))
+        && !((double)entity.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) > (Double) ConfigInterface.get("ShortBowAura","range"))
         ) {
             if(entity instanceof EntityPlayer){
-                if(Utils.isTeamMember(entity, Minecraft.getMinecraft().thePlayer) && !(Boolean) getConfigByFunctionName.get("ShortBowAura","attackTeam")) {
+                if(Utils.isTeamMember(entity, Minecraft.getMinecraft().thePlayer) && !(Boolean) ConfigInterface.get("ShortBowAura","attackTeam")) {
                     return false;
                 } else {
                     return !Utils.isNPC(entity);

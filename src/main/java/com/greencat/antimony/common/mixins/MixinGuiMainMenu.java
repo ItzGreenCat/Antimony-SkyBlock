@@ -16,6 +16,7 @@ import java.util.Random;
 @Mixin(GuiMainMenu.class)
 public abstract class MixinGuiMainMenu extends GuiScreen implements GuiYesNoCallback {
     int background = 1;
+    private static long lastSwitch = 0L;
     Random random = new Random();
     @Inject(
             method = "initGui",
@@ -24,7 +25,10 @@ public abstract class MixinGuiMainMenu extends GuiScreen implements GuiYesNoCall
             )
     )
     public void modifyInit(CallbackInfo ci){
-        background = random.nextInt(3) + 1;
+        if(System.currentTimeMillis() - lastSwitch > 600000) {
+            background = random.nextInt(3) + 1;
+            lastSwitch = System.currentTimeMillis();
+        }
     }
     @Inject(
             method = "drawScreen",

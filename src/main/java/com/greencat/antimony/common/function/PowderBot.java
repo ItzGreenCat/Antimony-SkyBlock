@@ -1,14 +1,17 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.Pathfinder;
 import com.greencat.antimony.core.PathfinderProxy;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.core.nukerCore2;
 import com.greencat.antimony.core.nukerWrapper;
 import com.greencat.antimony.utils.SmoothRotation;
 import com.greencat.antimony.utils.Utils;
+import me.greencat.lwebus.core.reflectionless.ReflectionlessEventHandler;
+import me.greencat.lwebus.core.type.Event;
 import net.minecraft.block.BlockOre;
 import net.minecraft.block.BlockPrismarine;
 import net.minecraft.block.state.IBlockState;
@@ -27,7 +30,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PowderBot {
+public class PowderBot extends FunctionStatusTrigger implements ReflectionlessEventHandler {
     public PowderBot() {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
@@ -45,7 +48,7 @@ public class PowderBot {
     public void move(TickEvent.ClientTickEvent event){
         if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().thePlayer != null) {
             if (FunctionManager.getStatus("PowderBot")) {
-                if (!((Boolean)getConfigByFunctionName.get("PowderBot","chestOnly"))) {
+                if (!((Boolean) ConfigInterface.get("PowderBot","chestOnly"))) {
                     if(looking && System.currentTimeMillis() - lastLooking > 10000){
                         looking = false;
                     }
@@ -96,38 +99,31 @@ public class PowderBot {
             }
         }
     }
-    @SubscribeEvent
-    public void onDisable(CustomEventHandler.FunctionDisabledEvent event) {
-        if(event.function.getName().equals("PowderBot")){
-            nukerWrapper.enable = false;
-            looking = false;
-            nukerWrapper.disable();
-        }
-    }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
-        if(event.function.getName().equals("PowderBot")) {
-            if (!event.status) {
-                nukerWrapper.enable = false;
-                looking = false;
-                nukerWrapper.disable();
-            } else {
-                nukerWrapper.enable = true;
-                looking = false;
-                nukerWrapper.enable();
-            }
-        }
-    }
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event){
-        if(event.function.getName().equals("PowderBot")){
-            nukerWrapper.enable = true;
-            looking = false;
-            nukerWrapper.enable();
-        }
+
+    @Override
+    public String getName() {
+        return "PowderBot";
     }
 
-    @SubscribeEvent
+    @Override
+    public void post() {
+        nukerWrapper.enable = false;
+        looking = false;
+        nukerWrapper.disable();
+    }
+
+    @Override
+    public void init() {
+        nukerWrapper.enable = true;
+        looking = false;
+        nukerWrapper.enable();
+    }
+    @Override
+    public void invoke(Event event){
+        if(event instanceof CustomEventHandler.PacketReceivedEvent){
+            receivePacket((CustomEventHandler.PacketReceivedEvent) event);
+        }
+    }
     public void receivePacket(CustomEventHandler.PacketReceivedEvent event) {
         if (FunctionManager.getStatus("PowderBot")) {
             if (event.packet instanceof S2APacketParticles) {

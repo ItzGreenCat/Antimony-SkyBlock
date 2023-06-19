@@ -1,5 +1,6 @@
 package com.greencat.antimony.common.function;
 
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.Pathfinder;
 import com.greencat.antimony.core.Pathfinding;
@@ -23,7 +24,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class JadeCrystalBot {
+public class JadeCrystalBot extends FunctionStatusTrigger {
     public JadeCrystalBot() {
         MinecraftForge.EVENT_BUS.register(this);
         CustomEventHandler.EVENT_BUS.register(this);
@@ -349,42 +350,34 @@ public class JadeCrystalBot {
         previousState = currentState;
         currentState = SolutionState.NOT_STARTED;
     }
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event){
-        if(event.function.getName().equals("JadeCrystalBot")){
-                    minesCenter = Vec3i.NULL_VECTOR;
-                    visitKeeperMessagePrinted = false;
-                    openedChestPositions.clear();
-                    chestLastFoundMillis = 0;
-                    prevDistToTreasure = 0;
-                    prevPlayerPos = null;
-                    currentState = SolutionState.NOT_STARTED;
-            possibleBlocks.clear();
-                    resetSolution(false);
-            pressedBinding = null;
-            pressed = false;
-            needMove = false;
-            FunctionManager.setStatus("Pathfinding", false);
-        }
+
+    @Override
+    public String getName() {
+        return "JadeCrystalBot";
     }
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event){
-        if(event.function.getName().equals("JadeCrystalBot") && event.status){
-            minesCenter = Vec3i.NULL_VECTOR;
-            visitKeeperMessagePrinted = false;
-            openedChestPositions.clear();
-            chestLastFoundMillis = 0;
-            prevDistToTreasure = 0;
-            prevPlayerPos = null;
-            currentState = SolutionState.NOT_STARTED;
-            resetSolution(false);
-            pressedBinding = null;
-            pressed = false;
-            needMove = false;
-            possibleBlocks.clear();
-            FunctionManager.setStatus("Pathfinding", false);
-        }
+
+    @Override
+    public void post() {
+
     }
+
+    @Override
+    public void init() {
+        minesCenter = Vec3i.NULL_VECTOR;
+        visitKeeperMessagePrinted = false;
+        openedChestPositions.clear();
+        chestLastFoundMillis = 0;
+        prevDistToTreasure = 0;
+        prevPlayerPos = null;
+        currentState = SolutionState.NOT_STARTED;
+        resetSolution(false);
+        pressedBinding = null;
+        pressed = false;
+        needMove = false;
+        possibleBlocks.clear();
+        FunctionManager.setStatus("Pathfinding", false);
+    }
+
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event){
         if(FunctionManager.getStatus("JadeCrystalBot")){

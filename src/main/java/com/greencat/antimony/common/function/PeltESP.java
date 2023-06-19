@@ -29,9 +29,9 @@ public class PeltESP {
     public void RenderEvent(RenderWorldLastEvent event){
         if (FunctionManager.getStatus("PeltESP")) {
                 if (Minecraft.getMinecraft().theWorld != null) {
-                    Double x = Minecraft.getMinecraft().thePlayer.posX;
-                    Double y = Minecraft.getMinecraft().thePlayer.posY;
-                    Double z = Minecraft.getMinecraft().thePlayer.posZ;
+                    double x = Minecraft.getMinecraft().thePlayer.posX;
+                    double y = Minecraft.getMinecraft().thePlayer.posY;
+                    double z = Minecraft.getMinecraft().thePlayer.posZ;
                     List<EntityArmorStand> entityList = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityArmorStand.class, new AxisAlignedBB(x - (2000 / 2d), y - (256 / 2d), z - (2000 / 2d), x + (2000 / 2d), y + (256 / 2d), z + (2000 / 2d)), null);
                     for(Entity entity : entityList) {
                         if (entity instanceof EntityArmorStand) {

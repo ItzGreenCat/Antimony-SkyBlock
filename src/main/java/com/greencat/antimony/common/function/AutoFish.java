@@ -1,9 +1,10 @@
 package com.greencat.antimony.common.function;
 
 import com.greencat.Antimony;
+import com.greencat.antimony.common.function.base.FunctionStatusTrigger;
 import com.greencat.antimony.core.FunctionManager.FunctionManager;
 import com.greencat.antimony.core.HUDManager;
-import com.greencat.antimony.core.config.getConfigByFunctionName;
+import com.greencat.antimony.core.config.ConfigInterface;
 import com.greencat.antimony.core.event.CustomEventHandler;
 import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -23,7 +24,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.awt.*;
 import java.util.List;
 
-public class AutoFish {
+public class AutoFish extends FunctionStatusTrigger {
     public static boolean emberStatus = false;
     static int Tick = 40;
     static int hookTick = -1;
@@ -43,7 +44,7 @@ public class AutoFish {
         CustomEventHandler.EVENT_BUS.register(this);
     }
 
-    public void init() {
+    public void reCheck() {
         try {
             if (FunctionManager.getStatus("AutoFish")) {
                 if (mc.thePlayer.getHeldItem().getItem() == Items.fishing_rod) {
@@ -63,35 +64,23 @@ public class AutoFish {
         }
     }
 
-    @SubscribeEvent
-    public void onEnable(CustomEventHandler.FunctionEnableEvent event) {
-        oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
-        Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
+    @Override
+    public String getName() {
+        return "AutoFish";
+    }
+
+    @Override
+    public void post() {
+        KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(), false);
+        Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, oldLevel);
         nextTickThrow = false;
     }
 
-    @SubscribeEvent
-    public void onDisabled(CustomEventHandler.FunctionDisabledEvent event) {
-        if (event.function.getName().equals("AutoFish")) {
-            KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(), false);
-            Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, oldLevel);
-            nextTickThrow = false;
-        }
-    }
-
-    @SubscribeEvent
-    public void onSwitch(CustomEventHandler.FunctionSwitchEvent event) {
-        if (event.function.getName().equals("AutoFish")) {
-            if (!event.status) {
-                KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(), false);
-                Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, oldLevel);
-                nextTickThrow = false;
-            } else {
-                oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
-                Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
-                nextTickThrow = false;
-            }
-        }
+    @Override
+    public void init() {
+        oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
+        Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
+        nextTickThrow = false;
     }
 
     @SubscribeEvent
@@ -100,7 +89,7 @@ public class AutoFish {
             if (!FunctionManager.getStatus("AutoFish")) {
                 AutoFishStatus = false;
             } else {
-                if ((Boolean) getConfigByFunctionName.get("AutoFish", "sneak")) {
+                if ((Boolean) ConfigInterface.get("AutoFish", "sneak")) {
                     KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(), true);
                 }
             }
@@ -171,9 +160,9 @@ public class AutoFish {
         }
         if (Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().theWorld != null) {
             if (FunctionManager.getStatus("AutoFish")) {
-                if ((Boolean) getConfigByFunctionName.get("AutoFish", "throwHook")) {
+                if ((Boolean) ConfigInterface.get("AutoFish", "throwHook")) {
                     if (!isHookThrown() && Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == Items.fishing_rod) {
-                        if (hookThrownCooldown + 1 > (Integer) getConfigByFunctionName.get("AutoFish", "throwHookCooldown") * 40) {
+                        if (hookThrownCooldown + 1 > (Integer) ConfigInterface.get("AutoFish", "throwHookCooldown") * 40) {
                             Utils.print("到达设定时间,自动抛竿");
                             Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
                             hookThrownCooldown = 0;
@@ -185,14 +174,14 @@ public class AutoFish {
                     }
                 }
             }
-            if ((Boolean) getConfigByFunctionName.get("AutoFish", "rethrow")) {
-                if (hookTick + 1 > (Integer) getConfigByFunctionName.get("AutoFish", "rethrowCooldown") * 40) {
+            if ((Boolean) ConfigInterface.get("AutoFish", "rethrow")) {
+                if (hookTick + 1 > (Integer) ConfigInterface.get("AutoFish", "rethrowCooldown") * 40) {
                     if (isHookThrown()) {
                         Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
                         nextTickThrow = true;
-                        init();
+                        reCheck();
                         AutoFishStatus = false;
-                        if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
+                        if ((Boolean) ConfigInterface.get("AutoFish", "message")) {
                             Utils.print("钓鱼检测状态:关闭");
                         }
                         hookTick = -1;
@@ -203,7 +192,7 @@ public class AutoFish {
                 Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
                 AutoFishStatus = true;
                 hookTick = 0;
-                if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
+                if ((Boolean) ConfigInterface.get("AutoFish", "message")) {
                     Utils.print("钓鱼检测状态:开启");
                 }
                 nextTickThrow = false;
@@ -223,20 +212,20 @@ public class AutoFish {
                         List<EntityFishHook> entities = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(EntityFishHook.class, new AxisAlignedBB(x - (0.5 / 2d), y - (0.5 / 2d), z - (0.5 / 2d), x + (0.5 / 2d), y + (0.5 / 2d), z + (0.5 / 2d)), null);
                         for (EntityFishHook entity : entities) {
                             if (entity.angler == Minecraft.getMinecraft().thePlayer) {
-                                slugFish = (Boolean) getConfigByFunctionName.get("AutoFish", "slug");
+                                slugFish = (Boolean) ConfigInterface.get("AutoFish", "slug");
                                 if (slugFish) {
                                     if (hookTick < 0) {
-                                        init();
+                                        reCheck();
                                         AutoFishStatus = false;
-                                        if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
+                                        if ((Boolean) ConfigInterface.get("AutoFish", "message")) {
                                             Utils.print("钓鱼检测状态:关闭");
                                         }
                                         hookTick = -1;
                                     }
                                 } else {
-                                    init();
+                                    reCheck();
                                     AutoFishStatus = false;
-                                    if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
+                                    if ((Boolean) ConfigInterface.get("AutoFish", "message")) {
                                         Utils.print("钓鱼检测状态:关闭");
                                     }
                                     hookTick = -1;
@@ -246,7 +235,7 @@ public class AutoFish {
                     } else {
                         AutoFishStatus = true;
                         hookTick = 0;
-                        if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
+                        if ((Boolean) ConfigInterface.get("AutoFish", "message")) {
                             Utils.print("钓鱼检测状态:开启");
                         }
                     }
@@ -262,7 +251,7 @@ public class AutoFish {
                 if (Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == Items.fishing_rod) {
                     if (AutoFishStatus) {
                         AutoFishStatus = false;
-                        if ((Boolean) getConfigByFunctionName.get("AutoFish", "message")) {
+                        if ((Boolean) ConfigInterface.get("AutoFish", "message")) {
                             Utils.print("钓鱼检测状态:关闭");
                         }
                     }
@@ -277,9 +266,9 @@ public class AutoFish {
     public void RenderText(RenderGameOverlayEvent event) {
         if (FunctionManager.getStatus("AutoFish")) {
             if (event.type == RenderGameOverlayEvent.ElementType.HELMET) {
-                if ((Boolean) getConfigByFunctionName.get("AutoFish", "timer")) {
+                if ((Boolean) ConfigInterface.get("AutoFish", "timer")) {
                     double second = ((double) (hookTick)) / 40;
-                    HUDManager.Render("Hook Thrown Time", (int) second, (Integer) getConfigByFunctionName.get("AutoFish", "timerX"), (Integer) getConfigByFunctionName.get("AutoFish", "timerY"));
+                    HUDManager.Render("Hook Thrown Time", (int) second, (Integer) ConfigInterface.get("AutoFish", "timerX"), (Integer) ConfigInterface.get("AutoFish", "timerY"));
                     //mc.fontRendererObj.drawString(NoticeString, (new ScaledResolution(mc).getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(NoticeString) / 2), (new ScaledResolution(mc).getScaledHeight() / 2) + 40, Antimony.Color);
                 }
             }
