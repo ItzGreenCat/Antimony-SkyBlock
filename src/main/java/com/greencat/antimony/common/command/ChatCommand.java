@@ -10,7 +10,7 @@ import net.minecraft.command.ICommandSender;
 
 public class ChatCommand extends CommandBase {
     Utils utils = new Utils();
-    String[] Usage = {"/amc <消息> 向Antimony聊天频道发送消息","/amc toggle 保持/退出Antimony聊天频道"};
+    String[] Usage = {"/amc - AMC服务器关闭 暂时被禁用"};
     public int getRequiredPermissionLevel() {
         return 0;
     }
