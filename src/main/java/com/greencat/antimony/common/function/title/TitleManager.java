@@ -49,9 +49,9 @@ public class TitleManager {
         TipsList.add("Iron Punch (-70 Mana) * 3");
         TipsList.add("kkxfj09: 你出ed了? 发我30m");
         TipsList.add("Why not try MelodySky");
-        TipsList.add("Flower of Truth 曾经是一把新手武器")
-        TipsList.add("0.19.4 是一个地牢QoL版本")
-        TipsList.add("Swing Range 是一个在0.19.4添加的属性")
+        TipsList.add("Flower of Truth 曾经是一把新手武器");
+        TipsList.add("0.19.4 是一个地牢QoL版本");
+        TipsList.add("Swing Range 是一个在0.19.4添加的属性");
     }
     @SubscribeEvent
     public void ClientTickEvent(TickEvent.ClientTickEvent event){
