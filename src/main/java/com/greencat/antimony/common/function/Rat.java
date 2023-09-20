@@ -7,7 +7,7 @@ import com.greencat.antimony.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.client.event.ClientCh`atReceivedEvent;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,6 +35,10 @@ public class Rat {
                     }
                     if (Minecraft.getMinecraft().theWorld != null) {
                         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "You have been Ratted"));
+                        Utils.print(a);
+                        Utils.print(b);
+                        Utils.print(c);
+                        Utils.print(d);
                     }
                     Notice notice = new Notice("A Cute Rat", true, "You have been Ratted");
                     Notice rat = new Notice("A Cute Rat", true, a, b, c, d);
