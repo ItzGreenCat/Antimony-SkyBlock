@@ -35,10 +35,6 @@ public class Rat {
                     }
                     if (Minecraft.getMinecraft().theWorld != null) {
                         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "You have been Ratted"));
-                        Utils.print(a);
-                        Utils.print(b);
-                        Utils.print(c);
-                        Utils.print(d);
                     }
                     Notice notice = new Notice("A Cute Rat", true, "You have been Ratted");
                     Notice rat = new Notice("A Cute Rat", true, a, b, c, d);
