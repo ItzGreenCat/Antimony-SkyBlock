@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Rat {
     Utils utils = new Utils();
-    String Rat = "之前有人给我发了shady的github链接，偶然看到个这个,就拿过来了lol,顺便拿这个做了个彩蛋功能";
+    String Rat = "之前有人给我发了shady的github链接,偶然看到个这个,就拿过来了lol,顺便拿这个做了个彩蛋功能";
     long lastTrigger = 0;
     public Rat() {
         MinecraftForge.EVENT_BUS.register(this);
