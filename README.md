@@ -1,4 +1,3 @@
-# 本项目已经停止维护 如有RP/Iss 处理周期极长
 # Antimony - ~~Skyblock~~
 ***Really only a skyblock mod?***
 Discord https://discord.gg/drhkxRckgH  
