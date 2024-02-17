@@ -27,8 +27,16 @@ CurseForge: https://www.curseforge.com/minecraft/mc-mods/antimony-skyblock
 [![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=Pysio2007&theme=dark)](https://github.com/anuraghazra/github-readme-stats)
 [![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=ItzGreenCat&theme=dark)](https://github.com/anuraghazra/github-readme-stats)
 [![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=Jrojro728&theme=dark)](https://github.com/anuraghazra/github-readme-stats)
+add-license-scan-badge
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FItzGreenCat%2FAntimony-SkyBlock.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FItzGreenCat%2FAntimony-SkyBlock?ref=badge_shield)
+
 # 许可证
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FItzGreenCat%2FAntimony-SkyBlock.svg?type=large&issueType=license)]
+master
 
 
 *Part of the code for linking servers across versions comes from ViaForge and ViaVersion*
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FItzGreenCat%2FAntimony-SkyBlock.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FItzGreenCat%2FAntimony-SkyBlock?ref=badge_large)
